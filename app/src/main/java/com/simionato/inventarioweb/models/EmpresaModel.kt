@@ -1,0 +1,21 @@
+package com.simionato.inventarioweb.models
+
+data class EmpresaModel(val id: Int,
+                        val cnpj_cpf:String ,
+                        val razao:String ,
+                        val fantasi:String ,
+                        val inscri:String ,
+                        val cadastr:String ,
+                        val ruaf:String ,
+                        val nrof:String ,
+                        val complementof:String ,
+                        val bairrof:String ,
+                        val cidadef:String ,
+                        val uff:String ,
+                        val cepf:String ,
+                        val tel1:String ,
+                        val tel2:String ,
+                        val email:String ,
+                        val obs:String ,
+                        val user_insert: Int,
+                        val user_update: Int)

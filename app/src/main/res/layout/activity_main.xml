@@ -6,13 +6,97 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="1dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Login"
+            app:flow_horizontalAlign="center"
+            tools:layout_editor_absoluteX="-37dp"
+            tools:layout_editor_absoluteY="67dp" />
+
+        <Button
+            android:id="@+id/btn_lancamento"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Lanç."
+            app:flow_horizontalAlign="center"
+            tools:layout_editor_absoluteX="145dp"
+            tools:layout_editor_absoluteY="67dp" />
+
+        <Button
+            android:id="@+id/btn_inventario"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Inv"
+            app:flow_horizontalAlign="center"
+            tools:layout_editor_absoluteX="275dp"
+            tools:layout_editor_absoluteY="67dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llBotao2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <Button
+            android:id="@+id/btn_produto"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="30dp"
+            android:text="Produto" />
+
+        <Button
+            android:id="@+id/btn_pesquisa"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="30dp"
+            android:text="Pesquisa"
+            app:flow_horizontalAlign="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llBotao2">
+
+
+        <TextView
+            android:id="@+id/lblId_Usuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/lblNomeUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
