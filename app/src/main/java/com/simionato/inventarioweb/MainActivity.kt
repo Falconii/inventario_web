@@ -38,6 +38,12 @@ class MainActivity : AppCompatActivity() {
                 Intent(this, PesquisaActivity::class.java)
             )
         }
+
+        binding.btnParametros.setOnClickListener{
+            startActivity(
+                Intent(this, ParametrosActivity::class.java)
+            )
+        }
     }
 
 

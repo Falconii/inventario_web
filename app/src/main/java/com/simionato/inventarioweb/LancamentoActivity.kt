@@ -14,14 +14,5 @@ class LancamentoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        binding.editDescricao.setText("Descrição Do Produto")
-        binding.editDescricao.setOnLongClickListener{
-            Toast.makeText(this, "Descrição", Toast.LENGTH_SHORT).show()
-            true
-        }
-        binding.editCCNovo.setOnLongClickListener{
-            Toast.makeText(this, "Long click detected", Toast.LENGTH_SHORT).show()
-            true
-        }
     }
 }

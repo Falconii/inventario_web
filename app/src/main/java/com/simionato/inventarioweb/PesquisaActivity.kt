@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.SearchView.OnQueryTextListener
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.simionato.inventarioweb.adapters.PesquisaAdapter
 import com.simionato.inventarioweb.databinding.ActivityPesquisaBinding
 import com.simionato.inventarioweb.infra.InfraHelper
@@ -70,7 +72,10 @@ class PesquisaActivity : AppCompatActivity() {
                     withContext(Dispatchers.Main) {
                         val adapter = PesquisaAdapter(usuarios)
                         binding.rvLista.adapter = adapter
-                        binding.rvLista.layoutManager = LinearLayoutManager(getApplicationContext().applicationContext)
+                        binding.rvLista.layoutManager = LinearLayoutManager(binding.rvLista.context)
+                        binding.rvLista.addItemDecoration(
+                            DividerItemDecoration( binding.rvLista.context,RecyclerView.VERTICAL)
+                        )
                         binding.svPesquisa.setOnQueryTextListener(object : OnQueryTextListener {
                             override fun onQueryTextSubmit(p0: String?): Boolean {
                                 return false

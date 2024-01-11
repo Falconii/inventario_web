@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinhaEmpresa"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ParametrosActivity">
+
+    <LinearLayout
+        android:id="@+id/llLinhaEmpresa01"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="88dp"
+        android:orientation="vertical"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/txtViewLabelEmpresa01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:paddingLeft="6dp"
+            android:text="EMPRESA"
+            android:textColor="@color/label"
+            android:textSize="10sp"
+            android:textStyle="normal|italic" />
+
+        <TextView
+            android:id="@+id/editEmpresa01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/moldura"
+            android:minHeight="30dp"
+            android:text="LOCAL"
+            android:textAlignment="textStart"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llLinhaLocal01"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llLinhaEmpresa01">
+
+        <TextView
+            android:id="@+id/txtViewLabelLocal01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:paddingLeft="6dp"
+            android:text="LOCAL"
+            android:textColor="@color/label"
+            android:textSize="10sp"
+            android:textStyle="normal|italic" />
+
+        <TextView
+            android:id="@+id/editLocal01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/moldura"
+            android:minHeight="30dp"
+            android:text="TextView"
+            android:textAlignment="textStart"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llLinhaInventario01"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llLinhaLocal01">
+
+        <TextView
+            android:id="@+id/txtViewLabelInventario01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:paddingLeft="6dp"
+            android:text="INVENTÁRIO"
+            android:textColor="@color/label"
+            android:textSize="10sp"
+            android:textStyle="normal|italic" />
+
+        <TextView
+            android:id="@+id/editInventario01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/moldura"
+            android:minHeight="30dp"
+            android:text="TextView"
+            android:textAlignment="textStart"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

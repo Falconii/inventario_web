@@ -63,16 +63,24 @@
             android:id="@+id/btn_produto"
             android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:layout_margin="30dp"
+            android:layout_margin="15dp"
             android:text="Produto" />
 
         <Button
             android:id="@+id/btn_pesquisa"
             android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:layout_margin="30dp"
+            android:layout_margin="15dp"
             android:text="Pesquisa"
             app:flow_horizontalAlign="center" />
+
+        <Button
+            android:id="@+id/btn_parametros"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_weight="1"
+            android:text="Param" />
     </LinearLayout>
 
     <LinearLayout
