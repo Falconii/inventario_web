@@ -12,7 +12,7 @@ import com.simionato.inventarioweb.databinding.ActivityPesquisaBinding
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.UsuarioQuery01Model
 import com.simionato.inventarioweb.parametros.ParametroUsuario01
-import com.simionato.inventarioweb.services.UsuarioAPI
+import com.simionato.inventarioweb.services.UsuarioService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,16 +25,11 @@ class PesquisaActivity : AppCompatActivity() {
         0,
         "",
         "",
-        "",
-        arrayOf<Int>(),
-        "",
-        "",
-        "",
-        "",
+        0,
         0,
         50,
         "N",
-        "Razão",
+        "Código",
         true
     )
 
@@ -55,8 +50,8 @@ class PesquisaActivity : AppCompatActivity() {
     private suspend fun getUsuarios(){
         var retorno: Response<List<UsuarioQuery01Model>>? = null
         try {
-            val usuarioAPI = InfraHelper.apiTimer.create( UsuarioAPI::class.java )
-            retorno = usuarioAPI.getUsuarios(params)
+            val usuarioService = InfraHelper.apiInventario.create( UsuarioService::class.java )
+            retorno = usuarioService.getUsuarios(params)
 
         }catch (e: Exception){
             e.printStackTrace()

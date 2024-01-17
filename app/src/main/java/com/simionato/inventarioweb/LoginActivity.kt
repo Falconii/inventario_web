@@ -1,17 +1,14 @@
 package com.simionato.inventarioweb
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.simionato.inventarioweb.databinding.ActivityLoginBinding
-import com.simionato.inventarioweb.databinding.ActivityMainBinding
-import com.simionato.inventarioweb.global.ParametroGlobal
-import com.simionato.inventarioweb.infra.InfraHelper.Companion.apiTimer
+import com.simionato.inventarioweb.infra.InfraHelper.Companion.apiInventario
 import com.simionato.inventarioweb.models.EmpresaModel
 import com.simionato.inventarioweb.models.UsuarioModel
-import com.simionato.inventarioweb.services.EmpresaAPI
-import com.simionato.inventarioweb.services.UsuarioAPI
+import com.simionato.inventarioweb.services.EmpresaService
+import com.simionato.inventarioweb.services.UsuarioService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,8 +50,8 @@ class LoginActivity : AppCompatActivity() {
         var retorno: Response<UsuarioModel>? = null
 
         try {
-            val usuarioAPI = apiTimer.create( UsuarioAPI::class.java )
-            retorno = usuarioAPI.getUsuario(1,id)
+            val usuarioService = apiInventario.create( UsuarioService::class.java )
+            retorno = usuarioService.getUsuario(1,id)
         }catch (e: Exception){
             e.printStackTrace()
             Log.e("login",e.message as String)
@@ -91,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
         var retorno: Response<EmpresaModel>? = null
 
         try {
-            val empresaAPI = apiTimer.create( EmpresaAPI::class.java )
+            val empresaAPI = apiInventario.create( EmpresaService::class.java )
             retorno = empresaAPI.getEmpresa(1)
         }catch (e: Exception){
             e.printStackTrace()

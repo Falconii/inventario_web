@@ -1,14 +1,66 @@
 package com.simionato.inventarioweb
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.simionato.inventarioweb.databinding.ActivityMainBinding
+import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
 import com.simionato.inventarioweb.databinding.ActivityParametrosBinding
+import com.simionato.inventarioweb.infra.InfraHelper
+import com.simionato.inventarioweb.models.CentroCustoModel
+import com.simionato.inventarioweb.models.InventarioModel
+import com.simionato.inventarioweb.models.LocalModel
+import com.simionato.inventarioweb.parametros.ParametroCentroCusto01
+import com.simionato.inventarioweb.parametros.ParametroInventario01
+import com.simionato.inventarioweb.parametros.ParametroLocal01
+import com.simionato.inventarioweb.services.CentroCustoService
+import com.simionato.inventarioweb.services.InventarioService
+import com.simionato.inventarioweb.services.LocalService
+import com.simionato.inventarioweb.shared.HttpErrorMessage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Response
+
 
 class ParametrosActivity : AppCompatActivity() {
 
+    val params : ParametroCentroCusto01 = ParametroCentroCusto01(
+        1,
+        1,
+        "",
+        "",
+        0,
+        50,
+        "N",
+        "Código",
+        true
+    )
+
+    val paramLocal: ParametroLocal01 = ParametroLocal01(
+        1,
+        0,
+        "",
+        "",
+        0,
+        50,
+        "N",
+        "Código",
+        true
+    )
+
+    private val paramInventario:ParametroInventario01 = ParametroInventario01(
+        1,
+        8,
+        0,
+        "",
+        0,
+        50,
+        "N",
+        "Código",
+        true
+    )
     private val binding by lazy {
         ActivityParametrosBinding.inflate(layoutInflater)
     }
@@ -27,5 +79,104 @@ class ParametrosActivity : AppCompatActivity() {
             }
             true
         }
+        CoroutineScope(Dispatchers.IO).launch {
+            getCC()
+            getLocais()
+            getInventarios()
+        }
+    }
+
+    private suspend fun getCC(){
+        var response: Response<List<CentroCustoModel>>? = null
+        try {
+            val ccService = InfraHelper.apiInventario.create( CentroCustoService::class.java )
+            response = ccService.getCentrosCustos(params)
+
+        }catch (e: Exception){
+            e.printStackTrace()
+            Log.e("cc",e.message as String)
+        }
+
+        if ( response != null ){
+            Log.i("centrocusto","[response] ${response.isSuccessful} ${response.code()}")
+            if( response.isSuccessful ){
+                val centroscustos = response.body()
+                centroscustos?.forEach({cc -> Log.i("centrocusto",cc.descricao)})
+            }else{
+                val gson = Gson()
+                val message = gson.fromJson(
+                    response.errorBody()!!.charStream(),
+                    HttpErrorMessage::class.java
+                )
+
+               Log.i("centrocustos",message.getMessage().toString())
+               Log.i("centrocusto","[CODE] ${response.code()}\n[BODY]${response.body()}\n[RAW]${response.raw()}\n[message]${response.message()}\n[BODY]${response.body()}\n[errorBody]${response.errorBody()}\n[headers]${response.headers()}")
+            }
+        } else {
+            Log.e("centrocusto","Falha Na Pesquisa!")
+        }
+
+    }
+
+    private suspend fun getLocais(){
+        var response: Response<List<LocalModel>>? = null
+        try {
+            val localService = InfraHelper.apiInventario.create( LocalService::class.java )
+            response = localService.getLocais(paramLocal)
+
+        }catch (e: Exception){
+            e.printStackTrace()
+            Log.e("cc",e.message as String)
+        }
+
+        if ( response != null ){
+            Log.i("locais","[RETORNO] ${response.isSuccessful} ${response.code()}")
+            if( response.isSuccessful ){
+                val locais = response.body()
+                locais?.forEach({local -> Log.i("locais",local.razao)})
+            }else{
+                val gson = Gson()
+                val message = gson.fromJson(
+                    response.errorBody()!!.charStream(),
+                    HttpErrorMessage::class.java
+                )
+
+                Log.i("locais",message.getMessage().toString())
+            }
+        } else {
+            Log.e("locais","Falha Na Pesquisa!")
+        }
+
+    }
+
+    private suspend fun getInventarios(){
+        var response: Response<List<InventarioModel>>? = null
+        try {
+            val inventarioService = InfraHelper.apiInventario.create( InventarioService::class.java )
+            response = inventarioService.getInventarios(paramInventario)
+
+        }catch (e: Exception){
+            e.printStackTrace()
+            Log.e("inventarios",e.message as String)
+        }
+
+        if ( response != null ){
+            Log.i("inventarios","[RETORNO] ${response.isSuccessful} ${response.code()}")
+            if( response.isSuccessful ){
+                val inventarios = response.body()
+                inventarios?.forEach({invent -> Log.i("inventarios",invent.descricao)})
+            }else{
+                val gson = Gson()
+                val message = gson.fromJson(
+                    response.errorBody()!!.charStream(),
+                    HttpErrorMessage::class.java
+                )
+
+                Log.i("inventarios",message.getMessage().toString())
+            }
+        } else {
+            Log.e("inventarios","Falha Na Pesquisa!")
+        }
+
     }
 }
