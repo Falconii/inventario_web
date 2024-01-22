@@ -13,26 +13,16 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface LocalService {
-    @GET("local/{id_empresa}/{id}")
-    suspend fun getLocal(
-        @Path("id_empresa") id_empresa: Int,
-        @Path("id") id: Int
-    ) : Response<LocalModel>
-
-    @POST("locais")
-    suspend fun getLocais(
-        @Body params: ParametroLocal01
-    ): Response<List<LocalModel>>
-
     //
     @GET("local/{id_empresa}/{id}")
-    fun getLocalv2(
+    fun getLocal(
         @Path("id_empresa") id_empresa: Int,
         @Path("id") id: Int
     ) : Call<LocalModel>
 
     @POST("locais")
-    fun getLocaisV2(
+    fun getLocais(
         @Body params: ParametroLocal01
     ): Call<List<LocalModel>>
+
 }

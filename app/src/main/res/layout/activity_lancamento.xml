@@ -5,6 +5,7 @@
     android:id="@+id/ScrollLancamento"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#D8D5DF"
     tools:context=".LancamentoActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -27,12 +28,13 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ToolBar02"
-        app:layout_constraintVertical_bias="0.5" >
+        app:layout_constraintVertical_bias="0.5">
 
         <LinearLayout
             android:id="@+id/llPrincipal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#F3EDED"
             android:orientation="vertical">
 
             <TextView
@@ -52,7 +54,7 @@
                 android:textStyle="normal|italic" />
 
             <LinearLayout
-                android:id="@+id/llCodigo"
+                android:id="@+id/llCodigo02"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -120,7 +122,6 @@
                         android:layout_marginTop="5dp"
                         android:layout_marginRight="50dp"
                         android:layout_weight="1"
-                        android:background="@drawable/moldura_azul"
                         app:srcCompat="@android:drawable/ic_menu_search" />
 
                 </LinearLayout>
@@ -144,15 +145,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/TextInputLayoutCodigo02">
 
-                <RadioButton
-                    android:id="@+id/rbNaoEncontrado02"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Não Encontrado" />
+                <CheckBox
+                    android:id="@+id/checkBox02"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="Marca aqui"
+                    android:textSize="20sp" />
+
 
                 <TextView
-                    android:id="@+id/txtViewSituac"
+                    android:id="@+id/txtViewSituac02"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_weight="1"
@@ -180,6 +182,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1">
+
 
                     <TextView
                         android:id="@+id/txtViewNroLancLabel02"
@@ -240,6 +243,19 @@
                         app:layout_constraintStart_toEndOf="@+id/editNroLanc02"
                         app:layout_constraintTop_toBottomOf="@+id/txtViewLabelData02" />
 
+                    <TextView
+                        android:id="@+id/txtViewResp02"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="MARCOS RENATO FALCONI"
+                        android:textColor="#DA1111"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/editNroLanc02" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -432,10 +448,11 @@
                 android:layout_marginRight="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editObs"
+                    android:id="@+id/editObs02"
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
-                    android:hint="Observação" />
+                    android:hint="Observação"
+                    android:maxLength="255" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
@@ -484,5 +501,43 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
+
+
+    <LinearLayout
+        android:id="@+id/llProgress02"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" >
+
+        <ProgressBar
+            android:id="@+id/progressBar02"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="#BDACE8"
+            android:padding="5dp" />
+
+        <TextView
+            android:id="@+id/textViewProgress02"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="3"
+            android:text="Aguarde...Processando..."
+            android:textAlignment="center"
+            android:textColor="#E41A1A"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

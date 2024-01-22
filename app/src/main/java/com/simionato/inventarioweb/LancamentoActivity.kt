@@ -4,17 +4,17 @@ import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.simionato.inventarioweb.databinding.ActivityLancamentoBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
 import com.simionato.inventarioweb.models.LancamentoModel
-import com.simionato.inventarioweb.models.LocalModel
-import com.simionato.inventarioweb.parametros.ParametroCentroCusto01
 import com.simionato.inventarioweb.parametros.ParametroImobilizadoInventario01
 import com.simionato.inventarioweb.parametros.ParametroLocal01
 import com.simionato.inventarioweb.services.ImobilizadoInventarioService
@@ -76,37 +76,56 @@ class LancamentoActivity : AppCompatActivity() {
         if (ReadOnly){
             binding.txtViewSituacao02.setVisibility(View.GONE)
         }
+        binding.llProgress02.visibility = View.GONE
         clearInventario()
         formulario(false)
         inicializar()
-        getLocais()
 
     }
 
     private fun inicializar(){
         inicializarTooBar()
+
         binding.imSearch.setOnClickListener{
+
+            val inputMethodManager =
+                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+
+            // on below line hiding our keyboard.
+            inputMethodManager.hideSoftInputFromWindow(binding.editCodigo.getWindowToken(), 0)
+
             try {
                 val codigo = binding.editCodigo.text.toString().toInt()
-                CoroutineScope(Dispatchers.IO).launch {
-                    getInventarios(codigo)
-                }
+                getInventario(codigo)
             } catch ( e : NumberFormatException ){
-                binding.editDescricao02.setText("Código Inválido!")
+                Toast.makeText(it.context,"Código Inválido!",Toast.LENGTH_SHORT).show()
             }
         }
-        binding.btCancelar02.setOnClickListener({})
+        /*
+        binding.rbNaoEncontrado02.setOnClickListener({
+            if (binding.rbNaoEncontrado02.isChecked) {
+                binding.rbNaoEncontrado02.clearCheck()
+            } else {
+                binding.rgNaoEncontrado02.check(R.id.rbNaoEncontrado02)
+            }
+        })
+        */
+        binding.btExcluir02.setOnClickListener({
+            val lancamento:LancamentoModel = loadLancamento()
+            deleteApontamento(lancamento)
+        })
+
         binding.btCancelar02.setOnClickListener({
+            clearInventario()
             binding.editCodigo.setText("")
             formulario(false)})
+
         binding.btGravar02.setOnClickListener({
-            val lancamento:LancamentoModel = loadInventario()
-            CoroutineScope(Dispatchers.IO).launch {
-                if (lancamento.id_lanca == 0){
-                    saveApontamento(lancamento)
-                } else {
-                    updateApontamento(lancamento)
-                }
+            val lancamento:LancamentoModel = loadLancamento()
+            if (lancamento.id_lanca == 0){
+                saveApontamento(lancamento)
+            } else {
+                updateApontamento(lancamento)
             }
         })
     }
@@ -128,7 +147,7 @@ class LancamentoActivity : AppCompatActivity() {
         }
 
     }
-    fun loadInventario():LancamentoModel{
+    fun localInventario():LancamentoModel{
         try {
             val codigo = binding.editCodigoNovo02.text.toString().toInt()
             inventario.new_codigo = codigo
@@ -143,7 +162,7 @@ class LancamentoActivity : AppCompatActivity() {
         }
         inventario.lanc_dt_lanca = getHoje()
         inventario.new_cc = ""
-        inventario.lanc_obs = binding.editObs.text.toString()
+        inventario.lanc_obs = binding.editObs02.text.toString()
             val lancamento = LancamentoModel(
                 inventario.id_empresa,
                 inventario.id_filial,
@@ -193,7 +212,7 @@ class LancamentoActivity : AppCompatActivity() {
 
        // setSupportActionBar(binding.ToolBar02)
     }
-    private suspend fun getInventarios(cod:Int){
+    private fun getInventario(cod:Int){
         var response: Response<List<ImobilizadoinventarioModel>>? = null
         params.id_imobilizado = 0
         params.new_codigo = 0
@@ -202,258 +221,341 @@ class LancamentoActivity : AppCompatActivity() {
         } else {
             params.new_codigo = cod
         }
-        Log.i("zyz","[PARAMETROS] ${params}")
         try {
             val imobilizadoInventarioService = InfraHelper.apiInventario.create( ImobilizadoInventarioService::class.java )
-            response = imobilizadoInventarioService.getImobilizadosInventarios(params)
-
-        }catch (e: Exception){
-            e.printStackTrace()
-            Log.e("zyz",e.message as String)
-        }
-
-        if ( response != null ){
-            Log.i("zyz","[response] ${response.isSuccessful} ${response.code()}")
-            if( response.isSuccessful ){
-                var lancamentos = response.body()
-
-                this.inventario = (lancamentos?.get(0) ?: ImobilizadoinventarioModel(
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    "",
-                    0,
-                    0,
-                    "",
-                    "",
-                    0,
-                    "",
-                    "",
-                    "" ,
-                    "",
-                    "",
-                    0,
-                    "",
-                    "",
-                    0,
-                    "",
-                    ""
-                )) as ImobilizadoinventarioModel
-
-                Log.e("zyz","[ACHEI] ${inventario}")
-
-                withContext(Dispatchers.Main) {
-
-                    with(binding) {
-                        deVolta(true)
-                        binding.txtViewSituac.setText(ParametroGlobal.Situacoes.getSituacao(inventario.status))
-                        binding.editNroLanc02.setText(
-                            if (inventario.id_lanca == 0) "" else inventario.id_lanca.toString()
-                        )
-                        binding.editData02.setText(inventario.lanc_dt_lanca)
-                        binding.editCodigoAtual02.setText(inventario.id_imobilizado.toString())
-                        binding.editCodigoNovo02.setText(
-                            if (inventario.new_codigo == 0) "" else inventario.new_codigo.toString()
-                        )
-                        binding.editDescricao02.setText(inventario.imo_descricao)
-                        binding.editCCOriginal02.setText(inventario.cc_descricao)
-                        binding.editCCNovol02.setText(
-                            if (inventario.new_cc_descricao == "") "Ativo Não Transferido!" else inventario.new_cc_descricao
-                        )
-                        binding.editObs.setText(inventario.lanc_obs)
-                    }
-                }
-
-            }else{
-                val gson = Gson()
-                val message = gson.fromJson(
-                    response.errorBody()!!.charStream(),
-                    HttpErrorMessage::class.java
-                )
-                inventario =ImobilizadoinventarioModel(0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    "",
-                    0,
-                    0,
-                    message.getMessage().toString(),
-                    "",
-                    0,
-                    "",
-                    "",
-                    "" ,
-                    "",
-                    "",
-                    0,
-                    "",
-                    "",
-                    0,
-                    "",
-                    "" )
-                withContext(Dispatchers.Main) {
-                    binding.editDescricao02.setText(inventario.imo_descricao)
-                }
-            }
-        } else {
-            Log.e("zyz","Falha Na Pesquisa!")
-        }
-
-    }
-    private suspend fun saveApontamento(lancamento:LancamentoModel){
-        var response: Response<LancamentoModel>? = null
-        try {
-            val lancamentoService = InfraHelper.apiInventario.create( LancamentoService::class.java )
-            response = lancamentoService.insertLancamento(lancamento)
-
-        }catch (e: Exception){
-            e.printStackTrace()
-            Log.e("zyz",e.message as String)
-        }
-
-        if ( response != null ){
-            Log.i("zyz","[INSERT response] ${response.isSuccessful} ${response.code()}")
-            if( response.isSuccessful ){
-
-                val lanca = response.body()
-                Log.e("zyz","[Gravei] ${lanca}")
-                formulario(false)
-
-            } else {
-                val gson = Gson()
-                val message = gson.fromJson(
-                    response.errorBody()!!.charStream(),
-                    HttpErrorMessage::class.java
-                )
-                Log.i("zyz","[INSERT response] ${response.isSuccessful} ${response.code()}\n${message.getMessage()}")
-            }
-        } else {
-            Log.e("zyz","Falha Na Inclusão!")
-        }
-
-    }
-    private suspend fun updateApontamento(lancamento:LancamentoModel){
-        var response: Response<LancamentoModel>? = null
-        Log.i("zyz","Indo para o update ${lancamento}")
-        try {
-            val lancamentoService = InfraHelper.apiInventario.create( LancamentoService::class.java )
-            response = lancamentoService.editLancamento(lancamento)
-
-        }catch (e: Exception){
-            e.printStackTrace()
-            Log.e("zyz",e.message as String)
-        }
-
-        if ( response != null ){
-            Log.i("zyz","[INSERT response] ${response.isSuccessful} ${response.code()}")
-            if( response.isSuccessful ){
-
-                var lanca = response.body()
-                Log.e("zyz","[Gravei] ${lanca}")
-                withContext(Dispatchers.Main) {
-                    deVolta(true);
-                }
-
-
-            } else {
-                val gson = Gson()
-                val message = gson.fromJson(
-                    response.errorBody()!!.charStream(),
-                    HttpErrorMessage::class.java
-                )
-                Log.i("zyz","[INSERT response] ${response.isSuccessful} ${response.code()}\n${message.getMessage()}")
-            }
-        } else {
-            Log.e("zyz","Falha Na Alteraçãi!")
-        }
-
-    }
-    private fun getLocal(){
-
-            val localService = InfraHelper.apiInventario.create( LocalService::class.java )
-
-            localService.getLocalv2(1,8).enqueue(object : Callback<LocalModel> {
-                override fun onResponse(call: Call<LocalModel>, response: Response<LocalModel>) {
+            binding.llProgress02.visibility = View.VISIBLE
+            imobilizadoInventarioService.getImobilizadosInventarios(params).enqueue(object :Callback<List<ImobilizadoinventarioModel>>{
+                override fun onResponse(
+                    call: Call<List<ImobilizadoinventarioModel>>,
+                    response: Response<List<ImobilizadoinventarioModel>>
+                ) {
+                    binding.llProgress02.visibility = View.GONE
                     if (response != null) {
-                        Log.i("zyz", "[response] ${response.isSuccessful} ${response.code()}")
                         if (response.isSuccessful) {
-                            var local = response.body()
 
-                            Log.e("zyz", "[ACHEI] ${local}")
+                            var inventarios = response.body()
 
-                            binding.txtViewSituacao02.visibility = View.VISIBLE
-                            binding.txtViewSituacao02.setText(local?.razao)
+                            inventario = (inventarios?.get(0) ?: ImobilizadoinventarioModel(
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                "",
+                                0,
+                                0,
+                                "",
+                                "",
+                                0,
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                0,
+                                "",
+                                "",
+                                0,
+                                "",
+                                ""
+                            )) as ImobilizadoinventarioModel
 
-                            Toast.makeText(binding.txtViewSituacao02.context,"Local ${local?.razao}",Toast.LENGTH_LONG).show()
+                            if (inventario.id_lanca !== 0) {
+                                showToast( "Ativo Já Inventariado!",
+                                    Toast.LENGTH_SHORT)
+                            }
 
-                        } else {
+                            with(binding) {
+                                formulario(true)
+                                //binding.checkBox02.cheched()
+                                if (inventario.status == 5){
+                                    //binding.rgNaoEncontrado02.check(R.id.rbNaoEncontrado02)
+                                } else {
+                                   /// binding.rgNaoEncontrado02.clearCheck()
+                                }
+                                binding.txtViewSituac02.setText(
+                                    ParametroGlobal.Situacoes.getSituacao(
+                                        inventario.status
+                                    )
+                                )
+                                binding.editNroLanc02.setText(
+                                    if (inventario.id_lanca == 0) "" else inventario.id_lanca.toString()
+                                )
+                                binding.editData02.setText(inventario.lanc_dt_lanca)
+                                binding.txtViewResp02.setText("RESP: ${inventario.usu_razao}")
+                                binding.editCodigoAtual02.setText(inventario.id_imobilizado.toString())
+                                binding.editCodigoNovo02.setText(
+                                    if (inventario.new_codigo == 0) "" else inventario.new_codigo.toString()
+                                )
+                                binding.editDescricao02.setText(inventario.imo_descricao)
+                                binding.editCCOriginal02.setText(inventario.cc_descricao)
+                                binding.editCCNovol02.setText(
+                                    if (inventario.new_cc_descricao == "") "Ativo Não Transferido!" else inventario.new_cc_descricao
+                                )
+                                binding.editObs02.setText(inventario.lanc_obs)
+                            }
+
+                        }
+                        else {
+                            binding.llProgress02.visibility = View.GONE
                             val gson = Gson()
                             val message = gson.fromJson(
                                 response.errorBody()!!.charStream(),
                                 HttpErrorMessage::class.java
                             )
-                            binding.txtViewSituacao02.visibility = View.VISIBLE
-                            binding.txtViewSituacao02.setText("[ERRO -> body] ${message.getMessage()}")
+                            if (response.code() == 409){
+                                showToast("Ativo Não Encontrado! ${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+                                Toast.makeText(applicationContext,"Ativo Não Encontrado!",Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(applicationContext,message.getMessage().toString(),Toast.LENGTH_SHORT).show()
+                            }
                         }
-
+                    } else {
+                        binding.llProgress02.visibility = View.GONE
+                        Toast.makeText(applicationContext,"Sem retorno Da Requisição!",Toast.LENGTH_SHORT).show()
                     }
                 }
-                override fun onFailure(call: Call<LocalModel>, t: Throwable) {
-                    binding.txtViewSituacao02.visibility = View.VISIBLE
-                    binding.txtViewSituacao02.setText("[ERRO] ${t.message}")
+                override fun onFailure(call: Call<List<ImobilizadoinventarioModel>>, t: Throwable) {
+                    binding.llProgress02.visibility = View.GONE
+                    showToast(t.message.toString())
                 }
             })
 
+        }catch (e: Exception){
+            binding.llProgress02.visibility = View.GONE
+            showToast("${e.message.toString()}",Toast.LENGTH_LONG)
+        }
+
     }
-    private fun getLocais(){
-            val localService = InfraHelper.apiInventario.create(LocalService::class.java)
-            localService.getLocaisV2(paramLocal).enqueue(object : Callback<List<LocalModel>> {
+    private  fun saveApontamento(lancamento:LancamentoModel){
+        try {
+            binding.llProgress02.visibility = View.VISIBLE
+
+            val lancamentoService = InfraHelper.apiInventario.create( LancamentoService::class.java )
+
+            lancamentoService.insertLancamento(lancamento).enqueue(object :Callback<LancamentoModel>{
                 override fun onResponse(
-                    call: Call<List<LocalModel>>,
-                    response: Response<List<LocalModel>>
+                    call: Call<LancamentoModel>,
+                    response: Response<LancamentoModel>
                 ) {
-                    if (response != null) {
-                        Log.i("zyz", "[response] ${response.isSuccessful} ${response.code()}")
+                    if ( response != null ) {
+                        binding.llProgress02.visibility = View.GONE
                         if (response.isSuccessful) {
-                            var locais = response.body()
 
-                            Log.e("zyz", "[ACHEI] ${locais}")
+                            val lanca = response.body()
 
-                            binding.txtViewSituacao02.visibility = View.VISIBLE
-                            binding.txtViewSituacao02.setText(locais?.get(0)?.razao)
+                            clearInventario()
+
+                            binding.editCodigo.setText("")
+
+                            formulario(false)
+
                             Toast.makeText(
-                                binding.txtViewSituacao02.context,
-                                "Locais ${locais?.count()}",
-                                Toast.LENGTH_LONG
+                                applicationContext,
+                                "Ativo Inventariado Com Sucesso!",
+                                Toast.LENGTH_SHORT
                             ).show()
 
                         } else {
+                            binding.llProgress02.visibility = View.GONE
+                                val gson = Gson()
+                                val message = gson.fromJson(
+                                    response.errorBody()!!.charStream(),
+                                    HttpErrorMessage::class.java
+                                )
+                                if (response.code() == 409){
+                                    showToast("Ativo Não Encontrado!",Toast.LENGTH_SHORT)
+                                } else {
+                                    showToast(message.getMessage().toString(),Toast.LENGTH_SHORT)
+                                }
+
+                        }
+                    } else {
+                        binding.llProgress02.visibility = View.GONE
+                        showToast("Falha Na Requisição!",Toast.LENGTH_LONG)
+                    }
+                }
+
+
+                override fun onFailure(call: Call<LancamentoModel>, t: Throwable) {
+                    binding.llProgress02.visibility = View.GONE
+                    showToast(t.message.toString(),Toast.LENGTH_LONG)
+                }
+
+            })
+
+        }catch (e: Exception){
+            binding.llProgress02.visibility = View.GONE
+            showToast("${e.message.toString()}",Toast.LENGTH_LONG)
+        }
+    }
+    private fun updateApontamento(lancamento:LancamentoModel){
+        binding.llProgress02.visibility = View.VISIBLE
+        Log.i("zyz","${lancamento}")
+        try {
+            val lancamentoService = InfraHelper.apiInventario.create( LancamentoService::class.java )
+            lancamentoService.editLancamento(lancamento).enqueue(object :Callback<LancamentoModel>{
+                override fun onResponse(
+                    call: Call<LancamentoModel>,
+                    response: Response<LancamentoModel>
+                ) {
+                    binding.llProgress02.visibility = View.GONE
+                    if ( response != null ) {
+
+                        if (response.isSuccessful)
+                        {
+                            var lanca = response.body()
+
+                            clearInventario()
+
+                            binding.editCodigo.setText("")
+
+                            formulario(false)
+
+                            Toast.makeText(
+                                applicationContext,
+                                "Ativo Alterado Com Sucesso!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                        } else
+                        {
                             val gson = Gson()
                             val message = gson.fromJson(
                                 response.errorBody()!!.charStream(),
                                 HttpErrorMessage::class.java
                             )
-                            binding.txtViewSituacao02.visibility = View.VISIBLE
-                            binding.txtViewSituacao02.setText("[ERRO -> body] ${message.getMessage()}")
+                            if (response.code() == 409){
+                                showToast("Ativo Não Encontrado!",Toast.LENGTH_SHORT)
+                            } else {
+                                showToast(message.getMessage().toString(),Toast.LENGTH_SHORT)
+                            }
                         }
-
+                    } else {
+                        showToast("Falha Na Requisição!",Toast.LENGTH_LONG)
                     }
                 }
 
-                override fun onFailure(call: Call<List<LocalModel>>, t: Throwable) {
-                    binding.txtViewSituacao02.visibility = View.VISIBLE
-                    binding.txtViewSituacao02.setText("[ERRO] ${t.message}")
+                override fun onFailure(call: Call<LancamentoModel>, t: Throwable) {
+                    binding.llProgress02.visibility = View.GONE
+                    showToast(t.message.toString(),Toast.LENGTH_LONG)
                 }
+
             })
+
+        }catch (e: Exception){
+            binding.llProgress02.visibility = View.GONE
+            showToast("${e.message.toString()}",Toast.LENGTH_LONG)
+        }
+
+
     }
 
+    private fun deleteApontamento(lancamento:LancamentoModel){
+        binding.llProgress02.visibility = View.VISIBLE
+        try {
+            val lancamentoService = InfraHelper.apiInventario.create( LancamentoService::class.java )
+            lancamentoService.deleteLancamento(lancamento.id_empresa,lancamento.id_filial,lancamento.id_inventario,lancamento.id_imobilizado)
+                .enqueue(object : Callback<JsonObject>{
+                    override fun onResponse(
+                        call: Call<JsonObject>,
+                        response: Response<JsonObject>
+                    ) {
+                        binding.llProgress02.visibility = View.GONE
+                        if ( response != null ) {
+
+                            if (response.isSuccessful) {
+                                var lanca = response.body()
+
+                                clearInventario()
+
+                                binding.editCodigo.setText("")
+
+                                formulario(false)
+
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Lançamento De Inventário, EXCLUÍDO Com Sucesso!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                val gson = Gson()
+                                val message = gson.fromJson(
+                                    response.errorBody()!!.charStream(),
+                                    HttpErrorMessage::class.java
+                                )
+                                if (response.code() == 409){
+                                    showToast("Ativo Não Encontrado!",Toast.LENGTH_SHORT)
+                                } else {
+                                    showToast(message.getMessage().toString(),Toast.LENGTH_SHORT)
+                                }
+                            }
+                        }
+                        else
+                        {
+                            showToast("Falha Na Requisição!",Toast.LENGTH_LONG)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                        binding.llProgress02.visibility = View.GONE
+                        showToast(t.message.toString(),Toast.LENGTH_LONG)
+                    }
+                })
+
+        }catch (e: Exception){
+            binding.llProgress02.visibility = View.GONE
+            showToast("${e.message.toString()}",Toast.LENGTH_LONG)
+        }
+    }
+
+    fun loadLancamento():LancamentoModel{
+        try {
+            val codigo = binding.editCodigoNovo02.text.toString().toInt()
+            inventario.new_codigo = codigo
+        } catch ( e : NumberFormatException ){
+            inventario.new_codigo = 0
+        }
+        try {
+            val codigo = binding.editNroLanc02.text.toString().toInt()
+            inventario.id_lanca = codigo
+        } catch ( e : NumberFormatException ){
+            inventario.id_lanca = 0
+        }
+        inventario.lanc_estado = inventario.lanc_estado //if (binding.rbNaoEncontrado02.isChecked) { 5 } else {inventario.lanc_estado}
+        inventario.lanc_dt_lanca = getHoje()
+        inventario.new_cc = ""
+        inventario.lanc_obs = binding.editObs02.text.toString()
+        val lancamento = LancamentoModel(
+            inventario.id_empresa,
+            inventario.id_filial,
+            inventario.id_inventario,
+            inventario.id_imobilizado,
+            inventario.user_insert,
+            inventario.id_lanca,
+            inventario.lanc_obs,
+            inventario.lanc_dt_lanca,
+            inventario.lanc_estado,
+            inventario.new_codigo,
+            inventario.new_cc,
+            1,
+            if (inventario.id_lanca !== 0) 1 else 0,
+            0,
+            "",
+            "",
+            0,
+            "",
+            ""
+        )
+        Log.i("zyz","Indo para gravação ${lancamento}")
+
+        return lancamento
+    }
+    fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
+        Toast.makeText(this, mensagem, duracao).show()
+    }
     private fun formulario(show:Boolean){
        if (show){
            binding.txtViewSituacao02.setText("lançamento de Inventário")
@@ -469,7 +571,7 @@ class LancamentoActivity : AppCompatActivity() {
        binding.txtInputObs02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
        if (inventario.id_lanca == 0){
            binding.btExcluir02.visibility = View.GONE
-           binding.btGravar02.text = "Incluir"
+           binding.btGravar02.text = "Inventariar"
        } else {
            binding.btExcluir02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
            binding.btGravar02.text = "Alterar"
@@ -479,9 +581,9 @@ class LancamentoActivity : AppCompatActivity() {
        pesquisa(!show)
    }
     private fun pesquisa(show:Boolean){
-        binding.llCodigo.visibility = if (!show) { View.GONE} else {View.VISIBLE}
+        binding.llCodigo02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
     }
-    private fun clearInventario(){
+    private fun clearInventario() {
         inventario =ImobilizadoinventarioModel(0,
             0,
             0,
@@ -507,15 +609,6 @@ class LancamentoActivity : AppCompatActivity() {
             "",
             "" )
     }
-
-
-   fun deVolta(ok:Boolean){
-        formulario(true);
-        Toast.makeText(baseContext,"Olha eu aqui !!!",Toast.LENGTH_SHORT)
-    }
-
-
-
 
 }
 

@@ -44,6 +44,12 @@ class MainActivity : AppCompatActivity() {
                 Intent(this, ParametrosActivity::class.java)
             )
         }
+
+        binding.btnProduto.setOnClickListener({
+            startActivity(
+                Intent(this, ProdutoActivity::class.java)
+            )
+        })
     }
 
 

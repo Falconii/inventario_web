@@ -2,6 +2,7 @@ package com.simionato.inventarioweb
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
@@ -21,6 +22,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 
 
@@ -81,9 +84,9 @@ class ParametrosActivity : AppCompatActivity() {
         }
         CoroutineScope(Dispatchers.IO).launch {
             getCC()
-            getLocais()
             getInventarios()
         }
+        getLocais()
     }
 
     private suspend fun getCC(){
@@ -118,33 +121,39 @@ class ParametrosActivity : AppCompatActivity() {
 
     }
 
-    private suspend fun getLocais(){
-        var response: Response<List<LocalModel>>? = null
+    private fun getLocais(){
         try {
             val localService = InfraHelper.apiInventario.create( LocalService::class.java )
-            response = localService.getLocais(paramLocal)
+
+            localService.getLocais(paramLocal).enqueue(object : Callback<List<LocalModel>>{
+                override fun onResponse(
+                    call: Call<List<LocalModel>>,
+                    response: Response<List<LocalModel>>
+                ) {
+                    if (response != null) {
+                        if (response.isSuccessful) {
+                            var locais = response.body()
+
+                            Log.e("zyz", "[ACHEI] ${locais}")
+
+                        } else {
+                            val gson = Gson()
+                            val message = gson.fromJson(
+                                response.errorBody()!!.charStream(),
+                                HttpErrorMessage::class.java
+                            )
+                        }
+
+                    }
+                }
+
+                override fun onFailure(call: Call<List<LocalModel>>, t: Throwable) {
+                }
+            })
 
         }catch (e: Exception){
             e.printStackTrace()
             Log.e("cc",e.message as String)
-        }
-
-        if ( response != null ){
-            Log.i("locais","[RETORNO] ${response.isSuccessful} ${response.code()}")
-            if( response.isSuccessful ){
-                val locais = response.body()
-                locais?.forEach({local -> Log.i("locais",local.razao)})
-            }else{
-                val gson = Gson()
-                val message = gson.fromJson(
-                    response.errorBody()!!.charStream(),
-                    HttpErrorMessage::class.java
-                )
-
-                Log.i("locais",message.getMessage().toString())
-            }
-        } else {
-            Log.e("locais","Falha Na Pesquisa!")
         }
 
     }
