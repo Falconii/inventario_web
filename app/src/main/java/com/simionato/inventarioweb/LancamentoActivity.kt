@@ -1,11 +1,15 @@
 package com.simionato.inventarioweb
 
+import android.app.Activity
+import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
@@ -65,7 +69,7 @@ class LancamentoActivity : AppCompatActivity() {
     )
     private var ReadOnly = true
 
-
+    private var requestCamara: ActivityResultLauncher<String>? = null
     private lateinit var inventario: ImobilizadoinventarioModel
     private val binding by lazy {
         ActivityLancamentoBinding.inflate(layoutInflater)
@@ -76,6 +80,16 @@ class LancamentoActivity : AppCompatActivity() {
         if (ReadOnly){
             binding.txtViewSituacao02.setVisibility(View.GONE)
         }
+
+        requestCamara = registerForActivityResult(ActivityResultContracts.RequestPermission(),){
+            if (it){
+                val intent = Intent(this,ScanBarCodeActivity::class.java)
+                getResult.launch(intent)
+            } else {
+                Toast.makeText(this,"Permissão Negada",Toast.LENGTH_SHORT).show()
+            }
+        }
+
         binding.llProgress02.visibility = View.GONE
         clearInventario()
         formulario(false)
@@ -84,6 +98,7 @@ class LancamentoActivity : AppCompatActivity() {
     }
 
     private fun inicializar(){
+
         inicializarTooBar()
 
         binding.imSearch.setOnClickListener{
@@ -129,6 +144,27 @@ class LancamentoActivity : AppCompatActivity() {
             }
         })
     }
+
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                val value = it.data?.getStringExtra("codigo")
+                try {
+                    if (value != null){
+                       val codigo = value.toInt()
+                       getInventario(codigo)
+                    } else {
+                        Toast.makeText(this,"Código Retornado Inválido!",Toast.LENGTH_SHORT).show()
+                    }
+                } catch ( e : NumberFormatException ){
+                    Toast.makeText(this,"Código Inválido!",Toast.LENGTH_SHORT).show()
+                }
+                binding.editCodigo.setText(value)
+            } else {
+                binding.editCodigo.setText("")
+            }
+        }
     fun getHoje():String{
 
         try {
@@ -147,47 +183,7 @@ class LancamentoActivity : AppCompatActivity() {
         }
 
     }
-    fun localInventario():LancamentoModel{
-        try {
-            val codigo = binding.editCodigoNovo02.text.toString().toInt()
-            inventario.new_codigo = codigo
-        } catch ( e : NumberFormatException ){
-            inventario.new_codigo = 0
-        }
-        try {
-            val codigo = binding.editNroLanc02.text.toString().toInt()
-            inventario.id_lanca = codigo
-        } catch ( e : NumberFormatException ){
-            inventario.id_lanca = 0
-        }
-        inventario.lanc_dt_lanca = getHoje()
-        inventario.new_cc = ""
-        inventario.lanc_obs = binding.editObs02.text.toString()
-            val lancamento = LancamentoModel(
-                inventario.id_empresa,
-                inventario.id_filial,
-                inventario.id_inventario,
-                inventario.id_imobilizado,
-                inventario.user_insert,
-                inventario.id_lanca,
-                inventario.lanc_obs,
-                inventario.lanc_dt_lanca,
-                inventario.lanc_estado,
-                inventario.new_codigo,
-                inventario.new_cc,
-                1,
-                if (inventario.id_lanca !== 0) 1 else 0,
-                0,
-                "",
-                "",
-                0,
-                "",
-                ""
-            )
-            Log.i("zyz","Indo para gravação ${lancamento}")
 
-        return lancamento
-    }
     private fun inicializarTooBar(){
         binding.ToolBar02.title = "Controle De Ativos"
         binding.ToolBar02.subtitle = "Inventário Intelli"
@@ -204,13 +200,15 @@ class LancamentoActivity : AppCompatActivity() {
                     finish()
                     return@setOnMenuItemClickListener true
                 }
+                R.id.item_barcode -> {
+                    requestCamara?.launch(android.Manifest.permission.CAMERA)
+                    return@setOnMenuItemClickListener true
+                }
                 else -> {
                     return@setOnMenuItemClickListener true
                 }
             }
         }
-
-       // setSupportActionBar(binding.ToolBar02)
     }
     private fun getInventario(cod:Int){
         var response: Response<List<ImobilizadoinventarioModel>>? = null
@@ -452,7 +450,6 @@ class LancamentoActivity : AppCompatActivity() {
 
 
     }
-
     private fun deleteApontamento(lancamento:LancamentoModel){
         binding.llProgress02.visibility = View.VISIBLE
         try {
@@ -510,7 +507,6 @@ class LancamentoActivity : AppCompatActivity() {
             showToast("${e.message.toString()}",Toast.LENGTH_LONG)
         }
     }
-
     fun loadLancamento():LancamentoModel{
         try {
             val codigo = binding.editCodigoNovo02.text.toString().toInt()

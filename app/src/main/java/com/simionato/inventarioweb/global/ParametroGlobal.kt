@@ -27,19 +27,19 @@ class ParametroGlobal {
                     }
 
                     2 -> {
-                        retorno = "Inv. Troca Código"
+                        retorno = "Inventariado Troca Código"
                     }
 
                     3 -> {
-                        retorno = "Inv. Troca CC"
+                        retorno = "IInventariado Troca CC"
                     }
 
                     4 -> {
-                        retorno = "Inv. Ambos Alterados"
+                        retorno = "Inventariado Ambos Alterados"
                     }
 
                     5 -> {
-                        retorno = "Inv. Não Encontrado"
+                        retorno = "Inventariado Como 'Não Encontrado'"
                     }
 
                     else -> {
