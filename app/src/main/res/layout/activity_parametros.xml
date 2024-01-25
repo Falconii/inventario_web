@@ -7,54 +7,28 @@
     android:layout_height="match_parent"
     tools:context=".ParametrosActivity">
 
-    <LinearLayout
-        android:id="@+id/llLinhaEmpresa01"
-        android:layout_width="0dp"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/ToolBar02"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
-        android:orientation="vertical"
-        android:padding="5dp"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/txtViewLabelEmpresa01"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:paddingLeft="6dp"
-            android:text="EMPRESA"
-            android:textColor="@color/label"
-            android:textSize="10sp"
-            android:textStyle="normal|italic" />
-
-        <TextView
-            android:id="@+id/editEmpresa01"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="1"
-            android:background="@drawable/moldura"
-            android:minHeight="30dp"
-            android:text="LOCAL"
-            android:textAlignment="textStart"
-            android:textStyle="bold" />
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/llLinhaLocal01"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="120dp"
         android:orientation="vertical"
         android:padding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/llLinhaEmpresa01">
+        app:layout_constraintTop_toBottomOf="@+id/ToolBar02">
 
         <TextView
             android:id="@+id/txtViewLabelLocal01"
@@ -64,28 +38,24 @@
             android:paddingLeft="6dp"
             android:text="LOCAL"
             android:textColor="@color/label"
-            android:textSize="10sp"
+            android:textSize="14sp"
             android:textStyle="normal|italic" />
 
-        <TextView
-            android:id="@+id/editLocal01"
+        <Spinner
+            android:id="@+id/spinnerLocal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="1"
-            android:background="@drawable/moldura"
-            android:minHeight="30dp"
-            android:text="TextView"
-            android:textAlignment="textStart"
-            android:textStyle="bold" />
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/moldura" />
+
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/llLinhaInventario01"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="50dp"
         android:orientation="vertical"
         android:padding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -101,22 +71,90 @@
             android:paddingLeft="6dp"
             android:text="INVENTÁRIO"
             android:textColor="@color/label"
-            android:textSize="10sp"
+            android:textSize="14sp"
             android:textStyle="normal|italic" />
 
-        <TextView
-            android:id="@+id/editInventario01"
+        <Spinner
+            android:id="@+id/spinnerInventario"
             android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/moldura" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llLinhaBotoes01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:minWidth="60dp"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llLinhaInventario01">
+
+
+        <Button
+            android:id="@+id/btCancelar01"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
-            android:background="@drawable/moldura"
-            android:minHeight="30dp"
-            android:text="TextView"
-            android:textAlignment="textStart"
-            android:textStyle="bold" />
+            android:backgroundTint="#E4B849"
+            android:text="Cancelar" />
+
+        <Button
+            android:id="@+id/btGravar01"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:backgroundTint="#1FE828"
+            android:text="Gravar" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/llProgress01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" >
+
+        <ProgressBar
+            android:id="@+id/progressBar01"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="#BDACE8"
+            android:padding="5dp"
+            />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="Local E Inventário Padrões"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ToolBar02" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -107,7 +107,7 @@
                         android:layout_height="wrap_content">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editCodigo"
+                            android:id="@+id/editCodigo01"
                             android:layout_width="match_parent"
                             android:layout_height="50dp"
                             android:hint="Digite O Código"
@@ -115,7 +115,7 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <ImageButton
-                        android:id="@+id/imSearch"
+                        android:id="@+id/imSearch01"
                         android:layout_width="150dp"
                         android:layout_height="50dp"
                         android:layout_marginLeft="40dp"

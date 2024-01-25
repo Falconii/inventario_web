@@ -1,17 +1,33 @@
 package com.simionato.inventarioweb.models
 
 data class InventarioModel(
-    val id_empresa:Int ,
-    val id_filial:Int ,
-    val codigo:Int ,
-    val descricao:String ,
-    val id_responsavel:Int ,
-    val data_inicial:String ,
-    val data_final:String ,
-    val data_encerra:String ,
-    val laudo:String ,
-    val user_insert:Int ,
-    val user_update:Int ,
-    val local_razao:String ,
-    val resp_razao:String
-)
+    var id_empresa:Int ,
+    var id_filial:Int ,
+    var codigo:Int ,
+    var descricao:String ,
+    var id_responsavel:Int ,
+    var data_inicial:String ,
+    var data_final:String ,
+    var data_encerra:String ,
+    var laudo:String ,
+    var user_insert:Int ,
+    var user_update:Int ,
+    var local_razao:String ,
+    var resp_razao:String
+) {
+    constructor() : this(
+        0,
+        0,
+        0,
+        "",
+        0,
+        "",
+        "",
+        "",
+        "",
+        0,
+        0,
+        "",
+        ""
+    )
+}

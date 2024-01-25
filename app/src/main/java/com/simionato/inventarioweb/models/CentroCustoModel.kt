@@ -7,4 +7,5 @@ data class CentroCustoModel(
     var descricao:String ,
     var user_insert:Int ,
     var user_update:Int
-)
+    )
+

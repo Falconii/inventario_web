@@ -1,14 +1,17 @@
 package com.simionato.inventarioweb.global
 
+import com.simionato.inventarioweb.models.EmpresaModel
+import com.simionato.inventarioweb.models.InventarioModel
+import com.simionato.inventarioweb.models.LocalModel
+import com.simionato.inventarioweb.models.UsuarioModel
+
 class ParametroGlobal {
     class Dados {
         companion object {
-            var Id_Empresa: Int = 0
-            var RazaoEmpresa: String = ""
-            var Id_Local: Int = 0
-            var RazaoLocal: String = ""
-            var Id_Usuario: Int = 0
-            var RazaoUsuario: String = ""
+            var usuario:UsuarioModel = UsuarioModel()
+            var empresa:EmpresaModel = EmpresaModel()
+            var local:LocalModel = LocalModel()
+            var InventarioModel: InventarioModel = InventarioModel()
         }
     }
 

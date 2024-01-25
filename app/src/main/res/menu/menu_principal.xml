@@ -3,15 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/item_barcode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:icon="@android:drawable/ic_menu_camera"
-        android:title="Código Barra"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/item_cancel"
         android:icon="@android:drawable/ic_menu_close_clear_cancel"
         android:title="Cancelar"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/item_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/common_full_open_on_phone"
+        android:title="Item"
         app:showAsAction="always" />
 </menu>

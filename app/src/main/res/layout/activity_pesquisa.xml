@@ -7,7 +7,7 @@
     tools:context=".UsuariosActivity">
 
     <SearchView
-        android:id="@+id/svPesquisa"
+        android:id="@+id/svPesquisa07"
         android:layout_width="402dp"
         android:layout_height="56dp"
         android:layout_marginTop="8dp"
@@ -18,7 +18,7 @@
         android:queryHint="Busca Por Nome"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvLista"
+        android:id="@+id/rvLista07"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -30,8 +30,34 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/svPesquisa"
+        app:layout_constraintTop_toBottomOf="@+id/svPesquisa07"
         tools:itemCount="10"
         tools:listitem="@layout/itemlista" />
+
+    <LinearLayout
+        android:id="@+id/llProgress07"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" >
+
+        <ProgressBar
+            android:id="@+id/progressBar07"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="#BDACE8"
+            android:padding="5dp"
+            />
+
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

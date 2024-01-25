@@ -1,27 +1,24 @@
 package com.simionato.inventarioweb
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import android.widget.AdapterView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.google.gson.Gson
+import com.simionato.inventarioweb.adapters.InventarioAdapter
+import com.simionato.inventarioweb.adapters.LocalAdapter
 import com.simionato.inventarioweb.databinding.ActivityParametrosBinding
 import com.simionato.inventarioweb.infra.InfraHelper
-import com.simionato.inventarioweb.models.CentroCustoModel
 import com.simionato.inventarioweb.models.InventarioModel
 import com.simionato.inventarioweb.models.LocalModel
 import com.simionato.inventarioweb.parametros.ParametroCentroCusto01
 import com.simionato.inventarioweb.parametros.ParametroInventario01
 import com.simionato.inventarioweb.parametros.ParametroLocal01
-import com.simionato.inventarioweb.services.CentroCustoService
 import com.simionato.inventarioweb.services.InventarioService
 import com.simionato.inventarioweb.services.LocalService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,9 +26,9 @@ import retrofit2.Response
 
 class ParametrosActivity : AppCompatActivity() {
 
-    val params : ParametroCentroCusto01 = ParametroCentroCusto01(
+    val paramsCC : ParametroCentroCusto01 = ParametroCentroCusto01(
         1,
-        1,
+        8,
         "",
         "",
         0,
@@ -70,122 +67,173 @@ class ParametrosActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        val texto = " A mutação de um tipo usado no DataStore invalida todas as garantias fornecidas e cria bugs potencialmente graves e difíceis de detectar. É altamente recomendável usar buffers de protocolo que ofereçam garantias de imutabilidade, uma API simples e uma serialização eficiente."
-        binding.editEmpresa01.setText(texto)
-        binding.editEmpresa01.setOnClickListener{
-            Log.i("CLICADO","Entrei No Evento")
-            Toast.makeText(this,"Olha a Empresa",Toast.LENGTH_LONG).show()
-            if (binding.editEmpresa01.text.toString().contains("MARCOS RENATO FALCONI")){
-                binding.editEmpresa01.setText("")
-            } else {
-                binding.editEmpresa01.setText("MARCOS RENATO FALCONI")
-            }
-            true
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            getCC()
-            getInventarios()
-        }
+        binding.llProgress01.visibility = View.GONE
+        inicializarTooBar()
         getLocais()
     }
 
-    private suspend fun getCC(){
-        var response: Response<List<CentroCustoModel>>? = null
-        try {
-            val ccService = InfraHelper.apiInventario.create( CentroCustoService::class.java )
-            response = ccService.getCentrosCustos(params)
+    private fun inicializarTooBar(){
+        binding.ToolBar02.title = "Parâmetros"
+        binding.ToolBar02.subtitle = "Inventário Intelli"
+        binding.ToolBar02.setTitleTextColor(
+            ContextCompat.getColor(this,R.color.white)
+        )
+        binding.ToolBar02.setSubtitleTextColor(
+            ContextCompat.getColor(this,R.color.white)
+        )
 
-        }catch (e: Exception){
-            e.printStackTrace()
-            Log.e("cc",e.message as String)
-        }
-
-        if ( response != null ){
-            Log.i("centrocusto","[response] ${response.isSuccessful} ${response.code()}")
-            if( response.isSuccessful ){
-                val centroscustos = response.body()
-                centroscustos?.forEach({cc -> Log.i("centrocusto",cc.descricao)})
-            }else{
-                val gson = Gson()
-                val message = gson.fromJson(
-                    response.errorBody()!!.charStream(),
-                    HttpErrorMessage::class.java
-                )
-
-               Log.i("centrocustos",message.getMessage().toString())
-               Log.i("centrocusto","[CODE] ${response.code()}\n[BODY]${response.body()}\n[RAW]${response.raw()}\n[message]${response.message()}\n[BODY]${response.body()}\n[errorBody]${response.errorBody()}\n[headers]${response.headers()}")
+        binding.ToolBar02.inflateMenu(R.menu.menu_parametros)
+        binding.ToolBar02.setOnMenuItemClickListener { menuItem ->
+            when( menuItem.itemId ){
+                R.id.item_cancel -> {
+                    finish()
+                    return@setOnMenuItemClickListener true
+                }
+                else -> {
+                    return@setOnMenuItemClickListener true
+                }
             }
-        } else {
-            Log.e("centrocusto","Falha Na Pesquisa!")
         }
-
     }
 
     private fun getLocais(){
         try {
             val localService = InfraHelper.apiInventario.create( LocalService::class.java )
-
+            binding.llProgress01.visibility = View.VISIBLE
             localService.getLocais(paramLocal).enqueue(object : Callback<List<LocalModel>>{
                 override fun onResponse(
                     call: Call<List<LocalModel>>,
                     response: Response<List<LocalModel>>
                 ) {
+                    binding.llProgress01.visibility = View.GONE
                     if (response != null) {
                         if (response.isSuccessful) {
+
                             var locais = response.body()
 
-                            Log.e("zyz", "[ACHEI] ${locais}")
+                            loadLocais(locais!!)
 
                         } else {
+                            binding.llProgress01.visibility = View.GONE
                             val gson = Gson()
                             val message = gson.fromJson(
                                 response.errorBody()!!.charStream(),
                                 HttpErrorMessage::class.java
                             )
+                            if (response.code() == 409){
+                                showToast("CC Não Encontrado! ${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+                            } else {
+                                showToast("CC Não Encontrado! ${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+                            }
                         }
 
+                    } else {
+                        binding.llProgress01.visibility = View.GONE
+                        Toast.makeText(applicationContext,"Sem retorno Da Requisição!", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<List<LocalModel>>, t: Throwable) {
+                    binding.llProgress01.visibility = View.GONE
+                    showToast(t.message.toString())
                 }
             })
 
         }catch (e: Exception){
-            e.printStackTrace()
-            Log.e("cc",e.message as String)
+            binding.llProgress01.visibility = View.GONE
+            showToast("${e.message.toString()}", Toast.LENGTH_LONG)
         }
 
     }
 
-    private suspend fun getInventarios(){
-        var response: Response<List<InventarioModel>>? = null
+    private fun getInventarios(){
         try {
             val inventarioService = InfraHelper.apiInventario.create( InventarioService::class.java )
-            response = inventarioService.getInventarios(paramInventario)
+            inventarioService.getInventarios(paramInventario).enqueue(object : Callback<List<InventarioModel>> {
+                override fun onResponse(
+                    call: Call<List<InventarioModel>>,
+                    response: Response<List<InventarioModel>>
+                ) {
+                    binding.llProgress01.visibility = View.GONE
+                    if (response != null) {
+                        if (response.isSuccessful) {
+                            var inventarios = response.body()
+
+                            loadInventarios(inventarios!!)
+
+
+                        } else {
+                            binding.llProgress01.visibility = View.GONE
+                            val gson = Gson()
+                            val message = gson.fromJson(
+                                response.errorBody()!!.charStream(),
+                                HttpErrorMessage::class.java
+                            )
+                            if (response.code() == 409){
+                                showToast("Inventário Não Encontrado! ${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+                            } else {
+                                showToast("Inventário Não Encontrado! ${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+                            }
+                        }
+
+                    } else {
+                        binding.llProgress01.visibility = View.GONE
+                        Toast.makeText(applicationContext,"Sem retorno Da Requisição!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<List<InventarioModel>>, t: Throwable) {
+                    binding.llProgress01.visibility = View.GONE
+                    showToast(t.message.toString())
+                }
+
+            })
 
         }catch (e: Exception){
-            e.printStackTrace()
-            Log.e("inventarios",e.message as String)
+            binding.llProgress01.visibility = View.GONE
+            showToast("${e.message.toString()}", Toast.LENGTH_LONG)
         }
 
-        if ( response != null ){
-            Log.i("inventarios","[RETORNO] ${response.isSuccessful} ${response.code()}")
-            if( response.isSuccessful ){
-                val inventarios = response.body()
-                inventarios?.forEach({invent -> Log.i("inventarios",invent.descricao)})
-            }else{
-                val gson = Gson()
-                val message = gson.fromJson(
-                    response.errorBody()!!.charStream(),
-                    HttpErrorMessage::class.java
-                )
 
-                Log.i("inventarios",message.getMessage().toString())
+    }
+
+    fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
+        Toast.makeText(this, mensagem, duracao).show()
+    }
+
+    private fun loadLocais(locais:List<LocalModel>){
+
+        binding.spinnerLocal.adapter = LocalAdapter(this,R.layout.item_spinner_opcoes,locais)
+
+        binding.spinnerLocal.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, view: View?, position: Int, p3: Long) {
+                val local = binding.spinnerLocal.selectedItem as LocalModel
+                getInventarios()
             }
-        } else {
-            Log.e("inventarios","Falha Na Pesquisa!")
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
         }
+
+    }
+
+    private fun loadInventarios(inventarios:List<InventarioModel>){
+
+        binding.spinnerInventario.adapter = InventarioAdapter(this,R.layout.item_spinner_opcoes,inventarios)
+
+        binding.spinnerLocal.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, view: View?, position: Int, p3: Long) {
+                val inventario = binding.spinnerLocal.selectedItem as InventarioModel
+                Toast.makeText(baseContext, "Descricao: ${inventario.descricao}",Toast.LENGTH_LONG).show()
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+        }
+
+
 
     }
 }

@@ -11,47 +11,58 @@
     android:paddingBottom="5dp"
     tools:context=".LoginActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="409dp"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolBar01"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:text="SIMIONATO AUDITORES"
-        android:textAlignment="center"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/txtViewTitulo01"
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:text="Identifique-se Por Favor"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolBar01" />
+
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutEmpresa"
+        android:id="@+id/textInputLayoutEmpresa01"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="70dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView">
+        app:layout_constraintTop_toBottomOf="@+id/txtViewTitulo01">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editEmpresa"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Empresa"
-            android:enabled="false" />
+            android:enabled="false"
+            android:hint="Empresa" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
+        android:id="@+id/textInputLayoutCodigo01"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutEmpresa">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutEmpresa01">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editCodigo"
+            android:id="@+id/editCodigo01"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Código Usuário"
@@ -59,16 +70,16 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout2"
+        android:id="@+id/textInputLayoutSenha01"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCodigo01">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editSenha"
+            android:id="@+id/editSenha01"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTintMode="screen"
@@ -76,35 +87,58 @@
             android:inputType="text|textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/btnCancelar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:text="Sair"
-        app:layout_constraintBottom_toBottomOf="@+id/btnValidar"
-        app:layout_constraintEnd_toStartOf="@+id/btnValidar" />
 
-    <Button
-        android:id="@+id/btnValidar"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginTop="70dp"
-        android:layout_marginEnd="10dp"
-        android:text="Entrar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2" />
-
-    <TextView
-        android:id="@+id/txtResultado"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/llProgress01"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="t"
-        android:textColor="#DD0D0D"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5">
+
+        <ProgressBar
+            android:id="@+id/progressBar01"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#BDACE8"
+            android:padding="5dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llBotoes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutSenha01">
+
+        <Button
+            android:id="@+id/btCancelar01"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:backgroundTint="#E4B849"
+            android:text="Cancelar" />
+
+        <Button
+            android:id="@+id/btGravar01"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:backgroundTint="#1FE828"
+            android:text="Entrar" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -23,12 +23,7 @@ import com.simionato.inventarioweb.parametros.ParametroImobilizadoInventario01
 import com.simionato.inventarioweb.parametros.ParametroLocal01
 import com.simionato.inventarioweb.services.ImobilizadoInventarioService
 import com.simionato.inventarioweb.services.LancamentoService
-import com.simionato.inventarioweb.services.LocalService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -101,16 +96,16 @@ class LancamentoActivity : AppCompatActivity() {
 
         inicializarTooBar()
 
-        binding.imSearch.setOnClickListener{
+        binding.imSearch01.setOnClickListener{
 
             val inputMethodManager =
                 getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
             // on below line hiding our keyboard.
-            inputMethodManager.hideSoftInputFromWindow(binding.editCodigo.getWindowToken(), 0)
+            inputMethodManager.hideSoftInputFromWindow(binding.editCodigo01.getWindowToken(), 0)
 
             try {
-                val codigo = binding.editCodigo.text.toString().toInt()
+                val codigo = binding.editCodigo01.text.toString().toInt()
                 getInventario(codigo)
             } catch ( e : NumberFormatException ){
                 Toast.makeText(it.context,"Código Inválido!",Toast.LENGTH_SHORT).show()
@@ -132,7 +127,7 @@ class LancamentoActivity : AppCompatActivity() {
 
         binding.btCancelar02.setOnClickListener({
             clearInventario()
-            binding.editCodigo.setText("")
+            binding.editCodigo01.setText("")
             formulario(false)})
 
         binding.btGravar02.setOnClickListener({
@@ -160,9 +155,9 @@ class LancamentoActivity : AppCompatActivity() {
                 } catch ( e : NumberFormatException ){
                     Toast.makeText(this,"Código Inválido!",Toast.LENGTH_SHORT).show()
                 }
-                binding.editCodigo.setText(value)
+                binding.editCodigo01.setText(value)
             } else {
-                binding.editCodigo.setText("")
+                binding.editCodigo01.setText("")
             }
         }
     fun getHoje():String{
@@ -196,7 +191,7 @@ class LancamentoActivity : AppCompatActivity() {
         binding.ToolBar02.inflateMenu(R.menu.menu_voltar)
         binding.ToolBar02.setOnMenuItemClickListener { menuItem ->
             when( menuItem.itemId ){
-                R.id.item_cancel_padrao -> {
+                R.id.item_cancel -> {
                     finish()
                     return@setOnMenuItemClickListener true
                 }
@@ -211,7 +206,6 @@ class LancamentoActivity : AppCompatActivity() {
         }
     }
     private fun getInventario(cod:Int){
-        var response: Response<List<ImobilizadoinventarioModel>>? = null
         params.id_imobilizado = 0
         params.new_codigo = 0
         if (binding.rbAntigo02.isChecked){
@@ -346,7 +340,7 @@ class LancamentoActivity : AppCompatActivity() {
 
                             clearInventario()
 
-                            binding.editCodigo.setText("")
+                            binding.editCodigo01.setText("")
 
                             formulario(false)
 
@@ -408,7 +402,7 @@ class LancamentoActivity : AppCompatActivity() {
 
                             clearInventario()
 
-                            binding.editCodigo.setText("")
+                            binding.editCodigo01.setText("")
 
                             formulario(false)
 
@@ -468,7 +462,7 @@ class LancamentoActivity : AppCompatActivity() {
 
                                 clearInventario()
 
-                                binding.editCodigo.setText("")
+                                binding.editCodigo01.setText("")
 
                                 formulario(false)
 
