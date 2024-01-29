@@ -1,11 +1,24 @@
 package com.simionato.inventarioweb.parametros
 
-data class ParametroLocal01(val id_empresa:Int ,
-                            val id:Int ,
-                            val razao:String ,
-                            val cnpj_cpf:String ,
-                            val pagina:Int ,
-                            val tamPagina:Int ,
-                            val contador:String ,
-                            val orderby:String ,
-                            val sharp:Boolean)
+data class ParametroLocal01(
+var id_empresa:Int ,
+var id:Int ,
+var razao:String ,
+var cnpj_cpf:String ,
+var pagina:Int ,
+var tamPagina:Int ,
+var contador:String ,
+var orderby:String ,
+var sharp:Boolean) {
+    constructor() : this(
+        0,
+        0,
+        "",
+        "",
+        0,
+        50,
+        "N",
+        "Código",
+        true
+    )
+}

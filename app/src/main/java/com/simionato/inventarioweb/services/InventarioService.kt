@@ -11,7 +11,7 @@ import retrofit2.http.Path
 
 interface InventarioService {
     @GET("inventario/{id_empresa}/{id_filial}/{codigo}")
-    fun getInventarios(
+    fun getInventario(
         @Path("id_empresa") id_empresa: Int,
         @Path("id_filial") id_filial: Int,
         @Path("codigo") codigo: Int,

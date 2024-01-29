@@ -121,7 +121,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutSenha01">
 
         <Button
-            android:id="@+id/btCancelar01"
+            android:id="@+id/btLoginSair01"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
@@ -131,7 +131,7 @@
             android:text="Cancelar" />
 
         <Button
-            android:id="@+id/btGravar01"
+            android:id="@+id/btLoginEntrar01"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"

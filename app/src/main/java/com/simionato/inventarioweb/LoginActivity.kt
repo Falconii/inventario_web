@@ -1,10 +1,14 @@
 package com.simionato.inventarioweb
 
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
@@ -57,17 +61,23 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
-        binding.btGravar01.setOnClickListener{
+
+        binding.btLoginEntrar01.setOnClickListener{
             try {
                 var codigo = binding.editCodigo01.text.toString().toInt()
-                    getUsuario(codigo)
+                getUsuario(codigo)
             } catch ( e : NumberFormatException ){
                 Toast.makeText(this,"Código Inválido!",Toast.LENGTH_SHORT).show()
             }
         }
 
-        binding.btCancelar01.setOnClickListener{
-            finish()
+        binding.btLoginSair01.setOnClickListener{
+            lifecycleScope.launch(Dispatchers.IO) {
+                saveUserProfile(1, 0)
+                withContext(Dispatchers.Main) {
+                    finish()
+                }
+            }
         }
     }
 
@@ -99,7 +109,6 @@ class LoginActivity : AppCompatActivity() {
             id_usuario = preferences[id_usuario_key] ?:1
         )
     }
-
     private  fun getUsuario(id_usuario:Int){
         try {
             val usuarioService = InfraHelper.apiInventario.create( UsuarioService::class.java )
@@ -117,11 +126,18 @@ class LoginActivity : AppCompatActivity() {
 
                             usuario = (usuario ?: UsuarioModel()) as UsuarioModel
 
-                            with(binding) {
-                                //formulario(true)
-
+                            if (usuario.senha.trim() != binding.editSenha01.text.toString()
+                                    .trim()
+                            ) {
+                                showToast("Problemas Com O Usuário!!")
+                            } else {
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    saveUserProfile(usuario.id_empresa, usuario.id)
+                                    withContext(Dispatchers.Main) {
+                                        finish()
+                                    }
+                                }
                             }
-
                         }
                         else {
                             binding.llProgress01.visibility = View.GONE
@@ -153,7 +169,6 @@ class LoginActivity : AppCompatActivity() {
         }
 
     }
-
     private fun getEmpresas(){
         try {
             val empresaService = InfraHelper.apiInventario.create( EmpresaService::class.java )
@@ -209,8 +224,15 @@ class LoginActivity : AppCompatActivity() {
             showToast("${e.message.toString()}", Toast.LENGTH_LONG)
         }
     }
-
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
         Toast.makeText(this, mensagem, duracao).show()
     }
-}
+
+    private suspend fun saveUserProfile(id_empresa: Int, id_ususario: Int) {
+        dataStore.edit { preferences ->
+            preferences[id_empresa_key] = id_empresa
+            preferences[id_usuario_key] = id_ususario
+        }
+    }
+
+ }

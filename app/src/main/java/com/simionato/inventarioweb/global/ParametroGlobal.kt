@@ -11,7 +11,7 @@ class ParametroGlobal {
             var usuario:UsuarioModel = UsuarioModel()
             var empresa:EmpresaModel = EmpresaModel()
             var local:LocalModel = LocalModel()
-            var InventarioModel: InventarioModel = InventarioModel()
+            var Inventario: InventarioModel = InventarioModel()
         }
     }
 

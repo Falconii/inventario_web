@@ -18,6 +18,158 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/llParametros00"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ToolBar00">
+
+        <LinearLayout
+            android:id="@+id/llLinhaEmpresa00"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minWidth="60dp"
+            android:orientation="vertical"
+            android:padding="5dp"
+>
+
+            <TextView
+                android:id="@+id/txtViewLabelEmpresa00"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingLeft="6dp"
+                android:text="Codigo Atual"
+                android:textColor="@color/label"
+                android:textSize="10sp"
+                android:textStyle="normal|italic" />
+
+            <TextView
+                android:id="@+id/editEmpresa00"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/moldura"
+                android:minHeight="50dp"
+                android:text="Código Atual"
+                android:textAlignment="textStart"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llLinhaUsuario00"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minWidth="60dp"
+            android:orientation="vertical"
+            android:padding="5dp"
+            >
+
+            <TextView
+                android:id="@+id/txtViewLabelUsuario00"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingLeft="6dp"
+                android:text="Codigo Atual"
+                android:textColor="@color/label"
+                android:textSize="10sp"
+                android:textStyle="normal|italic" />
+
+            <TextView
+                android:id="@+id/editUsuario00"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/moldura"
+                android:minHeight="50dp"
+                android:text="Código Atual"
+                android:textAlignment="textStart"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llLinhaLocal00"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minWidth="60dp"
+            android:orientation="vertical"
+            android:padding="5dp"
+            >
+
+            <TextView
+                android:id="@+id/txtViewLabelLocal00"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingLeft="6dp"
+                android:text="Codigo Atual"
+                android:textColor="@color/label"
+                android:textSize="10sp"
+                android:textStyle="normal|italic" />
+
+            <TextView
+                android:id="@+id/editLocal00"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/moldura"
+                android:minHeight="50dp"
+                android:text="Código Atual"
+                android:textAlignment="textStart"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llLinhaInventario00"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minWidth="60dp"
+            android:orientation="vertical"
+            android:padding="5dp"
+            >
+
+            <TextView
+                android:id="@+id/txtViewLabelInventario00"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingLeft="6dp"
+                android:text="Codigo Atual"
+                android:textColor="@color/label"
+                android:textSize="10sp"
+                android:textStyle="normal|italic" />
+
+            <TextView
+                android:id="@+id/editInventario00"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/moldura"
+                android:minHeight="50dp"
+                android:text="Código Atual"
+                android:textAlignment="textStart"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -26,7 +178,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ToolBar00">
+        app:layout_constraintTop_toBottomOf="@+id/llParametros00">
 
         <Button
             android:id="@+id/btn_login"
