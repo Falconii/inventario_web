@@ -45,9 +45,9 @@ class LancamentoActivity : AppCompatActivity() {
         true
     )
     private var params:ParametroImobilizadoInventario01 = ParametroImobilizadoInventario01(
-        1,
-        8,
-        2,
+        ParametroGlobal.Dados.empresa.id,
+        ParametroGlobal.Dados.local.id,
+        ParametroGlobal.Dados.Inventario.codigo,
         0,
         "",
         0,
@@ -72,6 +72,14 @@ class LancamentoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        //Validando Paramentros
+        if ((ParametroGlobal.Dados.usuario.id == 0) ||
+            (ParametroGlobal.Dados.local.id == 0)   ||
+            (ParametroGlobal.Dados.Inventario.codigo == 0)){
+            showToast("Parâmetros Do Inventário Incorretos!!")
+            finish()
+        }
         if (ReadOnly){
             binding.txtViewSituacao02.setVisibility(View.GONE)
         }
@@ -181,7 +189,7 @@ class LancamentoActivity : AppCompatActivity() {
 
     private fun inicializarTooBar(){
         binding.ToolBar02.title = "Controle De Ativos"
-        binding.ToolBar02.subtitle = "Inventário Intelli"
+        binding.ToolBar02.subtitle = ParametroGlobal.Dados.Inventario.descricao
         binding.ToolBar02.setTitleTextColor(
             ContextCompat.getColor(this,R.color.white)
         )
@@ -298,8 +306,7 @@ class LancamentoActivity : AppCompatActivity() {
                                 HttpErrorMessage::class.java
                             )
                             if (response.code() == 409){
-                                showToast("Ativo Não Encontrado! ${message.getMessage().toString()}",Toast.LENGTH_SHORT)
-                                Toast.makeText(applicationContext,"Ativo Não Encontrado!",Toast.LENGTH_SHORT).show()
+                                showToast("Ativo Não Encontrado!",Toast.LENGTH_SHORT)
                             } else {
                                 Toast.makeText(applicationContext,message.getMessage().toString(),Toast.LENGTH_SHORT).show()
                             }
@@ -523,15 +530,15 @@ class LancamentoActivity : AppCompatActivity() {
             inventario.id_filial,
             inventario.id_inventario,
             inventario.id_imobilizado,
-            inventario.user_insert,
+            ParametroGlobal.Dados.usuario.id,
             inventario.id_lanca,
             inventario.lanc_obs,
             inventario.lanc_dt_lanca,
             inventario.lanc_estado,
             inventario.new_codigo,
             inventario.new_cc,
-            1,
-            if (inventario.id_lanca !== 0) 1 else 0,
+            if (inventario.id_lanca !== 0)   inventario.user_insert else ParametroGlobal.Dados.usuario.id,
+            if (inventario.id_lanca !== 0)  ParametroGlobal.Dados.usuario.id else 0,
             0,
             "",
             "",

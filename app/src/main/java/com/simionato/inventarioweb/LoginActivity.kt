@@ -1,6 +1,7 @@
 package com.simionato.inventarioweb
 
 import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -72,15 +73,21 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.btLoginSair01.setOnClickListener{
-            lifecycleScope.launch(Dispatchers.IO) {
-                saveUserProfile(1, 0)
-                withContext(Dispatchers.Main) {
-                    finish()
-                }
-            }
+            saveParametrosSair()
+            val returnIntent: Intent = Intent()
+            returnIntent.putExtra("id_empresa",1)
+            returnIntent.putExtra("id_usuario",0)
+            setResult(Activity.RESULT_CANCELED,returnIntent)
+            finish()
+
         }
     }
 
+    private fun saveParametrosSair(){
+        lifecycleScope.launch(Dispatchers.IO) {
+            saveUserProfile(1, 0)
+        }
+    }
     private fun inicializarTooBar(){
         binding.toolBar01.title = "Controle De Ativos"
         binding.toolBar01.subtitle = "Login Do Sistema"
@@ -94,6 +101,10 @@ class LoginActivity : AppCompatActivity() {
         binding.toolBar01.setOnMenuItemClickListener { menuItem ->
             when( menuItem.itemId ){
                 R.id.item_cancel -> {
+                    val returnIntent: Intent = Intent()
+                    returnIntent.putExtra("id_empresa",0)
+                    returnIntent.putExtra("id_usuario",0)
+                    setResult(100,returnIntent)
                     finish()
                     return@setOnMenuItemClickListener true
                 }
@@ -134,6 +145,10 @@ class LoginActivity : AppCompatActivity() {
                                 lifecycleScope.launch(Dispatchers.IO) {
                                     saveUserProfile(usuario.id_empresa, usuario.id)
                                     withContext(Dispatchers.Main) {
+                                        val returnIntent: Intent = Intent()
+                                        returnIntent.putExtra("id_empresa",usuario.id_empresa)
+                                        returnIntent.putExtra("id_usuario",usuario.id)
+                                        setResult(Activity.RESULT_OK,returnIntent)
                                         finish()
                                     }
                                 }
@@ -228,11 +243,13 @@ class LoginActivity : AppCompatActivity() {
         Toast.makeText(this, mensagem, duracao).show()
     }
 
-    private suspend fun saveUserProfile(id_empresa: Int, id_ususario: Int) {
+    private suspend fun saveUserProfile(id_empresa: Int, id_usuario: Int) {
         dataStore.edit { preferences ->
             preferences[id_empresa_key] = id_empresa
-            preferences[id_usuario_key] = id_ususario
+            preferences[id_usuario_key] = id_usuario
         }
+        Log.i("zyzz","Salvei -> ${id_empresa} ${id_usuario}")
     }
+
 
  }

@@ -4,6 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="8dp"
+    android:paddingTop="8dp"
+    android:paddingRight="8dp"
+    android:paddingBottom="8dp"
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -33,11 +37,10 @@
             android:id="@+id/llLinhaEmpresa00"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:minWidth="60dp"
             android:orientation="vertical"
-            android:padding="5dp"
->
+            android:padding="5dp">
 
             <TextView
                 android:id="@+id/txtViewLabelEmpresa00"
@@ -45,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingLeft="6dp"
-                android:text="Codigo Atual"
+                android:text="Empresa"
                 android:textColor="@color/label"
                 android:textSize="10sp"
                 android:textStyle="normal|italic" />
@@ -63,15 +66,15 @@
                 android:textAlignment="textStart"
                 android:textStyle="bold" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/llLinhaUsuario00"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:minWidth="60dp"
             android:orientation="vertical"
-            android:padding="5dp"
-            >
+            android:padding="5dp">
 
             <TextView
                 android:id="@+id/txtViewLabelUsuario00"
@@ -79,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingLeft="6dp"
-                android:text="Codigo Atual"
+                android:text="Usuário"
                 android:textColor="@color/label"
                 android:textSize="10sp"
                 android:textStyle="normal|italic" />
@@ -97,15 +100,15 @@
                 android:textAlignment="textStart"
                 android:textStyle="bold" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/llLinhaLocal00"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:minWidth="60dp"
             android:orientation="vertical"
-            android:padding="5dp"
-            >
+            android:padding="5dp">
 
             <TextView
                 android:id="@+id/txtViewLabelLocal00"
@@ -113,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingLeft="6dp"
-                android:text="Codigo Atual"
+                android:text="Local"
                 android:textColor="@color/label"
                 android:textSize="10sp"
                 android:textStyle="normal|italic" />
@@ -147,7 +150,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingLeft="6dp"
-                android:text="Codigo Atual"
+                android:text="Inventário"
                 android:textColor="@color/label"
                 android:textSize="10sp"
                 android:textStyle="normal|italic" />

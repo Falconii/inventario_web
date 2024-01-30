@@ -1,5 +1,6 @@
 package com.simionato.inventarioweb
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -55,35 +57,27 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         inicializarTooBar()
-
+        Log.i("zyzz","Start Main Activity !!!!!!!")
        lifecycleScope.launch(Dispatchers.IO) {
             getUserProfile().collect {
                 withContext(Dispatchers.Main) {
-                    Log.i("zyz", "Memoria :${it}")
+                    Log.i("zyzz", "Memoria :${it}")
                     ParametroGlobal.Dados.empresa.id = it.id_empresa
                     ParametroGlobal.Dados.usuario.id_empresa = it.id_empresa
                     ParametroGlobal.Dados.usuario.id = it.id_usuario
                     if (it.id_usuario == 0){
-                        chamaLogin()
+                        //Log.i("zyzz", "Vou chamar login, pois usuário é zero")
+                        //chamaLogin()
                     } else {
+                        Log.i("zyzz", "Vou carregar padrao ${it.id_empresa} ${it.id_usuario}")
                         getPadrao(it.id_empresa,it.id_usuario)
                     }
                 }
             }
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            saveUserProfile(1, 16)
-            Log.i("zyz","Procurando Padrão")
-            getPadrao(1,16)
-        }
-
         binding.btnLogin.setOnClickListener {
-            startActivity(
-                Intent(this, LoginActivity::class.java)
-            )
-
-
+           chamaLogin()
         }
 
         binding.btnLancamento.setOnClickListener {
@@ -105,32 +99,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnParametros.setOnClickListener {
-            startActivity(
-                Intent(this, ParametrosActivity::class.java)
-            )
+            chamaParametro()
         }
 
         binding.btnProduto.setOnClickListener({
-            lifecycleScope.launch(Dispatchers.IO) {
-                getUserProfile().collect {
-                    withContext(Dispatchers.Main) {
-                        binding.lblNomeUsuario.setText(it.id_usuario.toString())
-                    }
-                }
-            }
-            //startActivity(
-            //    Intent(this, ProdutoActivity::class.java)
-            //)
+            chamaProduto()
         })
     }
 
-    private fun getPadrao(id_empresa: Int,id_ususario: Int) {
+    private fun getPadrao(id_empresa: Int,id_usuario: Int) {
         try {
             val padraoService = InfraHelper.apiInventario.create(PadraoService::class.java)
             //binding.llProgress02.visibility = View.VISIBLE
             padraoService.getPadrao(
                 id_empresa,
-                id_ususario
+                id_usuario
             ).enqueue(object :
                 Callback<PadraoModel> {
                 override fun onResponse(
@@ -214,9 +197,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.item_login -> {
-                    startActivity(
-                        Intent(applicationContext, LoginActivity::class.java)
-                    )
+                    chamaLogin()
                     return@setOnMenuItemClickListener true
                 }
 
@@ -517,10 +498,63 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun chamaLogin(){
-        startActivity(
-            Intent(applicationContext, LoginActivity::class.java)
-        )
+        val intent = Intent(this,LoginActivity::class.java)
+        getRetornoLogin.launch(intent)
     }
+
+    private val getRetornoLogin =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            Log.i("zyzz","Retorno do login ${it.resultCode}")
+            if(it.resultCode == Activity.RESULT_OK){
+                val id_empresa = it.data?.getIntExtra("id_empresa",0)
+                val id_usuario = it.data?.getIntExtra("id_usuario",0)
+                try {
+                    if (id_empresa != 0){
+                        Log.i("zyzz","id_empresa = ${id_empresa} id_usuario = ${id_usuario}")
+                    } else {
+                        showToast("Código Retornado Inválido!")
+                    }
+                } catch ( e : NumberFormatException ){
+                    showToast("Código Inválido!")
+                }
+            } else {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    saveUserProfile(1, 0)
+                    withContext(Dispatchers.Main) {
+                        Log.i("zyzz", "depois saveUserProfile Bye....")
+                        finish()
+                        System.exit(0);
+                    }
+                }
+            }
+        }
+
+    private fun chamaParametro(){
+        val intent = Intent(this,ParametrosActivity::class.java)
+        getRetornoParametro.launch(intent)
+    }
+
+    private val getRetornoParametro =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            Log.i("zyzz","Retorno do login ${it.resultCode}")
+            if(it.resultCode == Activity.RESULT_OK){
+                showHeader()
+            }
+        }
+
+    private fun chamaProduto(){
+        val intent = Intent(this,ProdutoActivity::class.java)
+        getRetornoProduto.launch(intent)
+    }
+
+    private val getRetornoProduto =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+            }
+        }
 }
 
 

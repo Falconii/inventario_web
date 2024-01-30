@@ -5,6 +5,10 @@
     android:id="@+id/ScrollLancamento"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="8dp"
+    android:paddingTop="8dp"
+    android:paddingRight="8dp"
+    android:paddingBottom="8dp"
     android:background="#D8D5DF"
     tools:context=".LancamentoActivity">
 

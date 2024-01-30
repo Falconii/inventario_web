@@ -1,5 +1,7 @@
 package com.simionato.inventarioweb
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -88,6 +90,8 @@ class ParametrosActivity : AppCompatActivity() {
     private fun iniciar(){
         inicializarTooBar()
         binding.btCancelar01.setOnClickListener({
+            val returnIntent: Intent = Intent()
+            setResult(Activity.RESULT_CANCELED,returnIntent)
             finish()
         })
 
@@ -127,6 +131,9 @@ class ParametrosActivity : AppCompatActivity() {
         binding.ToolBar02.setOnMenuItemClickListener { menuItem ->
             when( menuItem.itemId ){
                 R.id.item_cancel -> {
+                    val returnIntent: Intent = Intent()
+                    setResult(Activity.RESULT_CANCELED,returnIntent)
+                    finish()
                     finish()
                     return@setOnMenuItemClickListener true
                 }
@@ -317,7 +324,13 @@ class ParametrosActivity : AppCompatActivity() {
 
     private fun loadLocais(locais:List<LocalModel>){
 
-        binding.spinnerLocal.adapter = LocalAdapter(this,R.layout.item_spinner_opcoes,locais)
+        val local  = locais.indexOfFirst{it.id == ParametroGlobal.Dados.local.id}
+
+        val idxInicial = if (local == -1) { 0 } else { local }
+
+        val adapter = LocalAdapter(this,R.layout.item_spinner_opcoes,locais)
+
+        binding.spinnerLocal.adapter = adapter;
 
         binding.spinnerLocal.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, view: View?, position: Int, p3: Long) {
@@ -331,12 +344,19 @@ class ParametrosActivity : AppCompatActivity() {
             }
         }
 
+        binding.spinnerLocal.setSelection(idxInicial)
+
     }
 
     private fun loadInventarios(inventarios:List<InventarioModel>){
 
+        val inventario  = inventarios.indexOfFirst{ it.codigo == ParametroGlobal.Dados.Inventario.codigo}
 
-        binding.spinnerInventario.adapter = InventarioAdapter(this,R.layout.item_spinner_opcoes,inventarios)
+        val idxInicial = if (inventario == -1 ){ 0 } else { inventario }
+
+        val adapter = InventarioAdapter(this,R.layout.item_spinner_opcoes,inventarios)
+
+        binding.spinnerInventario.adapter = adapter
 
         binding.spinnerInventario.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, view: View?, position: Int, p3: Long) {
@@ -352,6 +372,8 @@ class ParametrosActivity : AppCompatActivity() {
 
             }
         }
+
+        binding.spinnerInventario.setSelection(idxInicial)
 
     }
 
@@ -445,6 +467,10 @@ class ParametrosActivity : AppCompatActivity() {
                                 ParametroGlobal.Dados.Inventario = inventario
 
                                 Log.i("zyz","Inventario: ${inventario}")
+
+                                val returnIntent: Intent = Intent()
+                                setResult(Activity.RESULT_OK,returnIntent)
+                                finish()
 
                             } else {
                                 //binding.llProgress01.visibility = View.GONE
