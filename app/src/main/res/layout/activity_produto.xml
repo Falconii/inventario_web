@@ -5,10 +5,10 @@
     android:id="@+id/ScrollLancamento"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="8dp"
-    android:paddingTop="8dp"
-    android:paddingRight="8dp"
-    android:paddingBottom="8dp"
+    android:paddingLeft="5dp"
+    android:paddingTop="5dp"
+    android:paddingRight="5dp"
+    android:paddingBottom="5dp"
     android:background="#D8D5DF"
     tools:context=".LancamentoActivity">
 
@@ -35,6 +35,7 @@
         app:layout_constraintTop_toBottomOf="@+id/ToolBar03"
         app:layout_constraintVertical_bias="0.5">
 
+
         <LinearLayout
             android:id="@+id/llPrincipal03"
             android:layout_width="match_parent"
@@ -43,6 +44,22 @@
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="parent">
 
+
+            <TextView
+                android:id="@+id/textViewTitulo03"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="5dp"
+                android:background="#DCA622"
+                android:gravity="center_horizontal|center_vertical"
+                android:paddingLeft="6dp"
+                android:text="Documento Disponível Apenas Para Consulta"
+                android:textAlignment="center"
+                android:textColor="@color/design_default_color_error"
+                android:textSize="14sp"
+                android:textStyle="normal|italic" />
 
             <LinearLayout
                 android:id="@+id/llCodigo03"
@@ -76,7 +93,7 @@
                         android:layout_height="wrap_content">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editCodigo01"
+                            android:id="@+id/editCodigo03"
                             android:layout_width="match_parent"
                             android:layout_height="50dp"
                             android:hint="Digite O Código"
@@ -84,7 +101,7 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <ImageButton
-                        android:id="@+id/imSearch01"
+                        android:id="@+id/imSearch03"
                         android:layout_width="150dp"
                         android:layout_height="50dp"
                         android:layout_marginLeft="40dp"
@@ -137,7 +154,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llLinhaCodigoNovo03"
+                android:id="@+id/llLinhaDescricao03"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -152,54 +169,17 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Código Novo">
+                    android:hint="Descrição">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editCodigoNovo03"
+                        android:id="@+id/editDescricao03"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Código Novo"
+                        android:hint="Descrição"
                         android:inputType="number|numberSigned" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/llLinhaDescricao03"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:minWidth="60dp"
-                android:orientation="vertical"
-                android:padding="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/llLinhaCodigoNovo03">
-
-                <TextView
-                    android:id="@+id/txtViewLabelDescricao03"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:paddingLeft="6dp"
-                    android:text="Descrição"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
-                    android:textStyle="normal|italic" />
-
-                <TextView
-                    android:id="@+id/editDescricao03"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/moldura"
-                    android:minHeight="50dp"
-                    android:text="Descrição"
-                    android:textAlignment="textStart"
-                    android:textStyle="bold" />
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/llLinhaGrupo03"
@@ -278,7 +258,7 @@
             <LinearLayout
                 android:id="@+id/llLinhaBotoes03"
                 android:layout_width="match_parent"
-                android:layout_height="122dp"
+                android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
                 android:minWidth="60dp"
                 android:orientation="horizontal"
@@ -319,8 +299,43 @@
                     android:backgroundTint="#1FE828"
                     android:text="Gravar" />
             </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 
+    <LinearLayout
+        android:id="@+id/llProgress03"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#D1C9C9"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5">
 
+        <ProgressBar
+            android:id="@+id/progressBar03"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="#BDACE8"
+            android:padding="5dp" />
+
+        <TextView
+            android:id="@+id/textViewProgress03"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="3"
+            android:text="Aguarde...Processando..."
+            android:textAlignment="center"
+            android:textColor="#E41A1A"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

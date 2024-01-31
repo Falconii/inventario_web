@@ -134,7 +134,6 @@ class ParametrosActivity : AppCompatActivity() {
                     val returnIntent: Intent = Intent()
                     setResult(Activity.RESULT_CANCELED,returnIntent)
                     finish()
-                    finish()
                     return@setOnMenuItemClickListener true
                 }
                 else -> {
