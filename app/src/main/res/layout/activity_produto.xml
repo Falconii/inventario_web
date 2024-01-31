@@ -176,7 +176,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Descrição"
-                        android:inputType="number|numberSigned" />
+                        android:inputType="text|textCapCharacters" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 

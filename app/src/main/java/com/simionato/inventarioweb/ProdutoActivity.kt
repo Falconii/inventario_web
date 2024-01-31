@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.simionato.inventarioweb.databinding.ActivityProdutoBinding
@@ -41,6 +42,14 @@ class ProdutoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        if ( (ParametroGlobal.Dados.usuario.id_empresa == 0) ||
+             (ParametroGlobal.Dados.usuario.id == 0)  ||
+             (ParametroGlobal.Dados.local.id == 0)  ||
+             (ParametroGlobal.Dados.Inventario.codigo == 0)
+            ) {
+            showToast("Parâmetros Incompletos Para Esta Função!")
+            finish()
+        }
         binding.llProgress03.visibility = View.GONE
         formulario(false)
         inicializar()
@@ -50,6 +59,13 @@ class ProdutoActivity : AppCompatActivity() {
 
         inicializarTooBar()
 
+        binding.editGrupo03.setOnClickListener{
+              chamaPesquisaGrupo()
+        }
+
+        binding.editCC03.setOnClickListener{
+            chamaPesquisaCc()
+        }
         binding.imSearch03.setOnClickListener{
 
             val inputMethodManager =
@@ -91,6 +107,32 @@ class ProdutoActivity : AppCompatActivity() {
             binding.editCodigo03.setText("")
             formulario(false)
         })
+    }
+
+    private val getRetornoPequisaGrupo =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                showToast("Deu Certo !!")
+            }
+        }
+
+    private fun chamaPesquisaGrupo(){
+        val intent = Intent(this,PesquisaGrupoActivity::class.java)
+        getRetornoPequisaGrupo.launch(intent)
+    }
+
+    private val getRetornoPequisaCc =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                showToast("Deu Certo !!")
+            }
+        }
+
+    private fun chamaPesquisaCc(){
+        val intent = Intent(this,PesquisaCcActivity::class.java)
+        getRetornoPequisaCc.launch(intent)
     }
     private fun inicializarTooBar(){
         binding.ToolBar03.title = "Controle De Ativos"
@@ -209,6 +251,7 @@ class ProdutoActivity : AppCompatActivity() {
                                        )
                                     if (response.code() == 409){
                                         idAcao = 4
+                                        imobilizado = ImobilizadoModel()
                                         imobilizado.codigo = codigo
                                         loadFormulario()
                                         formulario(true)
@@ -243,6 +286,11 @@ class ProdutoActivity : AppCompatActivity() {
     private fun formulario(show:Boolean){
         if (show){
             //binding.txtViewSituacao03.setText("lançamento de Inventário")
+        }
+        if (idAcao == 3){
+            binding.editDescricao03.setFocusable(false)
+        } else {
+            binding.editDescricao03.setFocusableInTouchMode(true)
         }
         binding.llLinhaCodigoAtual03.visibility = if (!show) { View.GONE} else {View.VISIBLE}
         binding.llLinhaDescricao03.visibility = if (!show) { View.GONE} else {View.VISIBLE}
