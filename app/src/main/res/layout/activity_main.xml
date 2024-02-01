@@ -237,7 +237,7 @@
             android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:text="Pesquisa"
+            android:text="Pesq."
             app:flow_horizontalAlign="center" />
 
         <Button
@@ -246,31 +246,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:layout_weight="1"
-            android:text="Param" />
+            android:text="Par" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/llBotao2">
-
-
-        <TextView
-            android:id="@+id/lblId_Usuario"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="TextView" />
-
-        <TextView
-            android:id="@+id/lblNomeUsuario"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="TextView" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
