@@ -1,6 +1,5 @@
 package com.simionato.inventarioweb.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,8 +20,8 @@ class PesquisaAdapter(private val lista : List<UsuarioQuery01Model>) :
         val  txtSubTitulo: TextView
 
         init {
-            textDescricao = ItemView.findViewById(R.id.txtDescricaoItem)
-            txtSubTitulo  = ItemView.findViewById(R.id.txtSubTitulo)
+            textDescricao = ItemView.findViewById(R.id.txtDescricaoItemLista100)
+            txtSubTitulo  = ItemView.findViewById(R.id.txtSubTituloItemLista100)
         }
 
     }

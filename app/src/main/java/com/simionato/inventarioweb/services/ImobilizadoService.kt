@@ -4,9 +4,11 @@ import com.simionato.inventarioweb.models.ImobilizadoModel
 import com.simionato.inventarioweb.parametros.ParametroImobilizado01
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.Field
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ImobilizadoService {
     @GET("imobilizado/{id_empresa}/{id_filial}/{codigo}")
@@ -20,4 +22,11 @@ interface ImobilizadoService {
     fun postInventario(
         @Body params: ParametroImobilizado01
     ): Call<List<ImobilizadoModel>>
+
+    @POST("imobilizado_inv")
+    fun postImobilizadoInventario(
+        @Body params: ImobilizadoModel,
+        @Field("inventario") inventario:Int
+    ): Call<ImobilizadoModel>
+
 }

@@ -5,7 +5,6 @@
     android:id="@+id/ScrollLancamento"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D8D5DF"
     tools:context=".LancamentoActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -23,6 +22,7 @@
         android:id="@+id/llScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="#EAE5E5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -34,7 +34,6 @@
             android:id="@+id/llPrincipal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#F3EDED"
             android:orientation="vertical">
 
             <TextView
@@ -512,7 +511,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" >
+        app:layout_constraintVertical_bias="0.5">
 
         <ProgressBar
             android:id="@+id/progressBar02"
@@ -537,7 +536,6 @@
             android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

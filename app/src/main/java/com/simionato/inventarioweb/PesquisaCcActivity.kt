@@ -1,11 +1,14 @@
 package com.simionato.inventarioweb
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -43,6 +46,31 @@ class PesquisaCcActivity : AppCompatActivity() {
     private fun iniciar(){
         getCcs()
     }
+    private fun inicializarTooBar(){
+        binding.ToolBar11.title = "Controle De Ativos"
+        binding.ToolBar11.subtitle = "Pesquisa Centro De Custos"
+        binding.ToolBar11.setTitleTextColor(
+            ContextCompat.getColor(this,R.color.white)
+        )
+        binding.ToolBar11.setSubtitleTextColor(
+            ContextCompat.getColor(this,R.color.white)
+        )
+
+        binding.ToolBar11.inflateMenu(R.menu.menu_parametros)
+        binding.ToolBar11.setOnMenuItemClickListener { menuItem ->
+            when( menuItem.itemId ){
+                R.id.item_cancel -> {
+                    val returnIntent: Intent = Intent()
+                    setResult(Activity.RESULT_CANCELED,returnIntent)
+                    finish()
+                    return@setOnMenuItemClickListener true
+                }
+                else -> {
+                    return@setOnMenuItemClickListener true
+                }
+            }
+        }
+    }
     private fun getCcs(){
         try {
             val centroCustoService = InfraHelper.apiInventario.create( CentroCustoService::class.java )
@@ -63,9 +91,13 @@ class PesquisaCcActivity : AppCompatActivity() {
 
                             if (cc !== null) {
 
-                                cc.forEach { it -> Log.i("zyzz", it.descricao) }
-
-                                val adapter = CentroAdapter(cc)
+                                val adapter = CentroAdapter(cc){centro ->
+                                    val returnIntent: Intent = Intent()
+                                    returnIntent.putExtra("codigo",centro.codigo)
+                                    returnIntent.putExtra("descricao",centro.descricao)
+                                    setResult(Activity.RESULT_OK,returnIntent)
+                                    finish()
+                                }
                                 binding.rvLista11.adapter = adapter
                                 binding.rvLista11.layoutManager =
                                     LinearLayoutManager(binding.rvLista11.context)
@@ -90,24 +122,23 @@ class PesquisaCcActivity : AppCompatActivity() {
                                     }
 
                                 })
+                            } else {
+                                showToast("Falha No Retorno Da Requisição!")
                             }
 
-                        } else {
+                        }
+                        else {
                             binding.llProgress11.visibility = View.GONE
-                            try {
                                 val gson = Gson()
                                 val message = gson.fromJson(
                                     response.errorBody()!!.charStream(),
                                     HttpErrorMessage::class.java
                                 )
-                            } catch (e:Exception){
-                                Log.e("zyzz","erro: ${e.message}")
-                            }
                             var locais: List<LocalModel> = listOf()
                             if (response.code() == 409){
-                                //loadLocais(locais)
+                                showToast("Tabela De Centro De Custos Vazia")
                             } else {
-                                //showToast("${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+                                showToast("${message.getMessage().toString()}",Toast.LENGTH_SHORT)
                             }
                         }
 
@@ -131,7 +162,6 @@ class PesquisaCcActivity : AppCompatActivity() {
         }
 
     }
-
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
         Toast.makeText(this, mensagem, duracao).show()
     }

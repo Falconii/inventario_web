@@ -10,20 +10,33 @@ import androidx.recyclerview.widget.RecyclerView
 import com.simionato.inventarioweb.R
 import com.simionato.inventarioweb.models.CentroCustoModel
 
-class CentroAdapter(private val lista : List<CentroCustoModel>) :
+class CentroAdapter(
+    private val lista : List<CentroCustoModel>,
+    private val clique: (centro:CentroCustoModel) -> Unit
+    ) :
     RecyclerView.Adapter<CentroAdapter.PesquisaViewHolder>(),Filterable {
 
     private var listaFiltered = lista
     inner class PesquisaViewHolder(val ItemView: View) : RecyclerView.ViewHolder(ItemView) {
 
+        val  layout: View
         val  textDescricao : TextView
         val  txtSubTitulo: TextView
 
         init {
-            textDescricao = ItemView.findViewById(R.id.txtDescricaoItem)
-            txtSubTitulo  = ItemView.findViewById(R.id.txtSubTitulo)
+            layout =  ItemView.findViewById(R.id.llMainItemLista100)
+            textDescricao = ItemView.findViewById(R.id.txtDescricaoItemLista100)
+            txtSubTitulo  = ItemView.findViewById(R.id.txtSubTituloItemLista100)
         }
 
+        fun bind(centro:CentroCustoModel){
+            textDescricao.setText(centro.codigo)
+            txtSubTitulo.setText(centro.descricao)
+
+            layout.setOnClickListener {
+                clique(centro)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PesquisaViewHolder {
@@ -41,8 +54,10 @@ class CentroAdapter(private val lista : List<CentroCustoModel>) :
 
     override fun onBindViewHolder(listaViewHolder: PesquisaViewHolder, position: Int) {
 
-        listaViewHolder.textDescricao.setText(listaFiltered[position].codigo)
-        listaViewHolder.txtSubTitulo.setText(listaFiltered[position].descricao)
+        val centro = listaFiltered[position]
+
+        listaViewHolder.bind(centro)
+
     }
 
     override fun getFilter(): Filter {

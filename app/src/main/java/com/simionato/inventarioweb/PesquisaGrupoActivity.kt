@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -72,7 +73,6 @@ class PesquisaGrupoActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
     private fun getGrupos(){
         try {
@@ -96,9 +96,13 @@ class PesquisaGrupoActivity : AppCompatActivity() {
 
                             if (grupos !== null) {
 
-                                grupos.forEach { it -> Log.i("zyzz", it.descricao) }
-
-                                val adapter = GrupoAdapter(grupos)
+                                val adapter = GrupoAdapter(grupos){grupo ->
+                                    val returnIntent: Intent = Intent()
+                                    returnIntent.putExtra("codigo",grupo.codigo)
+                                    returnIntent.putExtra("descricao",grupo.descricao)
+                                    setResult(Activity.RESULT_OK,returnIntent)
+                                    finish()
+                                }
                                 binding.rvLista10.adapter = adapter
                                 binding.rvLista10.layoutManager =
                                     LinearLayoutManager(binding.rvLista10.context)
@@ -123,31 +127,27 @@ class PesquisaGrupoActivity : AppCompatActivity() {
                                     }
 
                                 })
+                            } else {
+                                showToast("Falha No Retorno Da Requisição!")
                             }
 
                         } else {
                             binding.llProgress10.visibility = View.GONE
-                            try {
                                 val gson = Gson()
                                 val message = gson.fromJson(
                                     response.errorBody()!!.charStream(),
                                     HttpErrorMessage::class.java
                                 )
-                            } catch (e:Exception){
-                                Log.e("zyzz","erro: ${e.message}")
-                            }
-                            var locais: List<LocalModel> = listOf()
                             if (response.code() == 409){
-                                //loadLocais(locais)
+                                showToast("Tabela Dos Grupos Vazia!",Toast.LENGTH_SHORT)
                             } else {
-                                //showToast("${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+                                showToast("${message.getMessage().toString()}",Toast.LENGTH_SHORT)
                             }
                         }
-
                     }
                     else {
                         binding.llProgress10.visibility = View.GONE
-                        var locais: List<LocalModel> = listOf()
+                        showToast("")
 
                     }
                 }

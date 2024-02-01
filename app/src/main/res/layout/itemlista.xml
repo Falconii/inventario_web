@@ -2,12 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/llMainItemLista100"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#EAE4E4">
 
     <TextView
-        android:id="@+id/txtDescricaoItem"
+        android:id="@+id/txtDescricaoItemLista100"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -20,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtSubTitulo"
+        android:id="@+id/txtSubTituloItemLista100"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -30,14 +31,6 @@
         android:textColor="#090909"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtDescricaoItem" />
+        app:layout_constraintTop_toBottomOf="@+id/txtDescricaoItemLista100" />
 
-    <Button
-        android:id="@+id/btEscolha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:text="Ok"
-        app:layout_constraintBottom_toBottomOf="@+id/txtSubTitulo"
-        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

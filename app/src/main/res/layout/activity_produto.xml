@@ -9,7 +9,6 @@
     android:paddingTop="5dp"
     android:paddingRight="5dp"
     android:paddingBottom="5dp"
-    android:background="#D8D5DF"
     tools:context=".LancamentoActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -28,6 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
+        android:background="#EAE5E5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -40,7 +40,6 @@
             android:id="@+id/llPrincipal03"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#F3EDED"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="parent">
 
@@ -176,7 +175,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Descrição"
-                        android:inputType="text|textCapCharacters" />
+                        android:inputType="text|textCapCharacters|textMultiLine" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
@@ -258,7 +257,7 @@
             <LinearLayout
                 android:id="@+id/llLinhaBotoes03"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:minWidth="60dp"
                 android:orientation="horizontal"

@@ -3,28 +3,40 @@ package com.simionato.inventarioweb.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.simionato.inventarioweb.R
 import com.simionato.inventarioweb.models.GrupoModel
-import com.simionato.inventarioweb.models.UsuarioQuery01Model
 
-class GrupoAdapter(private val lista : List<GrupoModel>) :
+class GrupoAdapter(
+    private val lista : List<GrupoModel>,
+    private val clique: (grupo:GrupoModel) -> Unit
+    ) :
     RecyclerView.Adapter<GrupoAdapter.PesquisaViewHolder>(), Filterable {
 
     private var listaFiltered = lista
     inner class PesquisaViewHolder(val ItemView: View) : RecyclerView.ViewHolder(ItemView) {
-
-        val  textDescricao : TextView
+        val  layout:View
+        val  txtDescricao : TextView
         val  txtSubTitulo: TextView
 
         init {
-            textDescricao = ItemView.findViewById(R.id.txtDescricaoItem)
-            txtSubTitulo  = ItemView.findViewById(R.id.txtSubTitulo)
+            layout       = ItemView.findViewById(R.id.llMainItemLista100)
+            txtDescricao = ItemView.findViewById(R.id.txtDescricaoItemLista100)
+            txtSubTitulo  = ItemView.findViewById(R.id.txtSubTituloItemLista100)
         }
 
+        fun bind(grupo:GrupoModel){
+            txtDescricao.setText(grupo.codigo.toString())
+            txtSubTitulo.setText(grupo.descricao)
+            layout.setOnClickListener{
+                clique(grupo)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PesquisaViewHolder {
@@ -42,8 +54,9 @@ class GrupoAdapter(private val lista : List<GrupoModel>) :
 
     override fun onBindViewHolder(listaViewHolder: PesquisaViewHolder, position: Int) {
 
-        listaViewHolder.textDescricao.setText(listaFiltered[position].codigo.toString())
-        listaViewHolder.txtSubTitulo.setText(listaFiltered[position].descricao)
+        val grupo = listaFiltered[position]
+
+        listaViewHolder.bind(grupo)
     }
 
     override fun getFilter(): Filter {
