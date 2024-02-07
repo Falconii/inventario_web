@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class InfraHelper {
     companion object {
         val apiInventario = Retrofit.Builder()
-            .baseUrl("https://controle-inventario-backend-production.up.railway.app/api/")
+            .baseUrl("https://simionatoativobackend-production.up.railway.app/api/")
             .addConverterFactory( GsonConverterFactory.create() )//json ou XML
             .build()
 

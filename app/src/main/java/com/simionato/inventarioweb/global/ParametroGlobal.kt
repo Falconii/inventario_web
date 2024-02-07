@@ -1,5 +1,6 @@
 package com.simionato.inventarioweb.global
 
+import android.Manifest
 import com.simionato.inventarioweb.models.EmpresaModel
 import com.simionato.inventarioweb.models.InventarioModel
 import com.simionato.inventarioweb.models.LocalModel
@@ -52,6 +53,12 @@ class ParametroGlobal {
 
                 return retorno
             }
+        }
+    }
+
+    class Permissoes{
+        companion object{
+            val PERMISSAO_GALERIA  = Manifest.permission.READ_EXTERNAL_STORAGE
         }
     }
 }

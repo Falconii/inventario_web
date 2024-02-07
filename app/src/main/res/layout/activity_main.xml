@@ -204,11 +204,11 @@
             tools:layout_editor_absoluteY="67dp" />
 
         <Button
-            android:id="@+id/btn_inventario"
+            android:id="@+id/btn_inventario00"
             android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Inv"
+            android:text="Fotod"
             app:flow_horizontalAlign="center"
             tools:layout_editor_absoluteX="275dp"
             tools:layout_editor_absoluteY="67dp" />

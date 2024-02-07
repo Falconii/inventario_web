@@ -26,7 +26,7 @@ interface ImobilizadoService {
     @POST("imobilizado_inv")
     fun postImobilizadoInventario(
         @Body params: ImobilizadoModel,
-        @Field("inventario") inventario:Int
+        @Query("inventario") inventario:Int
     ): Call<ImobilizadoModel>
 
 }

@@ -86,10 +86,8 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        binding.btnInventario.setOnClickListener {
-            startActivity(
-                Intent(this, InventarioActivity::class.java)
-            )
+        binding.btnInventario00.setOnClickListener {
+            chamaFoto()
         }
 
         binding.btnPesquisa.setOnClickListener {
@@ -555,6 +553,20 @@ class MainActivity : AppCompatActivity() {
             if(it.resultCode == Activity.RESULT_OK){
             }
         }
+
+
+    private fun chamaFoto(){
+        val intent = Intent(this,FotosActivity::class.java)
+        getRetornoFoto.launch(intent)
+    }
+
+    private val getRetornoFoto =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+            }
+        }
+
 }
 
 

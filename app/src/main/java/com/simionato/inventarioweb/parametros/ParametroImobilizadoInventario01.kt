@@ -12,6 +12,7 @@ data class ParametroImobilizadoInventario01(
     var new_cc:String,
     var new_codigo:Int,
     var id_usuario:Int,
+    var origem:String,
     var pagina:Int,
     var tamPagina:Int,
     var contador:String,

@@ -33,17 +33,6 @@ import java.util.Date
 class LancamentoActivity : AppCompatActivity() {
 
 
-    val paramLocal: ParametroLocal01 = ParametroLocal01(
-        1,
-        0,
-        "",
-        "",
-        0,
-        50,
-        "N",
-        "Código",
-        true
-    )
     private var params:ParametroImobilizadoInventario01 = ParametroImobilizadoInventario01(
         ParametroGlobal.Dados.empresa.id,
         ParametroGlobal.Dados.local.id,
@@ -56,6 +45,7 @@ class LancamentoActivity : AppCompatActivity() {
         "",
         0,
         0,
+        "",
         0,
         50,
         "N",
@@ -119,6 +109,10 @@ class LancamentoActivity : AppCompatActivity() {
                 Toast.makeText(it.context,"Código Inválido!",Toast.LENGTH_SHORT).show()
             }
         }
+
+        binding.editCCNovol02.setOnClickListener {
+            chamaPesquisaCc()
+        }
         /*
         binding.rbNaoEncontrado02.setOnClickListener({
             if (binding.rbNaoEncontrado02.isChecked) {
@@ -146,6 +140,31 @@ class LancamentoActivity : AppCompatActivity() {
                 updateApontamento(lancamento)
             }
         })
+    }
+
+    private val getRetornoPequisaCc =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                if(it.resultCode == Activity.RESULT_OK){
+                    val codigo = it.data?.getStringExtra("codigo")
+                    val descricao = it.data?.getStringExtra("descricao")
+                    try {
+                        if (codigo?.trim() != ""){
+                            inventario.new_cc = codigo ?: ""
+                            inventario.new_cc_descricao = descricao ?: ""
+                            binding.editCCNovol02.setText(descricao)
+                        }
+                    } catch ( e : NumberFormatException ){
+                        showToast("Código Inválido!",Toast.LENGTH_SHORT)
+                    }
+                }
+            }
+        }
+
+    private fun chamaPesquisaCc(){
+        val intent = Intent(this,PesquisaCcActivity::class.java)
+        getRetornoPequisaCc.launch(intent)
     }
 
     private val getResult =
@@ -306,9 +325,9 @@ class LancamentoActivity : AppCompatActivity() {
                                 HttpErrorMessage::class.java
                             )
                             if (response.code() == 409){
-                                showToast("Ativo Não Encontrado!",Toast.LENGTH_SHORT)
+                                showToast("Ativo Não Encontrado!")
                             } else {
-                                Toast.makeText(applicationContext,message.getMessage().toString(),Toast.LENGTH_SHORT).show()
+                                showToast(message.getMessage().toString())
                             }
                         }
                     } else {
