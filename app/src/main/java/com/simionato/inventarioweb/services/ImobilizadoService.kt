@@ -4,7 +4,6 @@ import com.simionato.inventarioweb.models.ImobilizadoModel
 import com.simionato.inventarioweb.parametros.ParametroImobilizado01
 import retrofit2.Call
 import retrofit2.http.Body
-import retrofit2.http.Field
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -28,5 +27,7 @@ interface ImobilizadoService {
         @Body params: ImobilizadoModel,
         @Query("inventario") inventario:Int
     ): Call<ImobilizadoModel>
+
+
 
 }

@@ -10,6 +10,12 @@
     android:paddingBottom="8dp"
     tools:context=".MainActivity">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/ToolBar00"
         android:layout_width="match_parent"
@@ -176,7 +182,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="1dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -247,6 +253,34 @@
             android:layout_margin="15dp"
             android:layout_weight="1"
             android:text="Par" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/llBotao3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llBotao2">
+
+        <Button
+            android:id="@+id/btn_show_fotos"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="Mostra Fotos" />
+
+        <Button
+            android:id="@+id/btn_foto_web"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="Foto Web" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

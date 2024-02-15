@@ -3,6 +3,9 @@ package com.simionato.inventarioweb.infra
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+//.baseUrl("https://simionatoativobackend-production.up.railway.app/api/")
+
+//.baseUrl("192.168.15.13:3000/api/")
 class InfraHelper {
     companion object {
         val apiInventario = Retrofit.Builder()

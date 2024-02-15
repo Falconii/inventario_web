@@ -58,7 +58,7 @@ class ParametroGlobal {
 
     class Permissoes{
         companion object{
-            val PERMISSAO_GALERIA  = Manifest.permission.READ_EXTERNAL_STORAGE
+            val PERMISSAO_GALERIA  = Manifest.permission.READ_MEDIA_IMAGES
         }
     }
 }

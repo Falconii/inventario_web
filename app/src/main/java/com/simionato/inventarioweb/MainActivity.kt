@@ -100,9 +100,17 @@ class MainActivity : AppCompatActivity() {
             chamaParametro()
         }
 
-        binding.btnProduto.setOnClickListener({
+        binding.btnProduto.setOnClickListener{
             chamaProduto()
-        })
+        }
+
+        binding.btnShowFotos.setOnClickListener{
+            chamaShowFotos()
+        }
+
+        binding.btnFotoWeb.setOnClickListener{
+            chamaFotoWeb()
+        }
     }
 
     private fun getPadrao(id_empresa: Int,id_usuario: Int) {
@@ -119,6 +127,7 @@ class MainActivity : AppCompatActivity() {
                     response: Response<PadraoModel>
                 ) {
                     //binding.llProgress02.visibility = View.GONE
+                    Log.i("zyzz","Retornei da request ${response}")
                     if (response != null) {
                         if (response.isSuccessful) {
 
@@ -566,6 +575,31 @@ class MainActivity : AppCompatActivity() {
             if(it.resultCode == Activity.RESULT_OK){
             }
         }
+
+    private fun chamaShowFotos(){
+        val intent = Intent(this,ShowFotosActivity::class.java)
+        getRetornoShowFotos.launch(intent)
+    }
+
+    private val getRetornoShowFotos =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+            }
+        }
+
+    private fun chamaFotoWeb(){
+        val intent = Intent(this,FotoWebActivity::class.java)
+        getRetornoShowFotos.launch(intent)
+    }
+
+    private val getRetornoFotoWeb =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+            }
+        }
+
 
 }
 
