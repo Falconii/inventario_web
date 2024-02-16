@@ -1,4 +1,7 @@
 package com.simionato.inventarioweb.adapters
+/*
+  https://stackoverflow.com/questions/37462869/strange-issue-with-loading-image-from-imageview
+ */
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,9 +11,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.simionato.inventarioweb.R
 import com.simionato.inventarioweb.models.FotoModel
 import java.net.URL
+
 
 class FotoAdapter(
     private val lista : List<FotoModel>,
@@ -35,10 +40,24 @@ class FotoAdapter(
         fun bind(foto:FotoModel){
             try {
                 val url = URL("https://drive.google.com/uc?export=view&id=${foto.id_file}")
+                val thumbnailUrl = URL("https://drive.google.com/thumbnail?id=${foto.id_file}&sz=w10O")
+
+                Glide.with(layout.context)
+                    .load(url)
+                    .thumbnail(
+                        Glide.with(layout.context)
+                            .load(thumbnailUrl))
+                    .into(image);
+                /*
                 Glide.with(layout.context)
                .load(url)
                .centerCrop()
+
+                    .placeholder(R.drawable.image_loading)
+                    .error(R.drawable.no_foto)
                .into(image)
+               */
+
             } catch (e:Exception){
                 Log.i("zyzz","Erro-> ${e.message}")
             }

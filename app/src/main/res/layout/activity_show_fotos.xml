@@ -33,7 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ToolBar30"
         tools:itemCount="11"
-        tools:listitem="@layout/itemlista" />
+        tools:listitem="@layout/fotoitem" />
 
     <LinearLayout
         android:id="@+id/llProgress30"

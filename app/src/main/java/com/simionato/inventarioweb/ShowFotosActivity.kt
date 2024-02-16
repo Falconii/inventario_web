@@ -1,19 +1,14 @@
 package com.simionato.inventarioweb
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.google.gson.Gson
-import com.simionato.inventarioweb.adapters.CentroAdapter
 import com.simionato.inventarioweb.adapters.FotoAdapter
 import com.simionato.inventarioweb.databinding.ActivityShowFotosBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
@@ -26,7 +21,6 @@ import com.simionato.inventarioweb.shared.HttpErrorMessage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.net.URL
 
 
 class ShowFotosActivity : AppCompatActivity() {
@@ -78,9 +72,7 @@ class ShowFotosActivity : AppCompatActivity() {
                             if (fotos !== null) {
 
                                 val adapter = FotoAdapter(fotos){foto ->
-                                    val returnIntent: Intent = Intent()
-                                    setResult(RESULT_OK,returnIntent)
-                                    finish()
+                                    chamaFotoWeb(foto)
                                 }
                                 binding.rvLista30.adapter = adapter
                                 binding.rvLista30.layoutManager =
@@ -131,6 +123,12 @@ class ShowFotosActivity : AppCompatActivity() {
             showToast("${e.message.toString()}", Toast.LENGTH_LONG)
         }
 
+    }
+
+    fun chamaFotoWeb(foto:FotoModel){
+        val intent = Intent(this,FotoWebActivity::class.java)
+        intent.putExtra("id_file",foto.id_file)
+        startActivity(intent)
     }
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
         Toast.makeText(this, mensagem, duracao).show()
