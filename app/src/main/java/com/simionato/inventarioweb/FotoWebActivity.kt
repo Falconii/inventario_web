@@ -47,6 +47,7 @@ class FotoWebActivity : AppCompatActivity() {
         }
         Log.i("zyzz",id_file)
         val url: String = "https://drive.google.com/uc?export=view&id=${id_file}"
+        //val url: String = "https://drive.google.com/thumbnail?id=${id_file}&sz=s1000"
         binding.webView35.getSettings().setBuiltInZoomControls(true);
         binding.webView35.setInitialScale(-1);
         setWebViewClient(binding.webView35)

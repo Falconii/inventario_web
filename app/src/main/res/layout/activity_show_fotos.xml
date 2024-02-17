@@ -5,6 +5,10 @@
     android:id="@+id/llFoto30"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="5dp"
+    android:paddingTop="5dp"
+    android:paddingRight="5dp"
+    android:paddingBottom="5dp"
     tools:context=".ShowFotosActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -18,22 +22,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/txtViewSituacao30"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="#DCA622"
+        android:text="Documento Disponível Apenas Para Consulta"
+        android:textColor="@color/design_default_color_error"
+        android:textSize="14sp"
+        android:textStyle="normal|italic"
+        app:layout_constraintTop_toBottomOf="@+id/ToolBar30"
+        tools:layout_editor_absoluteX="5dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLista30"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:paddingLeft="5dp"
-        android:paddingTop="5dp"
-        android:paddingRight="5dp"
-        android:paddingBottom="5dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ToolBar30"
+        app:layout_constraintTop_toBottomOf="@+id/txtViewSituacao30"
         tools:itemCount="11"
         tools:listitem="@layout/fotoitem" />
+
 
     <LinearLayout
         android:id="@+id/llProgress30"

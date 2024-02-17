@@ -1,10 +1,13 @@
 package com.simionato.inventarioweb
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +35,7 @@ class ShowFotosActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        getFotos()
+        iniciar()
         /*
         try {
             val url =
@@ -49,6 +52,40 @@ class ShowFotosActivity : AppCompatActivity() {
 */
     }
 
+    private fun iniciar(){
+        inicializarTooBar()
+        binding.txtViewSituacao30.setText("Local: ${ParametroGlobal.Dados.Inventario.local_razao}\nInventário: ${ParametroGlobal.Dados.Inventario.descricao}\nPlaqueta: 99999\nDescricao: KAJSKAJSKLAJSKLJAKLSJKLA")
+
+        getFotos()
+    }
+
+    private fun inicializarTooBar(){
+        binding.ToolBar30.title = "Controle De Ativos"
+        binding.ToolBar30.subtitle = ParametroGlobal.Dados.Inventario.descricao
+        binding.ToolBar30.setTitleTextColor(
+            ContextCompat.getColor(this,R.color.white)
+        )
+        binding.ToolBar30.setSubtitleTextColor(
+            ContextCompat.getColor(this,R.color.white)
+        )
+        binding.ToolBar30.inflateMenu(R.menu.menu_show_fotos)
+        binding.ToolBar30.setOnMenuItemClickListener { menuItem ->
+            when( menuItem.itemId ){
+                R.id.menu_show_fotos_exit -> {
+                    val returnIntent: Intent = Intent()
+                    setResult(Activity.RESULT_CANCELED,returnIntent)
+                    finish()
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.menu_show_fotos_new -> {
+                    return@setOnMenuItemClickListener true
+                }
+                else -> {
+                    return@setOnMenuItemClickListener true
+                }
+            }
+        }
+    }
     private fun getFotos(){
         try {
             val fotoService = InfraHelper.apiInventario.create( FotoService::class.java )
