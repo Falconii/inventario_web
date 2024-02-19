@@ -7,23 +7,27 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.simionato.inventarioweb.R
 import com.simionato.inventarioweb.models.FotoModel
 import java.net.URL
 
 
 class FotoAdapter(
-    private val lista : List<FotoModel>,
-    private val clique: (foto: FotoModel) -> Unit
+    private val clique: (foto: FotoModel,idAcao:Int) -> Unit
 ): RecyclerView.Adapter<FotoAdapter.FotoViewHolder>(){
 
+    var lista : List<FotoModel> = listOf()
     inner class FotoViewHolder(val ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val  layout: View
+        val  btDestaque:ImageButton
+        val  btShow:ImageButton
+        val  btDelete:ImageButton
+        val  btUpdate:ImageButton
         val  image:ImageView
         val  textDescricao : TextView
         val  textObservacao : TextView
@@ -32,6 +36,10 @@ class FotoAdapter(
         init {
             layout =  ItemView.findViewById(R.id.foto_item_layout)
             image =  ItemView.findViewById(R.id.foto_item_image)
+            btDestaque = ItemView.findViewById(R.id.foto_item_destaque)
+            btDelete     = ItemView.findViewById(R.id.foto_item_delete)
+            btUpdate     = ItemView.findViewById(R.id.foto_item_edicao)
+            btShow     = ItemView.findViewById(R.id.foto_item_consulta)
             textDescricao = ItemView.findViewById(R.id.foto_item_txt_descricao)
             textObservacao = ItemView.findViewById(R.id.foto_item_txt_obs)
             textUsuario  = ItemView.findViewById(R.id.foto_item_txt_usuario)
@@ -42,11 +50,10 @@ class FotoAdapter(
                 val url = URL("https://drive.google.com/uc?export=view&id=${foto.id_file}")
                 val thumbnailUrl = URL("https://drive.google.com/thumbnail?id=${foto.id_file}&sz=w10O")
 
+
                 Glide.with(layout.context)
                     .load(url)
-                    .thumbnail(
-                        Glide.with(layout.context)
-                            .load(thumbnailUrl))
+                    .placeholder(R.drawable.no_foto)
                     .into(image);
                 /*
                 Glide.with(layout.context)
@@ -61,34 +68,41 @@ class FotoAdapter(
             } catch (e:Exception){
                 Log.i("zyzz","Erro-> ${e.message}")
             }
-            textDescricao.setText("Ainda Não Tenho")
+            textDescricao.setText(foto.imo_descricao)
             textObservacao.setText(foto.obs)
-            textUsuario.setText("Ainda Não Tenho")
+            textUsuario.setText(foto.usu_razao)
 
-            layout.setOnClickListener {
-               clique(foto)
+            btDestaque.visibility = if (foto.destaque == "S")  View.VISIBLE else View.GONE
+
+            btShow.setOnClickListener {
+               clique(foto,3)
+            }
+            btDelete.setOnClickListener {
+                clique(foto,2)
             }
         }
     }
 
+
 override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FotoViewHolder {
 
-val layoutInflater = LayoutInflater.from(parent.context)
+    val layoutInflater = LayoutInflater.from(parent.context)
 
-val itemView = layoutInflater.inflate(R.layout.fotoitem,parent,false)
+    val itemView = layoutInflater.inflate(R.layout.fotoitem,parent,false)
 
-return FotoViewHolder(itemView)
+    return FotoViewHolder(itemView)
 }
 
 override fun getItemCount(): Int {
-return lista.size
+    return lista.size
 }
 
 override fun onBindViewHolder(holder: FotoViewHolder, position: Int) {
 
-val foto = lista[position]
+    val foto = lista[position]
 
-holder.bind(foto)
+    holder.bind(foto)
 }
+
 
 }

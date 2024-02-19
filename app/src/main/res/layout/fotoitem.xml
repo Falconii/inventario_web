@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/foto_item_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/foto_item_image"
@@ -12,36 +13,53 @@
         android:layout_height="100dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <ImageButton
+        android:id="@+id/foto_item_destaque"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/white"
+        android:src="@drawable/star_24_yellow"
+        app:layout_constraintEnd_toStartOf="@+id/foto_item_consulta"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:id="@+id/foto_item_consulta"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_marginTop="8dp"
-        android:src="@android:drawable/btn_star"
-        app:layout_constraintStart_toEndOf="@+id/imageButton"
+        android:layout_marginEnd="16dp"
+        android:background="@color/white"
+        android:src="@drawable/show_24_blue"
+        app:layout_constraintEnd_toStartOf="@+id/foto_item_delete"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:id="@+id/foto_item_delete"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_marginTop="8dp"
-        android:src="@android:drawable/btn_star"
-        app:layout_constraintStart_toEndOf="@+id/foto_item_image"
+        android:layout_marginEnd="16dp"
+        android:background="@color/white"
+        android:src="@drawable/delete_24_red"
+        app:layout_constraintEnd_toStartOf="@+id/foto_item_edicao"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/foto_item_edicao"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_marginTop="8dp"
-        android:src="@android:drawable/btn_star"
-        app:layout_constraintStart_toEndOf="@+id/imageButton2"
+        android:layout_marginEnd="16dp"
+        android:background="@color/white"
+        android:src="@drawable/pencil_24_green"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -53,25 +71,29 @@
         android:text="Descricao"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/foto_item_image"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton" />
+        app:layout_constraintTop_toBottomOf="@+id/foto_item_consulta" />
 
     <TextView
         android:id="@+id/foto_item_txt_obs"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text="Observação"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/foto_item_image"
-        tools:layout_editor_absoluteY="102dp" />
+        app:layout_constraintTop_toBottomOf="@+id/foto_item_txt_usuario" />
 
     <TextView
         android:id="@+id/foto_item_txt_usuario"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="Nome Usuário"
-        app:layout_constraintBottom_toBottomOf="@+id/foto_item_image"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/foto_item_image" />
+        app:layout_constraintStart_toEndOf="@+id/foto_item_image"
+        app:layout_constraintTop_toBottomOf="@+id/foto_item_txt_descricao" />
 </androidx.constraintlayout.widget.ConstraintLayout>

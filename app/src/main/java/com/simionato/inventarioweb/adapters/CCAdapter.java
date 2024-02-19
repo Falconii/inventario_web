@@ -61,6 +61,7 @@ public class CCAdapter extends ArrayAdapter {
         TextView tvDescricao = (TextView) layout.findViewById(R.id.txtDescricaoGenerico100);
 
         tvCodigo.setText("Código: "+custos.get(position).getCodigo());
+
         tvDescricao.setText(custos.get(position).getDescricao());
 
         return layout;

@@ -1,5 +1,6 @@
 package com.simionato.inventarioweb.services
 
+import com.google.gson.JsonObject
 import com.simionato.inventarioweb.models.FotoModel
 import com.simionato.inventarioweb.models.RetornoUpload
 import com.simionato.inventarioweb.parametros.ParametroFoto01
@@ -16,6 +17,11 @@ interface FotoService {
     fun getFotos(
         @Body params: ParametroFoto01
     ): Call<List<FotoModel>>
+
+    @POST("deleteuploadfoto")
+    fun DeleteFoto(
+        @Body params: FotoModel
+    ): Call<JsonObject>
 
     @Multipart
     @POST("uploadfoto")
