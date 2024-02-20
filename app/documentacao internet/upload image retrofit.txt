@@ -1,0 +1,24 @@
+https://stackoverflow.com/questions/39953457/how-to-upload-an-image-file-in-retrofit-2
+//interface
+
+@Multipart
+@POST(userupdateprofile)
+ObservableResponseBody updateProfile(@Part(user_id) RequestBody id,
+                                       @Part(full_name) RequestBody fullName,
+                                       @Part MultipartBody.Part image,
+                                       @Part(other) RequestBody other);
+
+pass it like this
+File file = new File(storageemulated0DownloadCorrections 6.jpg);
+RequestBody requestFile =
+        RequestBody.create(MultipartBody.FORM, file);
+
+ MultipartBody.Part is used to send also the actual file name
+MultipartBody.Part body =
+        MultipartBody.Part.createFormData(image, file.getName(), requestFile);
+
+ add another part within the multipart request
+RequestBody fullName = 
+        RequestBody.create(MultipartBody.FORM, Your Name);
+
+service.updateProfile(id, fullName, body, other);
