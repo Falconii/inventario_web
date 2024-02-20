@@ -145,10 +145,10 @@
                 app:layout_constraintTop_toBottomOf="@+id/TextInputLayoutCodigo02">
 
                 <CheckBox
-                    android:id="@+id/checkBox02"
+                    android:id="@+id/cbSituacao"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:text="Marca aqui"
+                    android:text="Ativo Não Encontrado!"
                     android:textSize="20sp" />
 
 
@@ -506,9 +506,13 @@
         android:id="@+id/llProgress02"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#D1C9C9"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5">
@@ -518,8 +522,6 @@
             style="@style/Widget.AppCompat.ProgressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:background="#BDACE8"
             android:padding="5dp" />
@@ -536,6 +538,8 @@
             android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

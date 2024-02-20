@@ -10,8 +10,10 @@ import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.simionato.inventarioweb.databinding.ActivityFotoWebBinding
 import com.simionato.inventarioweb.databinding.ActivityInventarioBinding
+import com.simionato.inventarioweb.global.ParametroGlobal
 import java.net.URL
 
 class FotoWebActivity : AppCompatActivity() {
@@ -32,20 +34,18 @@ class FotoWebActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        inicializarTooBar()
+
         var id_file =  intent.getStringExtra("id_file")
 
         if ( id_file == null || id_file.isEmpty()){
-            /*
-            showToast("Não Foi Informado O Código Do Imobilizado!");
+            showToast("Não Foi Informado O ID Da Foto!");
             val returnIntent: Intent = Intent()
             setResult(Activity.RESULT_CANCELED,returnIntent)
             finish()
             return
-
-             */
-            id_file =  "1w6etlHYx8xSq05XWOfzFe_QUvVoLQglC"
         }
-        Log.i("zyzz",id_file)
         val url: String = "https://drive.google.com/uc?export=view&id=${id_file}"
         //val url: String = "https://drive.google.com/thumbnail?id=${id_file}&sz=s1000"
         binding.webView35.getSettings().setBuiltInZoomControls(true);
@@ -55,6 +55,32 @@ class FotoWebActivity : AppCompatActivity() {
         //binding.webView35.loadDataWithBaseURL(null,stringHtml,"text/html","utf-8",null)
     }
 
+    private fun inicializarTooBar(){
+        binding.ToolBar35.title = "Controle De Ativos"
+        binding.ToolBar35.subtitle = ParametroGlobal.Dados.Inventario.descricao
+        binding.ToolBar35.setTitleTextColor(
+            ContextCompat.getColor(this,R.color.white)
+        )
+        binding.ToolBar35.setSubtitleTextColor(
+            ContextCompat.getColor(this,R.color.white)
+        )
+
+        binding.ToolBar35.inflateMenu(R.menu.menu_login)
+        binding.ToolBar35.setOnMenuItemClickListener { menuItem ->
+            when( menuItem.itemId ){
+                R.id.item_cancel -> {
+                    val returnIntent: Intent = Intent()
+                    setResult(Activity.RESULT_OK,returnIntent)
+                    finish()
+                    return@setOnMenuItemClickListener true
+                }
+                else -> {
+                    return@setOnMenuItemClickListener true
+                }
+            }
+        }
+
+    }
     private fun setWebViewClient(webView: WebView?) {
         webView?.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {

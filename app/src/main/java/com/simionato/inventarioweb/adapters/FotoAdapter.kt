@@ -13,12 +13,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.simionato.inventarioweb.R
+import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.models.FotoModel
 import java.net.URL
 
 
 class FotoAdapter(
-    private val clique: (foto: FotoModel,idAcao:Int) -> Unit
+    private val clique: (foto: FotoModel,idAcao:CadastrosAcoes) -> Unit
 ): RecyclerView.Adapter<FotoAdapter.FotoViewHolder>(){
 
     var lista : List<FotoModel> = listOf()
@@ -74,11 +75,16 @@ class FotoAdapter(
 
             btDestaque.visibility = if (foto.destaque == "S")  View.VISIBLE else View.GONE
 
-            btShow.setOnClickListener {
-               clique(foto,3)
+            image.setOnClickListener{
+                clique(foto,CadastrosAcoes.Consulta)
             }
+
+            btShow.setOnClickListener {
+               clique(foto,CadastrosAcoes.Consulta)
+            }
+            
             btDelete.setOnClickListener {
-                clique(foto,2)
+                clique(foto,CadastrosAcoes.Exclusao)
             }
         }
     }

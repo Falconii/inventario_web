@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.text.InputFilter
 import android.util.Log
 import android.view.View
@@ -18,25 +19,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.simionato.inventarioweb.databinding.ActivityFotosBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.infra.InfraHelper
-import com.simionato.inventarioweb.models.FotoModel
-import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
 import com.simionato.inventarioweb.models.RetornoUpload
 import com.simionato.inventarioweb.services.FotoService
-import com.simionato.inventarioweb.services.ImobilizadoInventarioService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.Part
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Date
@@ -96,20 +90,24 @@ class FotosActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         //Validando Paramentros
-        if ((ParametroGlobal.Dados.usuario.id == 0) ||
-            (ParametroGlobal.Dados.local.id == 0)   ||
-            (ParametroGlobal.Dados.Inventario.codigo == 0)){
+        if (ParametroGlobal.Ambiente.itsOK()){
             showToast("Ambiente Incorreto!!")
             finish()
+            return
         }
 
-        val bundle = intent.extras
+        try {
+            val bundle = intent.extras
 
-        if (bundle != null){
-            id_imobilizado =  bundle.getInt("id_imobilizado",0)
-            descricao =  bundle.getString("descricao")!!
-        } else {
-            showToast("Parâmetro Foto Incorreto!!")
+            if (bundle != null) {
+                id_imobilizado = bundle.getInt("id_imobilizado", 0)
+                descricao = bundle.getString("descricao")!!
+            } else {
+                showToast("Parâmetro Foto Incorreto!!")
+                finish()
+            }
+        }  catch (error:Exception){
+            showToast("Erro Nos Parametros: ${error.message}")
             finish()
         }
         setContentView(binding.root)
@@ -214,9 +212,12 @@ class FotosActivity : AppCompatActivity() {
     private fun uploadFoto(){
         try {
 
+
             val filesDir = applicationContext.filesDir
 
-            val file = File(filesDir, "image.jpg")
+            val uriName = displayName(uri)
+
+            val file = File(filesDir, uriName)
 
             val inputStream = contentResolver.openInputStream(uri)
 
@@ -353,6 +354,15 @@ class FotosActivity : AppCompatActivity() {
             return ""
         }
 
+    }
+
+    private fun displayName(uri: Uri): String? {
+        val mCursor = applicationContext.contentResolver.query(uri, null, null, null, null)
+        val indexedname = mCursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        mCursor.moveToFirst()
+        val filename = mCursor.getString(indexedname)
+        mCursor.close()
+        return filename
     }
 
 }

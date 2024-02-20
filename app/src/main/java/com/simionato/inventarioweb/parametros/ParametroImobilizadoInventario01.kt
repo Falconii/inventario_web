@@ -1,5 +1,7 @@
 package com.simionato.inventarioweb.parametros
 
+import com.simionato.inventarioweb.global.ParametroGlobal
+
 data class ParametroImobilizadoInventario01(
     var id_empresa:Int,
     var id_filial:Int,
@@ -18,4 +20,24 @@ data class ParametroImobilizadoInventario01(
     var contador:String,
     var orderby:String,
     var sharp: Boolean
-)
+){
+    constructor():this(
+        ParametroGlobal.Dados.Inventario.id_empresa,
+        ParametroGlobal.Dados.Inventario.id_filial,
+        ParametroGlobal.Dados.Inventario.codigo,
+    0,
+    "",
+    0,
+    "",
+    -1,
+    "",
+    0,
+    0,
+    "",
+    0,
+    50,
+    "N",
+    "Código",
+    false
+    )
+}

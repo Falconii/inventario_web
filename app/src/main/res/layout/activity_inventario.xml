@@ -7,25 +7,81 @@
     android:background="@drawable/moldura"
     tools:context=".InventarioActivity">
 
-    <Button
-        android:id="@+id/btScannear"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:text="Scannear"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/ToolBar40"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/txtResult"
+    <SearchView
+        android:id="@+id/svPesquisa40"
+        android:layout_width="402dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="8dp"
+        android:iconifiedByDefault="false"
+        android:queryHint="Busca Por Nome"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ToolBar40"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvLista40"
         android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:paddingLeft="5dp"
+        android:paddingTop="5dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/svPesquisa40"
+        tools:itemCount="11"
+        tools:listitem="@layout/itemlista" />
+
+    <LinearLayout
+        android:id="@+id/llProgress40"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Valor Lido"
+        android:layout_margin="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#D1C9C9"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btScannear" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5">
+
+        <ProgressBar
+            android:id="@+id/progressBar40"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#BDACE8"
+            android:padding="5dp" />
+
+        <TextView
+            android:id="@+id/textViewProgress40"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="3"
+            android:text="Aguarde...Processando..."
+            android:textAlignment="center"
+            android:textColor="#E41A1A"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

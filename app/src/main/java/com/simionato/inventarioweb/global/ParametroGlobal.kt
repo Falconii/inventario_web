@@ -25,7 +25,6 @@ class ParametroGlobal {
                     0 -> {
                         retorno = "Não Inventariado"
                     }
-
                     1 -> {
                         retorno = "Inventariado"
                     }
@@ -61,4 +60,19 @@ class ParametroGlobal {
             val PERMISSAO_GALERIA  = Manifest.permission.READ_MEDIA_IMAGES
         }
     }
+
+    class Ambiente {
+        companion object {
+            public fun itsOK(): Boolean {
+                //Validando Paramentros
+                if ((ParametroGlobal.Dados.usuario.id == 0) ||
+                    (ParametroGlobal.Dados.local.id == 0)   ||
+                    (ParametroGlobal.Dados.Inventario.codigo == 0)){
+                    return true
+                }
+                return false
+            }
+        }
+    }
+
 }

@@ -214,7 +214,7 @@
             android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Fotod"
+            android:text="Invent."
             app:flow_horizontalAlign="center"
             tools:layout_editor_absoluteX="275dp"
             tools:layout_editor_absoluteY="67dp" />

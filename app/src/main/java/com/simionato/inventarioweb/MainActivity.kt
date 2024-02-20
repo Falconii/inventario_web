@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnInventario00.setOnClickListener {
-            chamaFoto()
+            chamaInventario()
         }
 
         binding.btnPesquisa.setOnClickListener {
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnShowFotos.setOnClickListener{
-            chamaShowFotos()
+            getImoInventario()
         }
 
         binding.btnFotoWeb.setOnClickListener{
@@ -564,20 +564,21 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-    private fun chamaFoto(){
-        val intent = Intent(this,FotosActivity::class.java)
-        getRetornoFoto.launch(intent)
+    private fun chamaInventario(){
+        val intent = Intent(this,InventarioActivity::class.java)
+        getRetornoInventario.launch(intent)
     }
 
-    private val getRetornoFoto =
+    private val getRetornoInventario =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
             if(it.resultCode == Activity.RESULT_OK){
             }
         }
 
-    private fun chamaShowFotos(){
+    private fun chamaShowFotos(imoInventario:ImobilizadoinventarioModel){
         val intent = Intent(this,ShowFotosActivity::class.java)
+        intent.putExtra("ImoInventario",imoInventario)
         getRetornoShowFotos.launch(intent)
     }
 
@@ -600,6 +601,73 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    private fun getImoInventario() {
+        try {
+            val imobilizadoInventarioService = InfraHelper.apiInventario.create(ImobilizadoInventarioService::class.java)
+            imobilizadoInventarioService.getImobilizadoInventario(
+                ParametroGlobal.Dados.Inventario.id_empresa,
+                ParametroGlobal.Dados.Inventario.id_filial,
+                ParametroGlobal.Dados.Inventario.codigo,
+                3
+            )
+                .enqueue(object : Callback<ImobilizadoinventarioModel> {
+                    override fun onResponse(
+                        call: Call<ImobilizadoinventarioModel>,
+                        response: Response<ImobilizadoinventarioModel>
+                    ) {
+                        //binding.llProgress01.visibility = View.GONE
+                        Log.i("zyzz","Indo buscar imoinventario")
+                        if (response != null) {
+                            if (response.isSuccessful) {
+                                Log.i("zyzz","Achei imoinventario ${response.body()}")
+                                val imoinvent = response.body()
+
+                                Log.i("zyzz","Retorno ${imoinvent}")
+
+                                if (imoinvent != null){
+                                     chamaShowFotos(imoinvent)
+                                } else {
+                                    showToast("Dados De Inventário Não Localizado")
+                                }
+
+                            } else {
+                                //binding.llProgress01.visibility = View.GONE
+                                Log.i("zyzz","Deu Merda")
+                                val gson = Gson()
+                                val message = gson.fromJson(
+                                    response.errorBody()!!.charStream(),
+                                    HttpErrorMessage::class.java
+                                )
+                                showToast(
+                                    "${message.getMessage().toString()}",
+                                    Toast.LENGTH_SHORT
+                                )
+                            }
+
+                        } else {
+                            //binding.llProgress01.visibility = View.GONE
+                            Toast.makeText(
+                                applicationContext,
+                                "Sem retorno Da Requisição!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ImobilizadoinventarioModel>, t: Throwable) {
+                        //binding.llProgress01.visibility = View.GONE
+                        showToast(t.message.toString())
+                    }
+
+                })
+
+        } catch (e: Exception) {
+            //binding.llProgress01.visibility = View.GONE
+            showToast("${e.message.toString()}", Toast.LENGTH_LONG)
+        }
+
+
+    }
 
 }
 

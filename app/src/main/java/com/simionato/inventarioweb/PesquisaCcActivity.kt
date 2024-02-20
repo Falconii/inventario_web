@@ -44,24 +44,30 @@ class PesquisaCcActivity : AppCompatActivity() {
     }
 
     private fun iniciar(){
+        inicializarTooBar()
         getCcs()
     }
     private fun inicializarTooBar(){
         binding.ToolBar11.title = "Controle De Ativos"
-        binding.ToolBar11.subtitle = "Pesquisa Centro De Custos"
+        binding.ToolBar11.subtitle = ParametroGlobal.Dados.Inventario.descricao
         binding.ToolBar11.setTitleTextColor(
             ContextCompat.getColor(this,R.color.white)
         )
         binding.ToolBar11.setSubtitleTextColor(
             ContextCompat.getColor(this,R.color.white)
         )
-
-        binding.ToolBar11.inflateMenu(R.menu.menu_parametros)
+        binding.ToolBar11.inflateMenu(R.menu.menu_pesquisa)
         binding.ToolBar11.setOnMenuItemClickListener { menuItem ->
             when( menuItem.itemId ){
-                R.id.item_cancel -> {
+                R.id.menu_pesquisa_sair -> {
                     val returnIntent: Intent = Intent()
                     setResult(Activity.RESULT_CANCELED,returnIntent)
+                    finish()
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.menu_pesquisa_limpar -> {
+                    val returnIntent: Intent = Intent()
+                    setResult(100,returnIntent)
                     finish()
                     return@setOnMenuItemClickListener true
                 }

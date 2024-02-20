@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.text.InputFilter
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -19,11 +18,11 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.simionato.inventarioweb.adapters.FotoAdapter
 import com.simionato.inventarioweb.databinding.ActivityShowFotosBinding
+import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.FotoModel
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
-import com.simionato.inventarioweb.models.LocalModel
 import com.simionato.inventarioweb.parametros.ParametroFoto01
 import com.simionato.inventarioweb.services.FotoService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
@@ -38,9 +37,11 @@ class ShowFotosActivity : AppCompatActivity() {
     }
 
     private val adapter = FotoAdapter(){foto,idAcao ->
-        if (idAcao == 3) {
+
+        if (idAcao == CadastrosAcoes.Consulta) {
             chamaFotoWeb(foto)
-        } else {
+        }
+        if (idAcao == CadastrosAcoes.Exclusao) {
             showDialogDelete(foto)
         }
     }
@@ -63,13 +64,21 @@ class ShowFotosActivity : AppCompatActivity() {
             finish()
         }
 
-        val bundle = intent.extras
-
-        if (bundle != null){
-            imoinventario = if (Build.VERSION.SDK_INT >= 33) bundle.getParcelable("ImoInventario",imoinventario::class.java)!!
-            else bundle.getParcelable("ImoInventario")!!
-        } else {
-            showToast("Parâmetro Do Inventário Incorreto!!")
+        try {
+            val bundle = intent.extras
+            Log.i("zyzz", "Chegue na showfotos ${bundle}")
+            if (bundle != null) {
+                imoinventario = if (Build.VERSION.SDK_INT >= 33) bundle.getParcelable(
+                    "ImoInventario",
+                    ImobilizadoinventarioModel::class.java
+                )!!
+                else bundle.getParcelable("ImoInventario")!!
+            } else {
+                showToast("Parâmetro Do Inventário Incorreto!!")
+                finish()
+            }
+        } catch (error:Exception){
+            showToast("Erro Nos Parametros: ${error.message}")
             finish()
         }
 
@@ -116,7 +125,7 @@ class ShowFotosActivity : AppCompatActivity() {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.menu_show_fotos_new -> {
-                    chamaFoto(FotoModel())
+                    chamaFoto()
                     return@setOnMenuItemClickListener true
                 }
                 else -> {
@@ -251,10 +260,11 @@ class ShowFotosActivity : AppCompatActivity() {
     }
 
 
-    private fun chamaFoto(foto:FotoModel){
+    private fun chamaFoto(){
 
         val intent = Intent(this,FotosActivity::class.java)
-        intent.putExtra("Foto",foto)
+        intent.putExtra("id_imobilizado",imoinventario.id_imobilizado)
+        intent.putExtra("descricao",imoinventario.imo_descricao)
         getRetornoFoto.launch(intent)
     }
 

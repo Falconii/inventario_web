@@ -33,25 +33,8 @@ import java.util.Date
 class LancamentoActivity : AppCompatActivity() {
 
 
-    private var params:ParametroImobilizadoInventario01 = ParametroImobilizadoInventario01(
-        ParametroGlobal.Dados.empresa.id,
-        ParametroGlobal.Dados.local.id,
-        ParametroGlobal.Dados.Inventario.codigo,
-        0,
-        "",
-        0,
-        "",
-        -1,
-        "",
-        0,
-        0,
-        "",
-        0,
-        50,
-        "N",
-        "Código",
-        true
-    )
+    private var params:ParametroImobilizadoInventario01 = ParametroImobilizadoInventario01()
+
     private var ReadOnly = true
 
     private var requestCamara: ActivityResultLauncher<String>? = null
@@ -113,39 +96,30 @@ class LancamentoActivity : AppCompatActivity() {
         binding.editCCNovol02.setOnClickListener {
             chamaPesquisaCc()
         }
-        /*
-        binding.rbNaoEncontrado02.setOnClickListener({
-            if (binding.rbNaoEncontrado02.isChecked) {
-                binding.rbNaoEncontrado02.clearCheck()
-            } else {
-                binding.rgNaoEncontrado02.check(R.id.rbNaoEncontrado02)
-            }
-        })
-        */
-        binding.btExcluir02.setOnClickListener({
+        binding.btExcluir02.setOnClickListener{
             val lancamento:LancamentoModel = loadLancamento()
             deleteApontamento(lancamento)
-        })
+        }
 
-        binding.btCancelar02.setOnClickListener({
+        binding.btCancelar02.setOnClickListener{
             clearInventario()
             binding.editCodigo01.setText("")
-            formulario(false)})
+            formulario(false)}
 
-        binding.btGravar02.setOnClickListener({
+        binding.btGravar02.setOnClickListener{
             val lancamento:LancamentoModel = loadLancamento()
             if (lancamento.id_lanca == 0){
                 saveApontamento(lancamento)
             } else {
                 updateApontamento(lancamento)
             }
-        })
+        }
     }
 
     private val getRetornoPequisaCc =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
-            if(it.resultCode == Activity.RESULT_OK){
+            if(it.resultCode == Activity.RESULT_OK && it.data != null){
                 if(it.resultCode == Activity.RESULT_OK){
                     val codigo = it.data?.getStringExtra("codigo")
                     val descricao = it.data?.getStringExtra("descricao")
@@ -160,6 +134,13 @@ class LancamentoActivity : AppCompatActivity() {
                     }
                 }
             }
+                if(it.resultCode == 100){
+                    inventario.new_cc = ""
+                    inventario.new_cc_descricao = ""
+                    binding.editCCNovol02.setText("Ativo Não Tramferido. TOQUE Para Alterar")
+
+                }
+
         }
 
     private fun chamaPesquisaCc(){
@@ -288,11 +269,10 @@ class LancamentoActivity : AppCompatActivity() {
 
                             with(binding) {
                                 formulario(true)
-                                //binding.checkBox02.cheched()
                                 if (inventario.status == 5){
-                                    //binding.rgNaoEncontrado02.check(R.id.rbNaoEncontrado02)
+                                    binding.cbSituacao.isChecked = true
                                 } else {
-                                   /// binding.rgNaoEncontrado02.clearCheck()
+                                    binding.cbSituacao.isChecked = false
                                 }
                                 binding.txtViewSituac02.setText(
                                     ParametroGlobal.Situacoes.getSituacao(
@@ -311,7 +291,7 @@ class LancamentoActivity : AppCompatActivity() {
                                 binding.editDescricao02.setText(inventario.imo_descricao)
                                 binding.editCCOriginal02.setText(inventario.cc_descricao)
                                 binding.editCCNovol02.setText(
-                                    if (inventario.new_cc_descricao == "") "Ativo Não Transferido!" else inventario.new_cc_descricao
+                                    if (inventario.new_cc_descricao == "") "Ativo Não Tramferido. TOQUE Para Alterar" else inventario.new_cc_descricao
                                 )
                                 binding.editObs02.setText(inventario.lanc_obs)
                             }
@@ -540,9 +520,8 @@ class LancamentoActivity : AppCompatActivity() {
         } catch ( e : NumberFormatException ){
             inventario.id_lanca = 0
         }
-        inventario.lanc_estado = inventario.lanc_estado //if (binding.rbNaoEncontrado02.isChecked) { 5 } else {inventario.lanc_estado}
+        inventario.lanc_estado = if (binding.cbSituacao.isChecked()) { 5 } else {0}
         inventario.lanc_dt_lanca = getHoje()
-        inventario.new_cc = ""
         inventario.lanc_obs = binding.editObs02.text.toString()
         val lancamento = LancamentoModel(
             inventario.id_empresa,
