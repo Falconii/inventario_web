@@ -1,7 +1,10 @@
 package com.simionato.inventarioweb.models
 
-import java.io.Serializable
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class FotoModel(
     var id_empresa:Int ,
     var id_local:Int ,
@@ -18,7 +21,7 @@ data class FotoModel(
     var user_insert:Int ,
     var user_update:Int,
     var imo_descricao:String,
-    var usu_razao :String) : Serializable {
+    var usu_razao :String) : Parcelable {
 
     constructor() : this(
         0,
@@ -38,4 +41,4 @@ data class FotoModel(
         "",
         ""
     )
-} Seria
+}

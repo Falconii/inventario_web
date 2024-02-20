@@ -1,5 +1,10 @@
 package com.simionato.inventarioweb.models
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+
+@Parcelize
 data class ImobilizadoinventarioModel(
     var id_empresa:Int ,
     var id_filial:Int ,
@@ -25,5 +30,5 @@ data class ImobilizadoinventarioModel(
     var lanc_estado:Int ,
     var usu_razao:String ,
     var new_cc_descricao:String
-)
+) : Parcelable
 

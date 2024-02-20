@@ -2,6 +2,7 @@ package com.simionato.inventarioweb
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.InputFilter
 import android.util.Log
@@ -46,7 +47,7 @@ class ShowFotosActivity : AppCompatActivity() {
 
     private lateinit var  dialogDelete: AlertDialog
 
-    private lateinit var  imoinventario: ImobilizadoinventarioModel()
+    private lateinit var  imoinventario: ImobilizadoinventarioModel
 
     private var params:ParametroFoto01 = ParametroFoto01()
 
@@ -58,11 +59,20 @@ class ShowFotosActivity : AppCompatActivity() {
         if ((ParametroGlobal.Dados.usuario.id == 0) ||
             (ParametroGlobal.Dados.local.id == 0)   ||
             (ParametroGlobal.Dados.Inventario.codigo == 0)){
-            showToast("Parâmetros Do Inventário Incorretos!!")
+            showToast("Ambiente Incorreto!!")
             finish()
         }
 
-        imoinventario = intent.getExtra
+        val bundle = intent.extras
+
+        if (bundle != null){
+            imoinventario = if (Build.VERSION.SDK_INT >= 33) bundle.getParcelable("ImoInventario",imoinventario::class.java)!!
+            else bundle.getParcelable("ImoInventario")!!
+        } else {
+            showToast("Parâmetro Do Inventário Incorreto!!")
+            finish()
+        }
+
         iniciar()
         /*
         try {
@@ -82,7 +92,7 @@ class ShowFotosActivity : AppCompatActivity() {
 
     private fun iniciar(){
         inicializarTooBar()
-        binding.txtViewSituacao30.setText("Local: ${ParametroGlobal.Dados.Inventario.local_razao}\nInventário: ${ParametroGlobal.Dados.Inventario.descricao}\nPlaqueta: ${id_imobilizado}\nDescricao: KAJSKAJSKLAJSKLJAKLSJKLA")
+        binding.txtViewSituacao30.setText("Local: ${ParametroGlobal.Dados.Inventario.local_razao}\nInventário: ${ParametroGlobal.Dados.Inventario.descricao}\nPlaqueta: ${imoinventario.id_imobilizado}\nDescricao: ${imoinventario.imo_descricao}")
 
         getFotos()
     }
@@ -106,7 +116,7 @@ class ShowFotosActivity : AppCompatActivity() {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.menu_show_fotos_new -> {
-                    chamaFoto()
+                    chamaFoto(FotoModel())
                     return@setOnMenuItemClickListener true
                 }
                 else -> {
@@ -118,10 +128,10 @@ class ShowFotosActivity : AppCompatActivity() {
     private fun getFotos(){
         try {
             val fotoService = InfraHelper.apiInventario.create( FotoService::class.java )
-            params.id_empresa = ParametroGlobal.Dados.empresa.id
-            params.id_local = ParametroGlobal.Dados.local.id
-            params.id_inventario = ParametroGlobal.Dados.Inventario.codigo
-            params.id_imobilizado = id_imobilizado
+            params.id_empresa       = imoinventario.id_empresa
+            params.id_local         = imoinventario.id_filial
+            params.id_inventario    = imoinventario.id_inventario
+            params.id_imobilizado   = imoinventario.id_imobilizado
             params.destaque = ""
             binding.llProgress30.visibility = View.VISIBLE
             fotoService.getFotos(params).enqueue(object :
@@ -143,7 +153,6 @@ class ShowFotosActivity : AppCompatActivity() {
                             } else {
                                 showToast("Falha No Retorno Da Requisição!")
                             }
-
                         }
                         else {
                             binding.llProgress30.visibility = View.GONE
@@ -242,12 +251,10 @@ class ShowFotosActivity : AppCompatActivity() {
     }
 
 
-    private fun chamaFoto(){
+    private fun chamaFoto(foto:FotoModel){
 
         val intent = Intent(this,FotosActivity::class.java)
-        val foto = FotoModel()
-        foto.id_empresa = ParametroGlobal.Dados.
-        intent.putExtra("id_imobilizado",id_imobilizado)
+        intent.putExtra("Foto",foto)
         getRetornoFoto.launch(intent)
     }
 
