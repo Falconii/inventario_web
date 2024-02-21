@@ -2,22 +2,32 @@ package com.simionato.inventarioweb
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.simionato.inventarioweb.adapters.ImoInventarioAdapter
 import com.simionato.inventarioweb.databinding.ActivityInventarioBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
+import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
-import com.simionato.inventarioweb.models.LancamentoModel
 import com.simionato.inventarioweb.parametros.ParametroImobilizadoInventario01
+import com.simionato.inventarioweb.services.ImobilizadoInventarioService
+import com.simionato.inventarioweb.shared.HttpErrorMessage
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+private val adapter = ImoInventarioAdapter()
 
 class InventarioActivity : AppCompatActivity() {
 
     private var params: ParametroImobilizadoInventario01 = ParametroImobilizadoInventario01()
 
-    private lateinit var inventario: ImobilizadoinventarioModel
+    private lateinit var imobilizadoinventarios: List<ImobilizadoinventarioModel>
 
     private val binding by lazy {
         ActivityInventarioBinding.inflate(layoutInflater)
@@ -39,6 +49,8 @@ class InventarioActivity : AppCompatActivity() {
     private fun inicializar(){
 
         inicializarTooBar()
+
+        getInventarios()
 
 
     }
@@ -70,6 +82,78 @@ class InventarioActivity : AppCompatActivity() {
         }
     }
 
+    private fun getInventarios(){
+        params.pagina = 1
+        params.tamPagina = 20000
+        try {
+            val imobilizadoInventarioService = InfraHelper.apiInventario.create( ImobilizadoInventarioService::class.java )
+            binding.llProgress40.visibility = View.VISIBLE
+            imobilizadoInventarioService.getImobilizadosInventarios(params).enqueue(object :
+                Callback<List<ImobilizadoinventarioModel>> {
+                override fun onResponse(
+                    call: Call<List<ImobilizadoinventarioModel>>,
+                    response: Response<List<ImobilizadoinventarioModel>>
+                ) {
+                    binding.llProgress40.visibility = View.GONE
+                    if (response != null) {
+                        if (response.isSuccessful) {
+
+                            imobilizadoinventarios = response.body()!!
+
+                            if (imobilizadoinventarios !== null) {
+
+                                montaLista(imobilizadoinventarios);
+
+                            } else {
+                                showToast("Falha No Retorno Da Requisição!")
+                            }
+
+                        }
+                        else {
+                            binding.llProgress40.visibility = View.GONE
+                            val gson = Gson()
+                            val message = gson.fromJson(
+                                response.errorBody()!!.charStream(),
+                                HttpErrorMessage::class.java
+                            )
+                            if (response.code() == 409){
+                                showToast("Tabela De Fotos Vazia")
+                                imobilizadoinventarios = listOf()
+                                montaLista(imobilizadoinventarios)
+                            } else {
+                                showToast(message.getMessage().toString())
+                            }
+                        }
+                    } else {
+                        binding.llProgress40.visibility = View.GONE
+                        Toast.makeText(applicationContext,"Sem retorno Da Requisição!",Toast.LENGTH_SHORT).show()
+                    }
+                }
+                override fun onFailure(call: Call<List<ImobilizadoinventarioModel>>, t: Throwable) {
+                    binding.llProgress40.visibility = View.GONE
+                    showToast(t.message.toString())
+                }
+            })
+
+        }catch (e: Exception){
+            binding.llProgress40.visibility = View.GONE
+            showToast("${e.message.toString()}",Toast.LENGTH_LONG)
+        }
+
+    }
+
+    private fun  montaLista(imobilizados:List<ImobilizadoinventarioModel>){
+        adapter.lista = imobilizados
+        binding.rvLista40.adapter = adapter
+        binding.rvLista40.layoutManager =
+            LinearLayoutManager(binding.rvLista40.context)
+        binding.rvLista40.addItemDecoration(
+            DividerItemDecoration(
+                binding.rvLista40.context,
+                RecyclerView.VERTICAL
+            )
+        )
+    }
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
         Toast.makeText(this, mensagem, duracao).show()
     }

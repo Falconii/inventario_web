@@ -6,8 +6,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -18,8 +16,6 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
-import com.simionato.inventarioweb.adapters.InventarioAdapter
-import com.simionato.inventarioweb.adapters.LocalAdapter
 import com.simionato.inventarioweb.databinding.ActivityMainBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.global.UserProfile

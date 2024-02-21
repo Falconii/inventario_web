@@ -6,7 +6,7 @@
         android:id="@+id/item_barcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@android:drawable/ic_menu_camera"
+        android:icon="@mipmap/barcode_72_xxhdpi"
         android:title="Código Barra"
         app:showAsAction="always" />
     <item
