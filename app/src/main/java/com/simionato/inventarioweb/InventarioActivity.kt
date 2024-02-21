@@ -84,7 +84,7 @@ class InventarioActivity : AppCompatActivity() {
 
     private fun getInventarios(){
         params.pagina = 1
-        params.tamPagina = 20000
+        params.tamPagina = 1000
         try {
             val imobilizadoInventarioService = InfraHelper.apiInventario.create( ImobilizadoInventarioService::class.java )
             binding.llProgress40.visibility = View.VISIBLE
