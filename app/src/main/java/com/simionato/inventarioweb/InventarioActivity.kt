@@ -1,9 +1,13 @@
 package com.simionato.inventarioweb
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.simionato.inventarioweb.adapters.ImoInventarioAdapter
 import com.simionato.inventarioweb.databinding.ActivityInventarioBinding
+import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
@@ -21,13 +26,18 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-private val adapter = ImoInventarioAdapter()
-
 class InventarioActivity : AppCompatActivity() {
+
+    private val adapter = ImoInventarioAdapter(){imoInventario,idAcao,idx ->
+         Log.i("zyzz","OnClick ${idx}")
+        if (idAcao == CadastrosAcoes.Lancamento) {
+            chamaLancamento(imoInventario,idx)
+        }
+    }
 
     private var params: ParametroImobilizadoInventario01 = ParametroImobilizadoInventario01()
 
-    private lateinit var imobilizadoinventarios: List<ImobilizadoinventarioModel>
+    private lateinit var imobilizadoinventarios : MutableList<ImobilizadoinventarioModel>
 
     private val binding by lazy {
         ActivityInventarioBinding.inflate(layoutInflater)
@@ -50,7 +60,7 @@ class InventarioActivity : AppCompatActivity() {
 
         inicializarTooBar()
 
-        getInventarios()
+        getInventarios(false)
 
 
     }
@@ -82,9 +92,16 @@ class InventarioActivity : AppCompatActivity() {
         }
     }
 
-    private fun getInventarios(){
-        params.pagina = 1
-        params.tamPagina = 1000
+    private fun getInventarios(unico:Boolean, id:Int = 0, idx:Int = 0){
+        if (unico){
+            params.id_imobilizado = id
+            params.pagina = 0
+            params.tamPagina = 50
+        } else {
+            params.id_imobilizado = 0
+            params.pagina = 1
+            params.tamPagina = 1000
+        }
         try {
             val imobilizadoInventarioService = InfraHelper.apiInventario.create( ImobilizadoInventarioService::class.java )
             binding.llProgress40.visibility = View.VISIBLE
@@ -98,16 +115,24 @@ class InventarioActivity : AppCompatActivity() {
                     if (response != null) {
                         if (response.isSuccessful) {
 
-                            imobilizadoinventarios = response.body()!!
-
-                            if (imobilizadoinventarios !== null) {
-
-                                montaLista(imobilizadoinventarios);
-
+                            if (unico){
+                                var  imos = response.body()!!
+                                if (imos != null) {
+                                    adapter.updateData(imos[0], idx)
+                                }
                             } else {
-                                showToast("Falha No Retorno Da Requisição!")
-                            }
 
+                                val imobilizadoinventarios = response.body()!!.toMutableList()
+
+                                if (imobilizadoinventarios !== null) {
+
+                                    montaLista(imobilizadoinventarios);
+
+                                } else {
+                                    showToast("Falha No Retorno Da Requisição!")
+                                }
+
+                            }
                         }
                         else {
                             binding.llProgress40.visibility = View.GONE
@@ -118,7 +143,7 @@ class InventarioActivity : AppCompatActivity() {
                             )
                             if (response.code() == 409){
                                 showToast("Tabela De Fotos Vazia")
-                                imobilizadoinventarios = listOf()
+                                imobilizadoinventarios = mutableListOf<ImobilizadoinventarioModel>()
                                 montaLista(imobilizadoinventarios)
                             } else {
                                 showToast(message.getMessage().toString())
@@ -142,8 +167,8 @@ class InventarioActivity : AppCompatActivity() {
 
     }
 
-    private fun  montaLista(imobilizados:List<ImobilizadoinventarioModel>){
-        adapter.lista = imobilizados
+    private fun  montaLista(imobilizados: MutableList<ImobilizadoinventarioModel>){
+        adapter.loadData(imobilizados)
         binding.rvLista40.adapter = adapter
         binding.rvLista40.layoutManager =
             LinearLayoutManager(binding.rvLista40.context)
@@ -153,6 +178,35 @@ class InventarioActivity : AppCompatActivity() {
                 RecyclerView.VERTICAL
             )
         )
+    }
+
+
+    private fun  updateItem(imobilizado:ImobilizadoinventarioModel,idx:Int){
+        adapter.updateData(imobilizado,idx)
+    }
+    private val getRetornoLancamento =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            Log.i("zyzz", "Retornando..... ${it.resultCode} ${it.data}")
+            if((it.resultCode == Activity.RESULT_OK) && (it.data?.extras != null) ){
+                try {
+                    var bundle = it.data!!.extras
+                    var id_imobilizado = bundle?.getInt("id_imobilizado",0)
+                    var idx            = bundle?.getInt("idx",0)
+                    getInventarios(true,id_imobilizado!!,idx!!)
+                } catch (error:Exception){
+                    showToast("Erro No Retorno: ${error.message}")
+                    finish()
+                }
+            }
+        }
+
+    private fun chamaLancamento(imobilizadoInventario: ImobilizadoinventarioModel,idx:Int){
+        val intent = Intent(this,LancamentoActivity::class.java)
+        intent.putExtra("id_imobilizado",imobilizadoInventario.id_imobilizado)
+        intent.putExtra("descricao",imobilizadoInventario.imo_descricao)
+        intent.putExtra("idx",idx)
+        getRetornoLancamento.launch(intent)
     }
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
         Toast.makeText(this, mensagem, duracao).show()

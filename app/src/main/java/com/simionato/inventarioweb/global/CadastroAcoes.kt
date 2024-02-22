@@ -12,6 +12,7 @@ package com.simionato.inventarioweb.global
         Sub_Conta(8),
         Visualizar_Estrtura(9),
         EdicaoMultipla(10),
-        None(99);
-
+        Foto(20),
+        Lancamento(21),
+        None(99)
     }

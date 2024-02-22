@@ -27,29 +27,27 @@
 
         <ImageButton
             android:id="@+id/item_inventario_lancamento"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:background="@color/white"
-            android:src="@drawable/star_24_yellow" />
+            android:src="@drawable/pencil_24_green" />
 
         <ImageButton
             android:id="@+id/item_inventario_foto"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:background="@color/white"
-            android:src="@drawable/star_24_yellow" />
+            android:src="@android:drawable/ic_menu_camera" />
 
         <ImageButton
             android:id="@+id/item_inventario_consulta"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="32dp"
-            android:background="@color/white"
             android:src="@drawable/show_24_blue" />
 
     </LinearLayout>

@@ -77,9 +77,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnLancamento.setOnClickListener {
-            startActivity(
-                Intent(this, LancamentoActivity::class.java)
-            )
+            chamaLancamento()
         }
 
         binding.btnInventario00.setOnClickListener {
@@ -576,6 +574,20 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this,ShowFotosActivity::class.java)
         intent.putExtra("ImoInventario",imoInventario)
         getRetornoShowFotos.launch(intent)
+    }
+
+    private val getRetornoLancamento =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+            }
+        }
+
+    private fun chamaLancamento(){
+        val intent = Intent(this,LancamentoActivity::class.java)
+        intent.putExtra("id_imobilizado",0)
+        intent.putExtra("descricao","")
+        getRetornoLancamento.launch(intent)
     }
 
     private val getRetornoShowFotos =

@@ -1,5 +1,9 @@
 package com.simionato.inventarioweb.models
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class LancamentoModel(
     val id_empresa:Int ,
     val id_filial:Int ,
@@ -20,4 +24,4 @@ data class LancamentoModel(
     val imo_cod_grupo:Int ,
     val imo_descricao:String ,
     val usu_razao:String ,
-)
+): Parcelable

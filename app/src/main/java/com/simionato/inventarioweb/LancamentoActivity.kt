@@ -37,6 +37,12 @@ class LancamentoActivity : AppCompatActivity() {
 
     private var ReadOnly = true
 
+    private var id_imobilizado:Int = 0
+
+    private var descricao:String = ""
+
+    private var idx:Int = 0;
+
     private var requestCamara: ActivityResultLauncher<String>? = null
     private lateinit var inventario: ImobilizadoinventarioModel
     private val binding by lazy {
@@ -47,12 +53,28 @@ class LancamentoActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         //Validando Paramentros
-        if ((ParametroGlobal.Dados.usuario.id == 0) ||
-            (ParametroGlobal.Dados.local.id == 0)   ||
-            (ParametroGlobal.Dados.Inventario.codigo == 0)){
-            showToast("Parâmetros Do Inventário Incorretos!!")
+        if (ParametroGlobal.Ambiente.itsOK()){
+            showToast("Ambiente Incorreto!!")
+            finish()
+            return
+        }
+
+        try {
+            val bundle = intent.extras
+
+            if (bundle != null) {
+                id_imobilizado = bundle.getInt("id_imobilizado", 0)
+                descricao = bundle.getString("descricao")!!
+                idx = bundle.getInt("idx",0)
+            } else {
+                showToast("Parâmetro Foto Incorreto!!")
+                finish()
+            }
+        }  catch (error:Exception){
+            showToast("Erro Nos Parametros: ${error.message}")
             finish()
         }
+
         if (ReadOnly){
             binding.txtViewSituacao02.setVisibility(View.GONE)
         }
@@ -67,9 +89,16 @@ class LancamentoActivity : AppCompatActivity() {
         }
 
         binding.llProgress02.visibility = View.GONE
-        clearInventario()
-        formulario(false)
-        inicializar()
+
+        if (id_imobilizado != 0){
+            getInventario(id_imobilizado)
+            inicializar()
+        } else {
+            clearInventario()
+            formulario(false)
+            inicializar()
+        }
+
 
     }
 
@@ -101,10 +130,15 @@ class LancamentoActivity : AppCompatActivity() {
             deleteApontamento(lancamento)
         }
 
-        binding.btCancelar02.setOnClickListener{
-            clearInventario()
-            binding.editCodigo01.setText("")
-            formulario(false)}
+        binding.btCancelar02.setOnClickListener {
+            if (id_imobilizado != 0) {
+                finish()
+            } else {
+                clearInventario()
+                binding.editCodigo01.setText("")
+                formulario(false)
+            }
+        }
 
         binding.btGravar02.setOnClickListener{
             val lancamento:LancamentoModel = loadLancamento()
@@ -355,7 +389,9 @@ class LancamentoActivity : AppCompatActivity() {
                                 "Ativo Inventariado Com Sucesso!",
                                 Toast.LENGTH_SHORT
                             ).show()
-
+                            if (id_imobilizado != 0){
+                                if (lanca != null)  finalizaOK(lanca)
+                            }
                         } else {
                             binding.llProgress02.visibility = View.GONE
                                 val gson = Gson()
@@ -391,7 +427,6 @@ class LancamentoActivity : AppCompatActivity() {
     }
     private fun updateApontamento(lancamento:LancamentoModel){
         binding.llProgress02.visibility = View.VISIBLE
-        Log.i("zyz","${lancamento}")
         try {
             val lancamentoService = InfraHelper.apiInventario.create( LancamentoService::class.java )
             lancamentoService.editLancamento(lancamento).enqueue(object :Callback<LancamentoModel>{
@@ -417,7 +452,9 @@ class LancamentoActivity : AppCompatActivity() {
                                 "Ativo Alterado Com Sucesso!",
                                 Toast.LENGTH_SHORT
                             ).show()
-
+                            if (id_imobilizado != 0){
+                                if (lanca != null)  finalizaOK(lanca)
+                            }
                         } else
                         {
                             val gson = Gson()
@@ -477,6 +514,9 @@ class LancamentoActivity : AppCompatActivity() {
                                     "Lançamento De Inventário, EXCLUÍDO Com Sucesso!",
                                     Toast.LENGTH_SHORT
                                 ).show()
+                                if (id_imobilizado != 0){
+                                    finalizaOK(lancamento)
+                                }
                             } else {
                                 val gson = Gson()
                                 val message = gson.fromJson(
@@ -544,8 +584,6 @@ class LancamentoActivity : AppCompatActivity() {
             "",
             ""
         )
-        Log.i("zyz","Indo para gravação ${lancamento}")
-
         return lancamento
     }
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
@@ -603,6 +641,14 @@ class LancamentoActivity : AppCompatActivity() {
             0,
             "",
             "" )
+    }
+
+    private fun finalizaOK(lancamento: LancamentoModel){
+        val returnIntent: Intent = Intent()
+        returnIntent.putExtra("id_imobilizado",lancamento.id_imobilizado)
+        returnIntent.putExtra("idx",idx)
+        setResult(Activity.RESULT_OK,returnIntent)
+        finish()
     }
 
 }

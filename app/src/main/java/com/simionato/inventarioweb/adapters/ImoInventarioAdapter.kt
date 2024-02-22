@@ -1,18 +1,24 @@
 package com.simionato.inventarioweb.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.simionato.inventarioweb.R
 import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.global.ParametroGlobal
+import com.simionato.inventarioweb.models.FotoModel
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
 
-class ImoInventarioAdapter(): RecyclerView.Adapter<ImoInventarioAdapter.InventarioViewHolder>() {
+class ImoInventarioAdapter(
+    private val onClickc:(imobilizadoinventarioModel: ImobilizadoinventarioModel, idAcao:CadastrosAcoes, idx:Int) -> Unit
+): RecyclerView.Adapter<ImoInventarioAdapter.InventarioViewHolder>() {
 
-    var lista:List<ImobilizadoinventarioModel> = listOf()
+    private var lista = mutableListOf<ImobilizadoinventarioModel>()
+
     inner class InventarioViewHolder(val ItemView: View):RecyclerView.ViewHolder(ItemView) {
         val  layout:View
         val  txtSituacao : TextView
@@ -26,6 +32,9 @@ class ImoInventarioAdapter(): RecyclerView.Adapter<ImoInventarioAdapter.Inventar
         val  txtLancamento:TextView
         val  txtResponsavel:TextView
         val  txtObs :TextView
+        val btLancamento:ImageButton
+        val btFoto:ImageButton
+        val btConsulta:ImageButton
 
         init {
             layout       = ItemView.findViewById(R.id.llI_item_inventario_master)
@@ -40,10 +49,14 @@ class ImoInventarioAdapter(): RecyclerView.Adapter<ImoInventarioAdapter.Inventar
             txtLancamento = ItemView.findViewById(R.id.item_inventario_lancamento_nro_data)
             txtResponsavel = ItemView.findViewById(R.id.item_inventario_lancamento_resp)
             txtObs = ItemView.findViewById(R.id.item_inventario_obs)
-
+            btLancamento = ItemView.findViewById(R.id.item_inventario_lancamento)
+            btFoto = ItemView.findViewById(R.id.item_inventario_foto)
+            btConsulta = ItemView.findViewById(R.id.item_inventario_consulta)
         }
 
-        fun bind(imobilizadoInventario: ImobilizadoinventarioModel){
+        fun bind(imobilizadoInventario: ImobilizadoinventarioModel,idx:Int){
+
+
 
             txtSituacao.setText("${ParametroGlobal.Situacoes.getSituacao(
                 imobilizadoInventario.status
@@ -72,8 +85,33 @@ class ImoInventarioAdapter(): RecyclerView.Adapter<ImoInventarioAdapter.Inventar
             txtLancamento.setText("DATA: ${imobilizadoInventario.lanc_dt_lanca} Nro: ${imobilizadoInventario.id_lanca}")
             txtResponsavel.setText("Resp: ${imobilizadoInventario.usu_razao}")
             txtObs.setText("Observação:\n${imobilizadoInventario.lanc_obs}")
+
+            btLancamento.setOnClickListener{
+                onClickc(imobilizadoInventario,CadastrosAcoes.Lancamento,idx)
+            }
+
+            btFoto.setOnClickListener{
+                onClickc(imobilizadoInventario,CadastrosAcoes.Foto,idx)
+            }
+
+            btConsulta.setOnClickListener{
+                onClickc(imobilizadoInventario,CadastrosAcoes.Consulta,idx)
+            }
         }
     }
+
+
+    fun loadData( values: MutableList<ImobilizadoinventarioModel> ){
+        lista = values
+        notifyDataSetChanged()
+    }
+
+    fun updateData( item: ImobilizadoinventarioModel, idx:Int ){
+        lista.set(idx,item)
+        notifyItemChanged(idx)
+    }
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InventarioViewHolder {
 
@@ -91,6 +129,6 @@ class ImoInventarioAdapter(): RecyclerView.Adapter<ImoInventarioAdapter.Inventar
     override fun onBindViewHolder(holder: InventarioViewHolder, position: Int) {
         val imobilizadoInventario = lista[position]
 
-        holder.bind(imobilizadoInventario)
+        holder.bind(imobilizadoInventario,position)
     }
 }
