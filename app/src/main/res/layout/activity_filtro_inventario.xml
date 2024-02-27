@@ -32,37 +32,56 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/labelCodigo35"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginRight="10dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editCodigo35"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:hint="Digite O Código"
-                        android:inputType="number|numberSigned" />
-                </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/labelNovoCodigo35"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="10dp">
+                android:layout_margin="5dp"
+                android:background="@drawable/moldura">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editNovoCodigo35"
+                <TextView
+                    android:id="@+id/LabelCodigo35"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Barra De Consulta"
+                    android:textColor="@color/label"
+                    android:textSize="10sp"
+                    android:textStyle="normal|italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <RadioGroup
+                    android:id="@+id/rgCodigos35"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Novo Código" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:gravity="start|left"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@+id/LabelCodigo35"
+                    tools:layout_editor_absoluteX="10dp">
+
+                    <RadioButton
+                        android:id="@+id/rbAntigo35"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Código Original" />
+
+                    <RadioButton
+                        android:id="@+id/rbNovo35"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Código Novo" />
+
+                    <RadioButton
+                        android:id="@+id/rbDescição35"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Descrição" />
+
+                </RadioGroup>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -268,6 +287,7 @@
                     app:layout_constraintEnd_toEndOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -278,7 +298,7 @@
                     android:id="@+id/LabelOrigem35"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="SITUAÇÃO"
+                    android:text="ORIGEM"
                     android:textColor="@color/label"
                     android:textSize="10sp"
                     android:textStyle="normal|italic"
@@ -297,15 +317,15 @@
 
                     <RadioButton
                         android:id="@+id/rbTodas35"
-                        android:layout_width="wrap_content"
+                        android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:gravity="start"
+                        android:gravity="center"
                         android:text="Todas" />
 
                     <RadioButton
                         android:id="@+id/rbPlanilha"
-                        android:layout_width="wrap_content"
+                        android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:text="Planilha" />

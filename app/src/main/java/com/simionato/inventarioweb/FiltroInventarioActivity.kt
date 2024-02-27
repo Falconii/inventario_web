@@ -27,6 +27,10 @@ class FiltroInventarioActivity : AppCompatActivity() {
 
     private fun iniciar(){
         inicializarTooBar()
+
+        binding.editCCOriginal35.setOnClickListener {
+            chamaPesquisaCc()
+        }
     }
     private fun inicializarTooBar(){
         binding.ToolBar35.title = "Controle De Ativos"
