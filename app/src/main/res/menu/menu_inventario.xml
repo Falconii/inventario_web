@@ -6,14 +6,14 @@
         android:id="@+id/menu_inventario_filtro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@mipmap/filter_24_mdpi"
+        android:icon="@drawable/filter_branco_noicon36"
         android:title="Filtro"
         app:showAsAction="never|ifRoom|withText" />
     <item
         android:id="@+id/menu_inventario_sair"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:icon="@drawable/exit_branco_36"
         android:title="Sair"
         app:showAsAction="always|withText" />
 </menu>

@@ -29,10 +29,13 @@ import retrofit2.Response
 class InventarioActivity : AppCompatActivity() {
 
     private val adapter = ImoInventarioAdapter(){imoInventario,idAcao,idx ->
-         Log.i("zyzz","OnClick ${idx}")
         if (idAcao == CadastrosAcoes.Lancamento) {
             chamaLancamento(imoInventario,idx)
         }
+        if (idAcao == CadastrosAcoes.Foto) {
+            chamaShowFotos(imoInventario)
+        }
+
     }
 
     private var params: ParametroImobilizadoInventario01 = ParametroImobilizadoInventario01()
@@ -42,6 +45,7 @@ class InventarioActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityInventarioBinding.inflate(layoutInflater)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -82,7 +86,7 @@ class InventarioActivity : AppCompatActivity() {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.menu_inventario_filtro -> {
-
+                    chamaFiltro()
                     return@setOnMenuItemClickListener true
                 }
                 else -> {
@@ -208,6 +212,29 @@ class InventarioActivity : AppCompatActivity() {
         intent.putExtra("idx",idx)
         getRetornoLancamento.launch(intent)
     }
+
+    private fun chamaShowFotos(imoInventario:ImobilizadoinventarioModel){
+        val intent = Intent(this,ShowFotosActivity::class.java)
+        intent.putExtra("ImoInventario",imoInventario)
+        getRetornoShowFotos.launch(intent)
+    }
+    private val getRetornoShowFotos =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+            }
+        }
+
+    private fun chamaFiltro(){
+        val intent = Intent(this,FiltroInventarioActivity::class.java)
+        getRetornoChamaFiltro.launch(intent)
+    }
+    private val getRetornoChamaFiltro =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+            }
+        }
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
         Toast.makeText(this, mensagem, duracao).show()
     }

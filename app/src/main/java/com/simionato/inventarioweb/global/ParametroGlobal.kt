@@ -5,6 +5,8 @@ import com.simionato.inventarioweb.models.EmpresaModel
 import com.simionato.inventarioweb.models.InventarioModel
 import com.simionato.inventarioweb.models.LocalModel
 import com.simionato.inventarioweb.models.UsuarioModel
+import com.simionato.inventarioweb.parametros.ParametroImobilizadoInventario01
+import com.simionato.inventarioweb.parametros.ParametroInventario01
 
 class ParametroGlobal {
     class Dados {
@@ -13,6 +15,7 @@ class ParametroGlobal {
             var empresa:EmpresaModel = EmpresaModel()
             var local:LocalModel = LocalModel()
             var Inventario: InventarioModel = InventarioModel()
+            var paramImoInventario:ParametroImobilizadoInventario01 = ParametroImobilizadoInventario01()
         }
     }
 
