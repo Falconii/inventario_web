@@ -15,13 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.simionato.inventarioweb.adapters.GrupoAdapter
-import com.simionato.inventarioweb.adapters.PesquisaAdapter
-import com.simionato.inventarioweb.databinding.ActivityPesquisaBinding
 import com.simionato.inventarioweb.databinding.ActivityPesquisaGrupoBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.GrupoModel
-import com.simionato.inventarioweb.models.LocalModel
 import com.simionato.inventarioweb.parametros.ParametroGrupo01
 import com.simionato.inventarioweb.services.GrupoService
 import com.simionato.inventarioweb.shared.HttpErrorMessage

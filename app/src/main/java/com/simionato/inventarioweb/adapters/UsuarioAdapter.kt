@@ -10,18 +10,31 @@ import androidx.recyclerview.widget.RecyclerView
 import com.simionato.inventarioweb.R
 import com.simionato.inventarioweb.models.UsuarioQuery01Model
 
-class PesquisaAdapter(private val lista : List<UsuarioQuery01Model>) :
-    RecyclerView.Adapter<PesquisaAdapter.PesquisaViewHolder>(),Filterable {
+class UsuarioAdapter(
+    private val lista : List<UsuarioQuery01Model>,
+    private val clique: (usuario:UsuarioQuery01Model) -> Unit) :
+    RecyclerView.Adapter<UsuarioAdapter.PesquisaViewHolder>(),Filterable {
 
     private var listaFiltered = lista
     inner class PesquisaViewHolder(val ItemView: View) : RecyclerView.ViewHolder(ItemView) {
 
+        val  layout: View
         val  textDescricao : TextView
         val  txtSubTitulo: TextView
 
         init {
+            layout =  ItemView.findViewById(R.id.llMainItemLista100)
             textDescricao = ItemView.findViewById(R.id.txtDescricaoItemLista100)
             txtSubTitulo  = ItemView.findViewById(R.id.txtSubTituloItemLista100)
+        }
+
+        fun bind(usuario:UsuarioQuery01Model ){
+            textDescricao.setText(usuario.id.toString())
+            txtSubTitulo.setText(usuario.razao)
+
+            layout.setOnClickListener {
+                clique(usuario)
+            }
         }
 
     }
@@ -41,8 +54,9 @@ class PesquisaAdapter(private val lista : List<UsuarioQuery01Model>) :
 
     override fun onBindViewHolder(listaViewHolder: PesquisaViewHolder, position: Int) {
 
-        listaViewHolder.textDescricao.setText(listaFiltered[position].razao)
-        listaViewHolder.txtSubTitulo.setText(listaFiltered[position].email)
+        val usuario = listaFiltered[position]
+
+        listaViewHolder.bind(usuario)
     }
 
     override fun getFilter(): Filter {

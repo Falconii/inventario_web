@@ -1,19 +1,20 @@
 package com.simionato.inventarioweb
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.simionato.inventarioweb.adapters.PesquisaAdapter
-import com.simionato.inventarioweb.databinding.ActivityPesquisaBinding
+import com.simionato.inventarioweb.adapters.UsuarioAdapter
+import com.simionato.inventarioweb.databinding.ActivityPesquisaUsuarioBinding
 import com.simionato.inventarioweb.infra.InfraHelper
-import com.simionato.inventarioweb.models.UsuarioModel
 import com.simionato.inventarioweb.models.UsuarioQuery01Model
 import com.simionato.inventarioweb.parametros.ParametroUsuario01
 import com.simionato.inventarioweb.services.UsuarioService
@@ -21,12 +22,11 @@ import com.simionato.inventarioweb.shared.HttpErrorMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PesquisaActivity : AppCompatActivity() {
+class PesquisaUsuarioActivity : AppCompatActivity() {
     val params : ParametroUsuario01 = ParametroUsuario01(
         1,
         0,
@@ -43,18 +43,47 @@ class PesquisaActivity : AppCompatActivity() {
     private var usuarios = listOf<UsuarioQuery01Model>()
 
     private val binding by lazy {
-        ActivityPesquisaBinding.inflate(layoutInflater)
+        ActivityPesquisaUsuarioBinding.inflate(layoutInflater)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        CoroutineScope(Dispatchers.IO).launch {
-            getUsuarios()
-        }
+        iniciar()
+    }
+
+    private fun iniciar(){
+        inicializarTooBar()
+
+        getUsuarios()
 
     }
 
-    private suspend fun getUsuarios(){
+    private fun inicializarTooBar(){
+        binding.ToolBar07.title = "Controle De Ativos"
+        binding.ToolBar07.subtitle = "Pesquisa De Usuário"
+        binding.ToolBar07.setTitleTextColor(
+            ContextCompat.getColor(this,R.color.white)
+        )
+        binding.ToolBar07.setSubtitleTextColor(
+            ContextCompat.getColor(this,R.color.white)
+        )
+
+        binding.ToolBar07.inflateMenu(R.menu.menu_pesquisa)
+        binding.ToolBar07.setOnMenuItemClickListener { menuItem ->
+            when( menuItem.itemId ){
+                R.id.menu_pesquisa_sair -> {
+                    val returnIntent: Intent = Intent()
+                    setResult(Activity.RESULT_CANCELED,returnIntent)
+                    finish()
+                    return@setOnMenuItemClickListener true
+                }
+                else -> {
+                    return@setOnMenuItemClickListener true
+                }
+            }
+        }
+    }
+    private  fun getUsuarios(){
         try {
             val usuarioService = InfraHelper.apiInventario.create( UsuarioService::class.java )
             binding.llProgress07.visibility = View.VISIBLE
@@ -74,7 +103,13 @@ class PesquisaActivity : AppCompatActivity() {
 
                             if (usuarios !== null) {
 
-                                val adapter = PesquisaAdapter(usuarios)
+                                val adapter = UsuarioAdapter(usuarios){usuario ->
+                                    val returnIntent: Intent = Intent()
+                                    returnIntent.putExtra("id_usuario",usuario.id)
+                                    returnIntent.putExtra("razao",usuario.razao)
+                                    setResult(Activity.RESULT_OK,returnIntent)
+                                    finish()
+                                }
                                 binding.rvLista07.adapter = adapter
                                 binding.rvLista07.layoutManager =
                                     LinearLayoutManager(binding.rvLista07.context)

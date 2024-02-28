@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnPesquisa.setOnClickListener {
             startActivity(
-                Intent(this, PesquisaActivity::class.java)
+                Intent(this, PesquisaUsuarioActivity::class.java)
             )
         }
 

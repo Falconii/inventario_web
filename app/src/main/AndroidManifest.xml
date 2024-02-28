@@ -72,7 +72,7 @@
             android:label="Ambiente"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".PesquisaActivity"
+            android:name=".PesquisaUsuarioActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:label="Pesquisa"
