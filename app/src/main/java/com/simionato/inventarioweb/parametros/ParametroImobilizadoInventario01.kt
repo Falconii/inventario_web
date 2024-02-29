@@ -19,7 +19,13 @@ data class ParametroImobilizadoInventario01(
     var tamPagina:Int,
     var contador:String,
     var orderby:String,
-    var sharp: Boolean
+    var sharp: Boolean,
+    var foto:Int,
+    var _searchIndex:Int,
+    var _descricaoCC: String,
+    var _descricaoGrupo:String,
+    var _descricaoNewCC:String,
+    var _nomeUsuario:String
 ){
     constructor():this(
         ParametroGlobal.Dados.Inventario.id_empresa,
@@ -34,10 +40,16 @@ data class ParametroImobilizadoInventario01(
     0,
     0,
     "",
-    0,
+    1,
     50,
     "N",
     "Código",
-    false
+    false,
+        0,
+        0,
+        "",
+    "",
+    "",
+    ""
     )
 }

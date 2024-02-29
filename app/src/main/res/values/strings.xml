@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Inventario Web</string>
+    <string name="sem_filtro">Sem Filtro. Toque Para Alterar"</string>
 </resources>

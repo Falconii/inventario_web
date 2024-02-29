@@ -54,6 +54,7 @@
                     android:id="@+id/rgCodigos35"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
                     android:gravity="start|left"
                     android:orientation="vertical"
                     app:layout_constraintTop_toBottomOf="@+id/LabelCodigo35"
@@ -73,10 +74,10 @@
                         android:text="Código Novo" />
 
                     <RadioButton
-                        android:id="@+id/rbDescição35"
+                        android:id="@+id/rbDescricao35"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Descrição" />
+                        android:text="Descricao" />
 
                 </RadioGroup>
 
@@ -278,6 +279,13 @@
                     tools:layout_editor_absoluteX="10dp">
 
                     <RadioButton
+                        android:id="@+id/rbSemFiltroSituacao35"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Sem Filtro" />
+
+                    <RadioButton
                         android:id="@+id/rbNaoInventariado35"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -353,22 +361,22 @@
                     app:layout_constraintTop_toBottomOf="@+id/LabelOrigem35">
 
                     <RadioButton
-                        android:id="@+id/rbTodas35"
+                        android:id="@+id/rbOrigemTodas35"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:checked="true"
                         android:gravity="center"
-                        android:text="Todas" />
+                        android:text="Sem Filtro" />
 
                     <RadioButton
-                        android:id="@+id/rbPlanilha"
+                        android:id="@+id/rbOrigemPlanilha"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:text="Planilha" />
 
                     <RadioButton
-                        android:id="@+id/rbManual35"
+                        android:id="@+id/rbOrigemManual35"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Manual" />
@@ -378,8 +386,97 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:background="@drawable/moldura">
+
+                <TextView
+                    android:id="@+id/LabelFoto35"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FOTOS"
+                    android:textColor="@color/label"
+                    android:textSize="10sp"
+                    android:textStyle="normal|italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <RadioGroup
+                    android:id="@+id/rgFoto35"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/LabelFoto35">
+
+                    <RadioButton
+                        android:id="@+id/rbFotoTodas35"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:text="Sem Filtro" />
+
+                    <RadioButton
+                        android:id="@+id/rbComFoto35"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:text="Com Fotos" />
+
+                    <RadioButton
+                        android:id="@+id/rbSemFoto35"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sem Fotos" />
+
+                </RadioGroup>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
         </LinearLayout>
     </ScrollView>
+    <LinearLayout
+        android:id="@+id/llProgress35"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#D1C9C9"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5">
 
+        <ProgressBar
+            android:id="@+id/progressBar35"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#BDACE8"
+            android:padding="5dp" />
+
+        <TextView
+            android:id="@+id/textViewProgress35"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="3"
+            android:text="Aguarde...Processando..."
+            android:textAlignment="center"
+            android:textColor="#E41A1A"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

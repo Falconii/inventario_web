@@ -10,7 +10,7 @@
         android:title="Limpar Filtro"
         app:showAsAction="always" />
     <item
-        android:id="@+id/menu_filtro_limpar_filtrar"
+        android:id="@+id/menu_filtro_filtrar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/filter_branco_36"

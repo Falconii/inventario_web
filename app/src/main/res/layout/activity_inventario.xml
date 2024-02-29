@@ -22,13 +22,11 @@
         android:id="@+id/svPesquisa40"
         android:layout_width="402dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
         android:iconifiedByDefault="false"
-        android:queryHint="Busca Por Nome"
-        app:layout_constraintHorizontal_bias="0.5"
+        android:inputType="number|numberSigned"
+        android:queryHint="Busca Por Código Atual"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ToolBar40"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintTop_toBottomOf="@+id/ToolBar40" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLista40"
