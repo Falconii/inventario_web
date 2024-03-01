@@ -30,5 +30,32 @@ data class ImobilizadoinventarioModel(
     var lanc_estado:Int ,
     var usu_razao:String ,
     var new_cc_descricao:String
-) : Parcelable
+) : Parcelable {
+    constructor() : this(
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        "",
+        0,
+        0,
+        "",
+        "",
+        0,
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        "",
+        "",
+        0,
+        "",
+        ""
+    )
+}
 

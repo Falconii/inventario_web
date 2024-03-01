@@ -96,4 +96,5 @@ public class InventarioAdapter extends ArrayAdapter {
         return getEscolhaView(position, convertView, parent);
 
     }
+
 }

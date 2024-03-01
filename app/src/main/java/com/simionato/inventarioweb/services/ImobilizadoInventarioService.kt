@@ -1,5 +1,6 @@
 package com.simionato.inventarioweb.services
 
+import com.google.gson.JsonObject
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
 import com.simionato.inventarioweb.models.RetornoUpload
 import com.simionato.inventarioweb.parametros.ParametroImobilizadoInventario01
@@ -26,6 +27,11 @@ interface ImobilizadoInventarioService {
     fun getImobilizadosInventarios(
         @Body params: ParametroImobilizadoInventario01
     ): Call<List<ImobilizadoinventarioModel>>
+
+    @POST("imobilizadosinventarios")
+    fun getImobilizadosInventariosContador(
+        @Body params: ParametroImobilizadoInventario01
+    ):  Call<JsonObject>
 
     @Multipart
     @POST("imobilizadoinventariofoto")
