@@ -43,7 +43,7 @@ data class ParametroImobilizadoInventario01(
     1,
     50,
     "N",
-    "Código",
+    "Imobilizado",
     false,
         0,
         0,

@@ -1,5 +1,6 @@
 package com.simionato.inventarioweb.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,8 @@ class ImoInventarioAdapter(
 
     private val VIEW_TYPE_ITEM = 0
     private val VIEW_TYPE_LOADING = 1
+    private var totalPaginas :Int = 0
+    private var paginaAtual:Int = 0
     inner class InventarioViewHolder(val ItemView: View, val view_Type : Int):RecyclerView.ViewHolder(ItemView) {
 
         lateinit var layout:View
@@ -37,11 +40,14 @@ class ImoInventarioAdapter(
         lateinit var btFoto:ImageButton
         lateinit var btConsulta:ImageButton
 
+        lateinit var textViewProgressXX:TextView
+
         init {}
 
         fun bind(imobilizadoInventario: ImobilizadoinventarioModel,idx:Int){
 
-            if (view_Type == 0) {
+            if (view_Type == VIEW_TYPE_ITEM)
+            {
 
                 layout       = ItemView.findViewById(R.id.llI_item_inventario_master)
                 txtSituacao     = ItemView.findViewById(R.id.item_inventario_situacao)
@@ -104,9 +110,20 @@ class ImoInventarioAdapter(
                     onClickc(imobilizadoInventario, CadastrosAcoes.Consulta, idx)
                 }
             }
+            else {
+                txtSituacao     = ItemView.findViewById(R.id.textViewProgressXX)
+                txtSituacao.setText("Carregando Página ${paginaAtual+1}/${totalPaginas}")
+            }
         }
     }
 
+    fun setTotalPaginas(value:Int){
+        totalPaginas = value
+    }
+
+    fun setPaginaAtual(value:Int){
+        paginaAtual = value
+    }
 
     fun loadData( values: MutableList<ImobilizadoinventarioModel> ){
         lista = values
@@ -118,6 +135,17 @@ class ImoInventarioAdapter(
         notifyItemChanged(idx)
     }
 
+    fun anexarData(values: MutableList<ImobilizadoinventarioModel>){
+        lista.removeAt(lista.size -1)
+        val idx = lista.size
+        notifyItemRemoved(idx)
+        lista.addAll(idx,values)
+        notifyItemRangeInserted(idx,values.size-1)
+    }
+
+    fun getLastEmpresa():Int{
+        return if (lista != null)  lista[lista.size-1].id_empresa else  1
+    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InventarioViewHolder {
@@ -151,7 +179,8 @@ class ImoInventarioAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (lista[position].id_empresa != 0) 0 else 1
+        return if (lista[position].id_empresa != 0) VIEW_TYPE_ITEM else VIEW_TYPE_LOADING
         //return super.getItemViewType(position)
     }
+
 }

@@ -20,6 +20,7 @@ import com.simionato.inventarioweb.databinding.ActivityMainBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.global.UserProfile
 import com.simionato.inventarioweb.infra.InfraHelper
+import com.simionato.inventarioweb.models.AmbienteModel
 import com.simionato.inventarioweb.models.EmpresaModel
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
 import com.simionato.inventarioweb.models.InventarioModel
@@ -91,7 +92,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnParametros.setOnClickListener {
-            chamaParametro()
+            startActivity(
+                Intent(this, SplashActivity::class.java)
+            )
         }
 
         binding.btnProduto.setOnClickListener{
@@ -478,6 +481,61 @@ class MainActivity : AppCompatActivity() {
 
                 })
 
+        } catch (e: Exception) {
+            //binding.llProgress01.visibility = View.GONE
+            showToast("${e.message.toString()}", Toast.LENGTH_LONG)
+        }
+
+
+    }
+
+    private fun getAmbiente(padrao:PadraoModel) {
+        try {
+            val usuarioService = InfraHelper.apiInventario.create(UsuarioService::class.java)
+            usuarioService.getAmbiente(
+                padrao.id_empresa,
+                padrao.id_usuario
+            ).enqueue( object : Callback<AmbienteModel>{
+                override fun onResponse(
+                    call: Call<AmbienteModel>,
+                    response: Response<AmbienteModel>
+                ) {
+                    //binding.llProgress01.visibility = View.GONE
+                    if (response != null) {
+                        if (response.isSuccessful) {
+
+                            var ambiente = response.body()
+
+
+
+                        } else {
+                            //binding.llProgress01.visibility = View.GONE
+                            val gson = Gson()
+                            val message = gson.fromJson(
+                                response.errorBody()!!.charStream(),
+                                HttpErrorMessage::class.java
+                            )
+                            showToast(
+                                "${message.getMessage().toString()}",
+                                Toast.LENGTH_SHORT
+                            )
+                        }
+
+                    } else {
+                        //binding.llProgress01.visibility = View.GONE
+                        Toast.makeText(
+                            applicationContext,
+                            "Sem retorno Da Requisição!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<AmbienteModel>, t: Throwable) {
+                    //binding.llProgress01.visibility = View.GONE
+                    showToast(t.message.toString())
+                }
+            })
         } catch (e: Exception) {
             //binding.llProgress01.visibility = View.GONE
             showToast("${e.message.toString()}", Toast.LENGTH_LONG)

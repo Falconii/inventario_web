@@ -130,16 +130,19 @@ class FiltroInventarioActivity : AppCompatActivity() {
 
         binding.ibLimparGrupo35.setOnClickListener {
             paramImoInventario.id_grupo = 0
+            paramImoInventario._descricaoGrupo = ""
             binding.editGrupo35.setText(R.string.sem_filtro)
         }
 
         binding.ibLimparCcNew35.setOnClickListener {
             paramImoInventario.new_cc = ""
+            paramImoInventario._descricaoNewCC = ""
             binding.editCCNew35.setText(R.string.sem_filtro)
         }
 
         binding.ibLimparUsuario35.setOnClickListener {
             paramImoInventario.id_usuario = 0
+            paramImoInventario._nomeUsuario = ""
             binding.editUsusario35.setText(R.string.sem_filtro)
         }
 
@@ -182,6 +185,9 @@ class FiltroInventarioActivity : AppCompatActivity() {
 
     private fun atualizaParametros() {
         try {
+            paramImoInventario.id_imobilizado = 0
+            paramImoInventario.new_codigo = 0
+            paramImoInventario.descricao = ""
             var parametro = ParametroModel(
                 usuario.id_empresa,
                 "inventariomobile",

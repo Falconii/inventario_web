@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#680A0A"
+    tools:context=".SplashActivity">
+
+    <ImageView
+        android:id="@+id/ivLogo90"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/moldura"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo_main" />
+
+    <TextView
+        android:id="@+id/textTitulo90"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Aplicativo De Inventário De Imobilizado\nColetor De Informações Para O Inventário."
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivLogo90" />
+
+    <ImageView
+        android:id="@+id/ivfoto0190"
+        android:layout_width="220dp"
+        android:layout_height="125dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="65dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivLogo90"
+        app:srcCompat="@drawable/computador" />
+
+    <ImageView
+        android:id="@+id/ivfoto0290"
+        android:layout_width="233dp"
+        android:layout_height="128dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivfoto0190"
+        app:srcCompat="@drawable/torno" />
+
+    <ImageView
+        android:id="@+id/ivfoto0390"
+        android:layout_width="273dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivfoto0290"
+        app:srcCompat="@drawable/prensa" />
+
+    <TextView
+        android:id="@+id/textVersao090"
+        android:layout_width="414dp"
+        android:layout_height="19dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Power By Simionato Versão 1.0 Beta"
+        android:textAlignment="textEnd"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/llProgress90"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#D1C9C9"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/textVersao090"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivfoto0390">
+
+        <ProgressBar
+            android:id="@+id/progressBar90"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#BDACE8"
+            android:padding="5dp" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

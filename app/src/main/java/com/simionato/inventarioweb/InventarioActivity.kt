@@ -59,9 +59,11 @@ class InventarioActivity : AppCompatActivity() {
 
     private var pesquisaString: String = ""
 
-    private val tamPagina: Int = 30
+    private val tamPagina: Int = 50
 
     private var isLoading: Boolean = false
+
+    private var first: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,9 +115,9 @@ class InventarioActivity : AppCompatActivity() {
                 val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
 
                 val tam = adapter.itemCount
-
                 if (!isLoading) {
-                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == tam - 1) {
+                    if (adapter.getLastEmpresa() == 0 && linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == tam - 1) {
+                        Log.i("zyzz","Pagina AtuL ${paginaAtual}")
                         atualizaPagina(PaginasAcoes.Avancar)
                         getInventarios(false)
                     }
@@ -156,7 +158,6 @@ class InventarioActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun getParametro() {
         try {
@@ -294,12 +295,14 @@ class InventarioActivity : AppCompatActivity() {
                 }
             }
         }
-
+        Log.i("zyzz", "BUsncado pagina ${paramImoInventario.pagina}")
         try {
             val imobilizadoInventarioService =
                 InfraHelper.apiInventario.create(ImobilizadoInventarioService::class.java)
-            if (!unico && paginaAtual > 1) {
+            if (!unico && paginaAtual == 1) {
                 binding.textViewProgress40.setText("Carregando Página ${paginaAtual}/${totalPaginas}")
+                if (unico) binding.textViewProgress40.setText("Atualizando Registro")
+                else binding.textViewProgress40.setText("Busncado Página ${paginaAtual}/${totalPaginas}")
                 binding.llProgress40.visibility = View.VISIBLE
             }
             imobilizadoInventarioService.getImobilizadosInventarios(params).enqueue(object :
@@ -308,7 +311,7 @@ class InventarioActivity : AppCompatActivity() {
                     call: Call<List<ImobilizadoinventarioModel>>,
                     response: Response<List<ImobilizadoinventarioModel>>
                 ) {
-                    if (!unico && paginaAtual > 1) binding.llProgress40.visibility = View.GONE
+                    if (!unico && paginaAtual == 1) binding.llProgress40.visibility = View.GONE
                     isLoading = false
                     if (response != null) {
                         if (response.isSuccessful) {
@@ -321,7 +324,10 @@ class InventarioActivity : AppCompatActivity() {
 
                                 val imobilizadoinventarios = response.body()!!.toMutableList()
 
-                                Log.i("zyzz","paginaAtual ${paginaAtual} ${totalPaginas}  ${imobilizadoinventarios.size}")
+                                Log.i(
+                                    "zyzz",
+                                    "paginaAtual ${paginaAtual} ${totalPaginas}  ${imobilizadoinventarios.size}"
+                                )
                                 if (imobilizadoinventarios !== null) {
                                     if (paginaAtual < totalPaginas) {
                                         var fimConsulta: ImobilizadoinventarioModel =
@@ -335,7 +341,7 @@ class InventarioActivity : AppCompatActivity() {
 
                             }
                         } else {
-                            if (!unico && paginaAtual > 1) binding.llProgress40.visibility =
+                            if (!unico && paginaAtual == 1) binding.llProgress40.visibility =
                                 View.GONE
                             isLoading = false
                             val gson = Gson()
@@ -344,15 +350,17 @@ class InventarioActivity : AppCompatActivity() {
                                 HttpErrorMessage::class.java
                             )
                             if (response.code() == 409) {
-                                showToast("Tabela De Fotos Vazia")
+                                showToast("QUERY Tabela De Imobilizados Vazia")
                                 imobilizadoinventarios = mutableListOf<ImobilizadoinventarioModel>()
+                                totalPaginas = 0
+                                //paginaAtual = 1
                                 montaLista(imobilizadoinventarios)
                             } else {
                                 showToast(message.getMessage().toString())
                             }
                         }
                     } else {
-                        if (!unico && paginaAtual > 1) binding.llProgress40.visibility = View.GONE
+                        if (!unico && paginaAtual == 1) binding.llProgress40.visibility = View.GONE
                         isLoading = false
                         Toast.makeText(
                             applicationContext,
@@ -366,14 +374,14 @@ class InventarioActivity : AppCompatActivity() {
                     call: Call<List<ImobilizadoinventarioModel>>,
                     t: Throwable
                 ) {
-                    if (!unico && paginaAtual > 1) binding.llProgress40.visibility = View.GONE
+                    if (!unico && paginaAtual == 1) binding.llProgress40.visibility = View.GONE
                     isLoading = false
                     showToast(t.message.toString())
                 }
             })
 
         } catch (e: Exception) {
-            if (!unico && paginaAtual > 1) binding.llProgress40.visibility = View.GONE
+            if (!unico && paginaAtual == 1) binding.llProgress40.visibility = View.GONE
             isLoading = false
             showToast("${e.message.toString()}", Toast.LENGTH_LONG)
         }
@@ -411,6 +419,7 @@ class InventarioActivity : AppCompatActivity() {
         try {
             val imobilizadoInventarioService =
                 InfraHelper.apiInventario.create(ImobilizadoInventarioService::class.java)
+            binding.textViewProgress40.setText("Recuperando Total De Registros")
             binding.llProgress40.visibility = View.VISIBLE
             imobilizadoInventarioService.getImobilizadosInventariosContador(params)
                 .enqueue(object : Callback<JsonObject> {
@@ -429,13 +438,19 @@ class InventarioActivity : AppCompatActivity() {
                                     try {
                                         var contador =
                                             res?.get("total").toString().replace("\"", "").toInt()
-                                        Log.i("zyzz","Total de Registros: ${contador} Total Paginas ${contador/tamPagina} Resto: ${contador.rem(tamPagina)}")
+                                        Log.i(
+                                            "zyzz",
+                                            "Total de Registros: ${contador} tamPagina ${tamPagina} Total Paginas ${contador / tamPagina} Resto: ${
+                                                contador.rem(tamPagina)
+                                            }"
+                                        )
                                         if (contador <= tamPagina) {
                                             totalPaginas = 1
                                         } else {
-                                            totalPaginas = contador/tamPagina
+                                            totalPaginas = contador / tamPagina
                                             val resto = contador.rem(tamPagina)
-                                            totalPaginas = if (resto == 0) totalPaginas else totalPaginas  + 1
+                                            totalPaginas =
+                                                if (resto == 0) totalPaginas else totalPaginas + 1
                                         }
                                         paginaAtual = 1
                                         getInventarios(false)
@@ -459,7 +474,7 @@ class InventarioActivity : AppCompatActivity() {
                                     HttpErrorMessage::class.java
                                 )
                                 if (response.code() == 409) {
-                                    showToast("Tabela Vazia")
+                                    showToast(" CONTADOR Tabela Vazia")
                                     totalPaginas = 0
                                     paginaAtual = 1
                                 } else {
@@ -498,16 +513,23 @@ class InventarioActivity : AppCompatActivity() {
     }
 
     private fun montaLista(imobilizados: MutableList<ImobilizadoinventarioModel>) {
-        adapter.loadData(imobilizados)
-        binding.rvLista40.adapter = adapter
-        binding.rvLista40.layoutManager =
-            LinearLayoutManager(binding.rvLista40.context)
-        binding.rvLista40.addItemDecoration(
-            DividerItemDecoration(
-                binding.rvLista40.context,
-                RecyclerView.VERTICAL
+        adapter.setTotalPaginas(totalPaginas)
+        adapter.setPaginaAtual(paginaAtual)
+        if (paginaAtual == 1) {
+            adapter.loadData(imobilizados)
+            binding.rvLista40.adapter = adapter
+            binding.rvLista40.layoutManager =
+                LinearLayoutManager(binding.rvLista40.context)
+            binding.rvLista40.addItemDecoration(
+                DividerItemDecoration(
+                    binding.rvLista40.context,
+                    RecyclerView.VERTICAL
+                )
             )
-        )
+        }
+        else {
+            adapter.anexarData(imobilizados)
+        }
     }
 
     private val getRetornoLancamento =
