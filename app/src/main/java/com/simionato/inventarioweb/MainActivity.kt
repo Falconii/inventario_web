@@ -6,18 +6,21 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.simionato.inventarioweb.databinding.ActivityMainBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
+import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.Inventario
+import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.empresa
+import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.local
+import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.usuario
 import com.simionato.inventarioweb.global.UserProfile
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.AmbienteModel
@@ -42,9 +45,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "INVENTARIO_PREFERS")
-private val id_empresa_key = intPreferencesKey("id_empresa")
-private val id_usuario_key = intPreferencesKey("id_usuario")
+//val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "INVENTARIO_PREFERS")
+//private val id_empresa_key = intPreferencesKey("id_empresa")
+//private val id_usuario_key = intPreferencesKey("id_usuario")
 class MainActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
@@ -54,7 +57,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         inicializarTooBar()
+        showHeader()
         Log.i("zyzz","Start Main Activity !!!!!!!")
+        /*
        lifecycleScope.launch(Dispatchers.IO) {
             getUserProfile().collect {
                 withContext(Dispatchers.Main) {
@@ -71,9 +76,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
 
-        binding.btnLogin.setOnClickListener {
+
+        }
+*/
+        /*binding.btnLogin.setOnClickListener {
            chamaLogin()
         }
 
@@ -107,10 +114,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnFotoWeb.setOnClickListener{
             chamaFotoWeb()
-        }
+        }*/
     }
 
-    private fun getPadrao(id_empresa: Int,id_usuario: Int) {
+    /*private fun getPadrao(id_empresa: Int,id_usuario: Int) {
         try {
             val padraoService = InfraHelper.apiInventario.create(PadraoService::class.java)
             //binding.llProgress02.visibility = View.VISIBLE
@@ -182,7 +189,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
+*/
     private fun inicializarTooBar() {
         binding.ToolBar00.title = "Controle De Ativos"
         binding.ToolBar00.subtitle = "Tela Principal"
@@ -196,6 +203,7 @@ class MainActivity : AppCompatActivity() {
         binding.ToolBar00.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.item_cancel -> {
+                    //finishAndRemoveTask()
                     finish()
                     return@setOnMenuItemClickListener true
                 }
@@ -211,7 +219,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+/*
     private suspend fun saveUserProfile(id_empresa: Int, id_ususario: Int) {
         dataStore.edit { preferences ->
             preferences[id_empresa_key] = id_empresa
@@ -543,19 +551,22 @@ class MainActivity : AppCompatActivity() {
 
 
     }
-
+*/
     private fun showToast(mensagem: String, duracao: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(baseContext, mensagem, duracao).show()
     }
 
-    private fun showHeader()
-    {
-        binding.editEmpresa00.setText("${ParametroGlobal.Dados.empresa.razao}")
-        binding.editUsuario00.setText("${ParametroGlobal.Dados.usuario.razao}")
-        binding.editLocal00.setText("${ParametroGlobal.Dados.local.razao}")
-        binding.editInventario00.setText("${ParametroGlobal.Dados.Inventario.descricao}")
+    private fun showHeader() {
+        if (usuario.id > 0) {
+            binding.llParametros00.visibility = View.VISIBLE
+            binding.editEmpresa00.setText("${ParametroGlobal.Dados.empresa.razao}")
+            binding.editUsuario00.setText("${ParametroGlobal.Dados.usuario.razao}")
+            binding.editLocal00.setText("${ParametroGlobal.Dados.local.razao}")
+            binding.editInventario00.setText("${ParametroGlobal.Dados.Inventario.descricao}")
+        } else {
+            binding.llParametros00.visibility = View.GONE
+        }
     }
-
     private fun chamaLogin(){
         val intent = Intent(this,LoginActivity::class.java)
         getRetornoLogin.launch(intent)
@@ -566,26 +577,14 @@ class MainActivity : AppCompatActivity() {
             ActivityResultContracts.StartActivityForResult()) {
             Log.i("zyzz","Retorno do login ${it.resultCode}")
             if(it.resultCode == Activity.RESULT_OK){
-                val id_empresa = it.data?.getIntExtra("id_empresa",0)
-                val id_usuario = it.data?.getIntExtra("id_usuario",0)
-                try {
-                    if (id_empresa != 0){
-                        Log.i("zyzz","id_empresa = ${id_empresa} id_usuario = ${id_usuario}")
-                    } else {
-                        showToast("Código Retornado Inválido!")
-                    }
-                } catch ( e : NumberFormatException ){
-                    showToast("Código Inválido!")
-                }
-            } else {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    saveUserProfile(1, 0)
-                    withContext(Dispatchers.Main) {
-                        Log.i("zyzz", "depois saveUserProfile Bye....")
-                        finish()
-                        System.exit(0);
-                    }
-                }
+               showHeader()
+            }
+            if(it.resultCode == 100){
+                empresa = EmpresaModel()
+                usuario = UsuarioModel()
+                local = LocalModel()
+                Inventario = InventarioModel()
+                showHeader()
             }
         }
 

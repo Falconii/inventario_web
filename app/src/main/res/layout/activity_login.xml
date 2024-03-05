@@ -45,7 +45,7 @@
         app:layout_constraintTop_toBottomOf="@+id/txtViewTitulo01">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editEmpresa"
+            android:id="@+id/editEmpresa01"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:enabled="false"
@@ -110,7 +110,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/llBotoes"
+        android:id="@+id/llBotoes01"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"

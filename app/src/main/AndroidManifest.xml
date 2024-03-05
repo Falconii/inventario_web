@@ -26,8 +26,13 @@
         <activity
             android:name=".SplashActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".FiltroInventarioActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -108,12 +113,8 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:label="Controle De Inventário"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>

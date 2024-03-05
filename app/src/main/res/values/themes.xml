@@ -3,7 +3,9 @@
     <style name="Base.Theme.InventarioWeb" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-        <item name="colorPrimary">@color/label</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="Theme.InventarioWeb" parent="Base.Theme.InventarioWeb" />

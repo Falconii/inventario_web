@@ -17,7 +17,7 @@ interface UsuarioService {
         @Path("id") id: Int
     ) : Call<UsuarioModel>
 
-    @GET("usuario/{id_empresa}/{id_usuario}")
+    @GET("ambiente/{id_empresa}/{id_usuario}")
     fun getAmbiente(
         @Path("id_empresa") id_empresa: Int,
         @Path("id_usuario") id_usuario: Int

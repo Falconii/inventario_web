@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="#680A0A"
     tools:context=".SplashActivity">
 
@@ -83,14 +83,14 @@
         android:layout_marginRight="5dp"
         android:background="#D1C9C9"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/textVersao090"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivfoto0390">
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ProgressBar
             android:id="@+id/progressBar90"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            style="@style/Widget.AppCompat.ProgressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

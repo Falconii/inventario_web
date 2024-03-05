@@ -295,7 +295,7 @@ class InventarioActivity : AppCompatActivity() {
                 }
             }
         }
-        Log.i("zyzz", "BUsncado pagina ${paramImoInventario.pagina}")
+        Log.i("zyzz", "Buscando pagina ${paramImoInventario.pagina}")
         try {
             val imobilizadoInventarioService =
                 InfraHelper.apiInventario.create(ImobilizadoInventarioService::class.java)
