@@ -1,6 +1,5 @@
 package com.simionato.inventarioweb.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,6 +63,14 @@ class ImoInventarioAdapter(
                 btLancamento = ItemView.findViewById(R.id.item_inventario_lancamento)
                 btFoto = ItemView.findViewById(R.id.item_inventario_foto)
                 btConsulta = ItemView.findViewById(R.id.item_inventario_consulta)
+                when (imobilizadoInventario.status) {
+                    0 -> {txtSituacao.getResources().getColor(R.color.corVermelho)}
+                    1 -> {txtSituacao.getResources().getColor(R.color.corVerde)}
+                    2..4 -> {txtSituacao.getResources().getColor(R.color.corAmarelo)}
+                    5 -> {txtSituacao.getResources().getColor(R.color.black}
+                    else -> {txtSituacao.getResources().getColor(R.color.corVermelho)}
+                }
+
                 txtSituacao.setText(
                     "${
                         ParametroGlobal.Situacoes.getSituacao(

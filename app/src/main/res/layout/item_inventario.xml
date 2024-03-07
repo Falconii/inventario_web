@@ -10,7 +10,11 @@
         android:id="@+id/ll_item_inventario_situacao"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:background="@drawable/moldura"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/item_inventario_situacao"
@@ -31,6 +35,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:background="@color/white"
             android:src="@drawable/pencil_24_green" />
 
         <ImageButton
@@ -48,6 +53,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="32dp"
+            android:background="@color/white"
             android:src="@drawable/show_24_blue" />
 
     </LinearLayout>
@@ -68,6 +74,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:background="@color/white"
         android:text="item_inventario_codigo_novo"
         android:textColor="@color/black"
         android:textSize="14sp"

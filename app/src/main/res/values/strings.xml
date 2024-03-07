@@ -1,4 +1,16 @@
 <resources>
     <string name="app_name">Inventario Web</string>
-    <string name="sem_filtro">Sem Filtro. Toque Para Alterar"</string>
+    <string name="sem_filtro">Sem Filtro. Toque Para Alterar</string>
+    <string name="titulo_barra">Controle De Imobilizados</string>
+    <string name="no_user">\nUsuário Não Informado!\n\nFavor Efetuar Login.</string>
+    <string name="lancamento_unico">Lançamento Individual\nPermite Inventariar O Produto\nAtravés Da Digitação Do Número Da Plaqueta\nOu Da Leitura Do Código De Barras</string>
+    <string name="lancamento_lote">Lançamento Em Lote\nPermite Filtrar Os Imobilizados\nPor Vários Itens\nInventariar Imobilizado\nE Anexar Fotos e etc</string>
+    <string name="lancamento_produto">Lançamento Produto Novo.\nPermite Cadastrar Produto Que Não Esta Na Relação de Imibilizados"</string>
+    <string name="dashboard">Resumo Do Inventário\nPermite Visualizar A Sitação Do Inventário"</string>
+    <string name="botao_lancamento_unico">Lançamento Único</string>
+    <string name="botao_lancamento_lote">Lançamento Em Lote</string>
+    <string name="botao_lancamento_produto">Produto Novo</string>
+    <string name="botao_dashboard">Resumo Do Inventário</string>
+
+
 </resources>

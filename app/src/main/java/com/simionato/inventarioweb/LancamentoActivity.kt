@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.text.InputFilter
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -122,8 +123,16 @@ class LancamentoActivity : AppCompatActivity() {
             }
         }
 
+        binding.editObs02.filters += InputFilter.AllCaps()
+
         binding.editCCNovol02.setOnClickListener {
             chamaPesquisaCc()
+        }
+
+        binding.ibLimparCcNew02.setOnClickListener {
+            inventario.new_cc = ""
+            inventario.new_cc_descricao = ""
+            binding.editCCNovol02.setText(R.string.sem_filtro)
         }
         binding.btExcluir02.setOnClickListener{
             val lancamento:LancamentoModel = loadLancamento()

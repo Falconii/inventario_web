@@ -27,6 +27,8 @@ import com.simionato.inventarioweb.global.UserProfile
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.AmbienteModel
 import com.simionato.inventarioweb.models.PadraoModel
+import com.simionato.inventarioweb.models.mensagemModel
+import com.simionato.inventarioweb.services.HelloService
 import com.simionato.inventarioweb.services.PadraoService
 import com.simionato.inventarioweb.services.UsuarioService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
@@ -37,6 +39,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 class SplashActivity : AppCompatActivity() {
 
@@ -50,153 +53,53 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        
-        binding.llProgress90.visibility = View.GONE
 
-        chamaMain()
 
-      /*  lifecycleScope.launch(Dispatchers.IO) {
-            getUserProfile().collect {
-                withContext(Dispatchers.Main) {
-                    Log.i("zyzz", "Memoria :${it}")
-                    if (it.id_usuario == 0){
-                        //Log.i("zyzz", "Vou chamar login, pois usuário é zero")
-                        //chamaLogin()
-                    } else {
-                        Log.i("zyzz", "Vou carregar padrao ${it.id_empresa} ${it.id_usuario}")
-                        getPadrao(it.id_empresa,it.id_usuario)
-                    }
-                }
-            }
-        }*/
-    }
-
-    private fun getPadrao(id_empresa: Int,id_usuario: Int) {
-        try {
-            val padraoService = InfraHelper.apiInventario.create(PadraoService::class.java)
-            binding.llProgress90.visibility = View.VISIBLE
-            padraoService.getPadrao(
-                id_empresa,
-                id_usuario
-            ).enqueue(object :
-                Callback<PadraoModel> {
-                override fun onResponse(
-                    call: Call<PadraoModel>,
-                    response: Response<PadraoModel>
-                ) {
-                    binding.llProgress90.visibility = View.GONE
-                    Log.i("zyzz","Retornei da request ${response} ${response.isSuccessful}")
-                    if (response != null) {
-                        if (response.isSuccessful) {
-
-                            var padrao = response.body()
-
-                            padrao = (padrao ?: PadraoModel()) as PadraoModel
-
-                            Log.i("zyzz","Achei O Padrão ${padrao}")
-
-                            getAmbiente(padrao)
-
-                        } else {
-                            binding.llProgress90.visibility = View.GONE
-                            val gson = Gson()
-                            val message = gson.fromJson(
-                                response.errorBody()!!.charStream(),
-                                HttpErrorMessage::class.java
-                            )
-                            if (response.code() == 409) {
-                                showToast(
-                                    "Usuário Não Tem Padrao! ${message.getMessage().toString()}",
-                                    Toast.LENGTH_SHORT
-                                )
-                            } else {
-                                showToast(message.getMessage().toString())
-                            }
-                        }
-                    } else {
-                        binding.llProgress90.visibility = View.GONE
-                        showToast("Sem retorno Da Requisição!")
-                    }
-                }
-
-                override fun onFailure(call: Call<PadraoModel>, t: Throwable) {
-                    binding.llProgress90.visibility = View.GONE
-                    showToast(t.message.toString())
-                }
-            })
-
-        } catch (e: Exception) {
-            binding.llProgress90.visibility = View.GONE
-            showToast("${e.message.toString()}", Toast.LENGTH_LONG)
-        }
+        splash()
 
     }
-    /*private fun getUserProfile() = dataStore.data.map { preferences ->
-        UserProfile(
-            id_empresa = preferences[id_empresa_key] ?: 1,
-            id_usuario = preferences[id_usuario_key] ?: 0
-        )
-    }*/
-    private fun getAmbiente(padrao:PadraoModel) {
+
+
+    private fun splash() {
         try {
-            val usuarioService = InfraHelper.apiInventario.create(UsuarioService::class.java)
-            usuarioService.getAmbiente(
-                padrao.id_empresa,
-                padrao.id_usuario
-            ).enqueue( object : Callback<AmbienteModel>{
+            val helloService = InfraHelper.apiInventario.create(HelloService::class.java)
+            helloService.splash().enqueue( object : Callback<mensagemModel>{
                 override fun onResponse(
-                    call: Call<AmbienteModel>,
-                    response: Response<AmbienteModel>
+                    call: Call<mensagemModel>,
+                    response: Response<mensagemModel>
                 ) {
-                    binding.llProgress90.visibility = View.GONE
+                    Log.i("zyzz","Retorno ${response.isSuccessful} ${response.code()}")
                     if (response != null) {
                         if (response.isSuccessful) {
 
                             var ambiente = response.body()
 
                             if (ambiente != null )
-                                if (ambiente.id_retorno == 200) {
-                                    empresa = ambiente.empresa!!
-                                    usuario = ambiente.usuario!!
-                                    local = ambiente.local!!
-                                    Inventario = ambiente.inventario!!
-                                    showToast("Ambiente Carregado Com Sucesso!")
-                                    chamaMain()
+                                chamaMain()
                                 } else {
-                                    showToast("Ambiente Não Disponivel Para Este Usuário!")
+                                    showToast("Falha Na Comunicação. Sem retorno")
+                                    finish()
                                 }
                         } else {
-                            binding.llProgress90.visibility = View.GONE
                             val gson = Gson()
                             val message = gson.fromJson(
                                 response.errorBody()!!.charStream(),
                                 HttpErrorMessage::class.java
                             )
-                            showToast(
-                                "${message.getMessage().toString()}",
-                                Toast.LENGTH_SHORT
-                            )
+                        showToast("Falha Na Comunicação Com A Nuvem! Tente Mais Tarde")
+                        finish()
                         }
-                    } else {
-                        //binding.llProgress90.visibility = View.GONE
-                        Toast.makeText(
-                            applicationContext,
-                            "Sem retorno Da Requisição! Tente Mais Tarde!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
                 }
 
-                override fun onFailure(call: Call<AmbienteModel>, t: Throwable) {
-                    binding.llProgress90.visibility = View.GONE
-                    showToast(t.message.toString())
+                override fun onFailure(call: Call<mensagemModel>, t: Throwable) {
+                    showToast("Falha Na Comunicação. Erro Na Chamada")
+                    finish()
                 }
             })
         } catch (e: Exception) {
-            binding.llProgress90.visibility = View.GONE
-            showToast("${e.message.toString()}", Toast.LENGTH_LONG)
+            showToast("Falha Interna ${e.message}")
+            finish()
         }
-
 
     }
 

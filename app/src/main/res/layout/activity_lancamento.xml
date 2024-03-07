@@ -5,6 +5,7 @@
     android:id="@+id/ScrollLancamento"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#EAE5E5"
     tools:context=".LancamentoActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -400,7 +401,7 @@
                     android:textAlignment="textStart"
                     android:textStyle="bold" />
             </LinearLayout>
-
+            <!--
             <LinearLayout
                 android:id="@+id/llLinhaCCNovol02"
                 android:layout_width="match_parent"
@@ -437,7 +438,49 @@
                     android:textAlignment="textStart"
                     android:textStyle="bold" />
             </LinearLayout>
+            -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/llLinhaCCNovol02"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/moldura">
 
+                <TextView
+                    android:id="@+id/LabelCCNew02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="NOVO CENTRO DE CUSTO"
+                    android:textColor="@color/label"
+                    android:textSize="10sp"
+                    android:textStyle="normal|italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/editCCNovol02"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="3dp"
+                    android:layout_weight="1"
+                    android:gravity="center|left"
+                    android:minHeight="50dp"
+                    android:text="Sem Filtro. Toque Para Alterar"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/ib_Limpar_cc_new02"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/ib_Limpar_cc_new02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/txtInputObs02"
                 android:layout_width="match_parent"
@@ -450,8 +493,10 @@
                     android:id="@+id/editObs02"
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
+                    android:gravity="start"
                     android:hint="Observação"
-                    android:maxLength="255" />
+                    android:maxLength="255"
+                    android:textAlignment="textStart" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout

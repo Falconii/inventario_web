@@ -128,7 +128,7 @@
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:backgroundTint="#E4B849"
-            android:text="Cancelar" />
+            android:text="Sair" />
 
         <Button
             android:id="@+id/btLoginEntrar01"

@@ -32,7 +32,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ToolBar20"
+        app:layout_constraintTop_toBottomOf="@+id/ToolBar03"
         app:layout_constraintVertical_bias="0.5">
 
 
@@ -180,79 +180,90 @@
             </LinearLayout>
 
 
-            <LinearLayout
-                android:id="@+id/llLinhaGrupo03"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:padding="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/llLinhaDescricao03">
-
-                <TextView
-                    android:id="@+id/txtViewLabelllLinhaGrupo0303"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:paddingLeft="6dp"
-                    android:text="Grupo"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
-                    android:textStyle="normal|italic" />
-
-                <TextView
-                    android:id="@+id/editGrupo03"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/moldura"
-                    android:minHeight="50dp"
-                    android:text="Grupo"
-                    android:textAlignment="textStart"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/llLinhaCC03"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:padding="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/llLinhaGrupo03">
+                android:layout_margin="5dp"
+                android:background="@drawable/moldura">
 
                 <TextView
-                    android:id="@+id/txtViewLabelCC03"
+                    android:id="@+id/Labelcc03"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:paddingLeft="6dp"
-                    android:text="CENTRO DE CUSTO"
+                    android:text="GRUPO DO PRODUTO"
                     android:textColor="@color/label"
                     android:textSize="10sp"
-                    android:textStyle="normal|italic" />
+                    android:textStyle="normal|italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/editCC03"
-                    android:layout_width="match_parent"
+                    android:id="@+id/editcc03"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="3dp"
                     android:layout_weight="1"
-                    android:background="@drawable/moldura"
+                    android:gravity="center|left"
                     android:minHeight="50dp"
-                    android:text="Centro de Custo"
-                    android:textAlignment="textStart"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                    android:text="@+id/sem_filtro"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/ib_Limpar_cc03"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/ib_Limpar_cc03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/llLinhaGrupo03"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/moldura">
+
+                <TextView
+                    android:id="@+id/LabelGrupo03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CENTRO DE CUSTO ORIGINAL"
+                    android:textColor="@color/label"
+                    android:textSize="10sp"
+                    android:textStyle="normal|italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/editGrupo03"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="3dp"
+                    android:layout_weight="1"
+                    android:gravity="center|left"
+                    android:minHeight="50dp"
+                    android:text="Sem Filtro. Toque Para Alterar"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/ib_Limpar_grupo03"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/ib_Limpar_grupo03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:id="@+id/llLinhaBotoes03"
