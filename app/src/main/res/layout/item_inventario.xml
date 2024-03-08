@@ -4,17 +4,20 @@
     android:id="@+id/llI_item_inventario_master"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+    android:layout_margin="5dp"
+    android:paddingBottom="5dp">
 
     <LinearLayout
         android:id="@+id/ll_item_inventario_situacao"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/moldura"
+        android:layout_marginTop="5dp"
+        android:background="@color/white"
         android:orientation="horizontal"
         android:padding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/item_inventario_situacao"

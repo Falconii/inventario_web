@@ -7,9 +7,8 @@
     <color name="secondary">#Ff5252</color>
     <color name="colorAccent">#FF4081</color>
     <color name="corFundo">#EAE5E5</color>
+    <color name="corAzul">#0713D0</color>
     <color name="corVermelho">#D5150C</color>
-    <color name="corAmarelo">##E9D017</color>
+    <color name="corAmarelo">#87891B</color>
     <color name="corVerde">#15D51D</color>
-
-
 </resources>

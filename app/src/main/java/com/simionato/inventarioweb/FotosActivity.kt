@@ -160,7 +160,7 @@ class FotosActivity : AppCompatActivity() {
 
     private fun iniciar(){
         inicializarTooBar()
-        binding.txtViewSituacao20.setText("Local: ${ParametroGlobal.Dados.Inventario.local_razao}\nInventário: ${ParametroGlobal.Dados.Inventario.descricao}\nPlaqueta: ${id_imobilizado}\nDescricao: ${descricao}")
+        binding.txtViewSituacao20.setText("")
         binding.editUsuario20.setText(ParametroGlobal.Dados.usuario.razao)
         binding.txtInputObs.filters += InputFilter.AllCaps()
         binding.swDestaque20.isChecked = false

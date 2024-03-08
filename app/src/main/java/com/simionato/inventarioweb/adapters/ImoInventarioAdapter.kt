@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.simionato.inventarioweb.R
 import com.simionato.inventarioweb.global.CadastrosAcoes
@@ -64,11 +65,11 @@ class ImoInventarioAdapter(
                 btFoto = ItemView.findViewById(R.id.item_inventario_foto)
                 btConsulta = ItemView.findViewById(R.id.item_inventario_consulta)
                 when (imobilizadoInventario.status) {
-                    0 -> {txtSituacao.getResources().getColor(R.color.corVermelho)}
-                    1 -> {txtSituacao.getResources().getColor(R.color.corVerde)}
-                    2..4 -> {txtSituacao.getResources().getColor(R.color.corAmarelo)}
-                    5 -> {txtSituacao.getResources().getColor(R.color.black}
-                    else -> {txtSituacao.getResources().getColor(R.color.corVermelho)}
+                    0 -> {txtSituacao.setTextColor(ContextCompat.getColor(layout.context, R.color.corVermelho))}
+                    1 -> {txtSituacao.setTextColor(ContextCompat.getColor(layout.context, R.color.corVerde))}
+                    in 2..4 -> {txtSituacao.setTextColor(ContextCompat.getColor(layout.context, R.color.corAmarelo))}
+                    5 -> {txtSituacao.setTextColor(ContextCompat.getColor(layout.context, R.color.secondary))}
+                    else -> {txtSituacao.setTextColor(ContextCompat.getColor(layout.context, R.color.corVermelho))}
                 }
 
                 txtSituacao.setText(
@@ -78,16 +79,17 @@ class ImoInventarioAdapter(
                         )
                     }"
                 )
-                txtCodigo.setText("CODIGO:${imobilizadoInventario.id_imobilizado.toString()}")
+                txtCodigo.setText(ParametroGlobal.prettyText.tituloDescricao("CODIGO: ",imobilizadoInventario.id_imobilizado.toString()))
                 txtCodigoNovo.visibility =
                     if (imobilizadoInventario.new_codigo != 0) View.VISIBLE else View.GONE
-                txtCodigoNovo.setText("COD. NOVO:${imobilizadoInventario.new_codigo.toString()}")
-                txtDescricao.setText("DESCRIÇÃO:\n${imobilizadoInventario.imo_descricao}")
-                txtGrupo.setText("Grupo:\n${imobilizadoInventario.grupo_descricao}")
-                txtCC.setText("CC:\n${imobilizadoInventario.cc_descricao}")
+                txtCodigoNovo.setText(ParametroGlobal.prettyText.tituloDescricao("COD. NOVO: ",imobilizadoInventario.new_codigo.toString()))
+
+                txtDescricao.setText(ParametroGlobal.prettyText.tituloDescricao("DESCRIÇÃO: ",imobilizadoInventario.imo_descricao))
+                txtGrupo.setText(ParametroGlobal.prettyText.tituloDescricao("GRUPO: ",imobilizadoInventario.grupo_descricao))
+                txtCC.setText(ParametroGlobal.prettyText.tituloDescricao("CENTRO CUSTO: ",imobilizadoInventario.grupo_descricao))
                 txtCCNovo.visibility =
                     if (imobilizadoInventario.new_cc != "") View.VISIBLE else View.GONE
-                txtCCNovo.setText("CC Novo:\n${imobilizadoInventario.new_cc_descricao}")
+                txtCCNovo.setText(ParametroGlobal.prettyText.tituloDescricao("C.C. NOVO: ",imobilizadoInventario.new_cc_descricao))
 
                 var visivel = if (imobilizadoInventario.id_lanca == 0) {
                     View.GONE
@@ -101,9 +103,9 @@ class ImoInventarioAdapter(
                 txtObs.visibility = visivel
 
                 txtTituloLancamento.setText("** INFORMAÇÕES DO LANÇAMENTO **")
-                txtLancamento.setText("DATA: ${imobilizadoInventario.lanc_dt_lanca} Nro: ${imobilizadoInventario.id_lanca}")
-                txtResponsavel.setText("Resp: ${imobilizadoInventario.usu_razao}")
-                txtObs.setText("Observação:\n${imobilizadoInventario.lanc_obs}")
+                txtLancamento.setText(ParametroGlobal.prettyText.tituloDescricaoDois("DATA: ",imobilizadoInventario.lanc_dt_lanca,"Nº: ",imobilizadoInventario.id_lanca.toString()))
+                txtResponsavel.setText(ParametroGlobal.prettyText.tituloDescricao("RESP: ",imobilizadoInventario.usu_razao))
+                txtObs.setText(ParametroGlobal.prettyText.tituloDescricao("OBSERVAÇÃO: ",imobilizadoInventario.lanc_obs))
 
                 btLancamento.setOnClickListener {
                     onClickc(imobilizadoInventario, CadastrosAcoes.Lancamento, idx)

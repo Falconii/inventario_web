@@ -11,6 +11,8 @@
     <string name="botao_lancamento_lote">Lançamento Em Lote</string>
     <string name="botao_lancamento_produto">Produto Novo</string>
     <string name="botao_dashboard">Resumo Do Inventário</string>
+    <string name="corAmareloPretty">#87891B</string>
+    <string name="corVerdePretty">#15D51D</string>
 
 
 </resources>
