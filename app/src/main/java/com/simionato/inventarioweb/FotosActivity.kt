@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.google.gson.Gson
 import com.simionato.inventarioweb.databinding.ActivityFotosBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
@@ -43,6 +44,16 @@ class FotosActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityFotosBinding.inflate(layoutInflater)
     }
+    private val contract = registerForActivityResult(ActivityResultContracts.TakePicture()){
+        if (it) {
+            binding.imView20.setImageURI(imageUri)
+            showFormulario(true)
+        } else {
+            binding.imView20.setImageURI(null)
+            showFormulario(false)
+        }
+    }
+    lateinit var imageUri : Uri
 
     private val requestGaleria = registerForActivityResult(ActivityResultContracts.RequestPermission()){ permissao ->
         if (permissao){
@@ -81,24 +92,21 @@ class FotosActivity : AppCompatActivity() {
 
     private var id_imobilizado:Int = 0
 
-    private var plaqueta:String = ""
-
     private var descricao:String = ""
+
+    private var origem:String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //Validando Paramentros
         if (ParametroGlobal.Ambiente.itsOK()){
             showToast("Ambiente Incorreto!!")
             finish()
             return
         }
-
         try {
             val bundle = intent.extras
-
             if (bundle != null) {
                 id_imobilizado = bundle.getInt("id_imobilizado", 0)
                 descricao = bundle.getString("descricao")!!
@@ -118,12 +126,23 @@ class FotosActivity : AppCompatActivity() {
             finish()
             return
         }
-
         binding.llProgress20.visibility = View.GONE
         showFormulario(false)
         iniciar()
     }
-
+    private fun createImageUri() : Uri? {
+        try {
+            val image = File(applicationContext.filesDir, "camera_foto.png")
+            return FileProvider.getUriForFile(
+                applicationContext,
+                "com.simionato.inventarioweb.fileProvider",
+                image
+            )
+        } catch (error:Exception){
+            showToast("Falha: createImageUri ${error.message} ")
+        }
+        return null
+    }
     private fun verificaPermissaoGaleria(){
         val permissaoGaleriaAceita = verficaPermissao(ParametroGlobal.Permissoes.PERMISSAO_GALERIA)
         when {
@@ -160,8 +179,12 @@ class FotosActivity : AppCompatActivity() {
 
     private fun iniciar(){
         inicializarTooBar()
-        binding.txtViewSituacao20.setText("")
+        imageUri = createImageUri()!!
+        binding.txtViewSituacao20.setText(ParametroGlobal.prettyText.ambiente_produto(id_imobilizado,descricao))
         binding.editUsuario20.setText(ParametroGlobal.Dados.usuario.razao)
+        binding.textAjudaGaleria20.setText(ParametroGlobal.prettyText.tituloDescricao("Atenção!","Utilize Esse Botão Para Importar As Fotos Da Galeria Do Celuar",true))
+        binding.textAjudaCamera20.setText(ParametroGlobal.prettyText.tituloDescricao("Atenção!","Utilize Esse Botão Para Importar As Fotos Da Câmera Do Celuar",true))
+
         binding.txtInputObs.filters += InputFilter.AllCaps()
         binding.swDestaque20.isChecked = false
         binding.swDestaque20.setText("Foto Não Está Em Destaque")
@@ -171,6 +194,11 @@ class FotosActivity : AppCompatActivity() {
 
         binding.btGravar20.setOnClickListener {
             uploadFoto()
+        }
+        binding.btCancelar20.setOnClickListener {
+            val returnIntent: Intent = Intent()
+            setResult(Activity.RESULT_CANCELED,returnIntent)
+            finish()
         }
     }
 
@@ -193,12 +221,12 @@ class FotosActivity : AppCompatActivity() {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.item_galeria_camera -> {
-                    val returnIntent: Intent = Intent()
-                    setResult(Activity.RESULT_CANCELED,returnIntent)
-                    finish()
+                    origem = "CAMERA"
+                    contract.launch(imageUri)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.item_galeria_galeria -> {
+                    origem = "GALERIA"
                     verificaPermissaoGaleria()
                     return@setOnMenuItemClickListener true
                 }
@@ -208,10 +236,15 @@ class FotosActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun uploadFoto(){
+        if (origem == "GALERIA"){
+            uploadFoto_galeria()
+        } else {
+            uploadFoto_camera()
+        }
+    }
+    private fun uploadFoto_galeria(){
         try {
-
 
             val filesDir = applicationContext.filesDir
 
@@ -328,15 +361,125 @@ class FotosActivity : AppCompatActivity() {
             showToast("Falha Ao Preparar A Foto Para Transmissão!")
         }
     }
+    private fun uploadFoto_camera(){
+        try {
 
+            val filesDir = applicationContext.filesDir
+
+            val uriName = displayName(imageUri)
+
+            val file = File(filesDir, uriName)
+
+            Log.i("zyzz","Nome do arquivo enviado! ${file.name}")
+
+            val requestFile = RequestBody.create(MultipartBody.FORM, file)
+
+            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+
+            val id_empresa = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.empresa.id.toString())
+
+            val id_local = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.local.id.toString())
+
+            val id_inventario = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.Inventario.codigo.toString())
+
+            val id_imobilizado = RequestBody.create(MultipartBody.FORM,id_imobilizado.toString())
+
+            val id_pasta = RequestBody.create(MultipartBody.FORM,"")
+
+            val id_file = RequestBody.create(MultipartBody.FORM,"")
+
+            val id_usuario = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.usuario.id.toString())
+
+            val data = RequestBody.create(MultipartBody.FORM,getHoje())
+
+            val destaque = RequestBody.create(MultipartBody.FORM,if(binding.swDestaque20.isChecked) "S" else "N")
+
+            val obs = RequestBody.create(MultipartBody.FORM,binding.txtInputObs.text.toString())
+
+            binding.llProgress20.visibility = View.VISIBLE
+
+            try {
+                val fotoService = InfraHelper.apiInventario.create( FotoService::class.java )
+
+                fotoService.postUploadFoto(
+                    id_empresa
+                    ,id_local
+                    ,id_inventario
+                    ,id_imobilizado
+                    ,id_pasta
+                    ,id_file
+                    ,id_usuario
+                    ,data
+                    ,destaque
+                    ,obs
+                    ,body)
+                    .enqueue(object :Callback<RetornoUpload>{
+                        override fun onResponse(
+                            call: Call<RetornoUpload>,
+                            response: Response<RetornoUpload>
+                        ) {
+                            binding.llProgress20.visibility = View.GONE
+
+                            if (response != null) {
+                                if (response.isSuccessful) {
+
+                                    var mensagem = response.body()
+
+                                    if (mensagem !== null) {
+
+                                        showToast("${mensagem.message}")
+
+                                        val returnIntent: Intent = Intent()
+
+                                        setResult(Activity.RESULT_OK,returnIntent)
+
+                                        finish()
+
+                                    } else {
+                                        showToast("Falha No Retorno Da Requisição!")
+                                    }
+
+                                }
+                                else {
+                                    binding.llProgress20.visibility = View.GONE
+                                    val gson = Gson()
+                                    val message = gson.fromJson(
+                                        response.errorBody()!!.charStream(),
+                                        HttpErrorMessage::class.java
+                                    )
+                                    showToast("${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+
+                                }
+                            }
+                            else {
+                                binding.llProgress20.visibility = View.GONE
+                                showToast("Não Foi Possivel Inserir A Fota Na Nuvem")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<RetornoUpload>, t: Throwable) {
+                            binding.llProgress20.visibility = View.GONE
+                            showToast("${t.message.toString()}", Toast.LENGTH_LONG)
+                        }
+                    })
+
+            } catch (e: Exception){
+                binding.llProgress20.visibility = View.GONE
+                showToast("${e.message.toString()}", Toast.LENGTH_LONG)
+            }
+
+
+        } catch (error:Exception){
+            showToast("Falha Ao Preparar A Foto Para Transmissão!")
+        }
+    }
     private fun showFormulario(value:Boolean){
+        binding.llAjuda20.visibility = if (!value) View.VISIBLE else View.GONE
         binding.llCadastro20.visibility = if (value) View.VISIBLE else View.GONE
     }
-
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
         Toast.makeText(this, mensagem, duracao).show()
     }
-
     fun getHoje():String{
 
         try {
@@ -355,7 +498,6 @@ class FotosActivity : AppCompatActivity() {
         }
 
     }
-
     private fun displayName(uri: Uri): String? {
         val mCursor = applicationContext.contentResolver.query(uri, null, null, null, null)
         val indexedname = mCursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)

@@ -79,10 +79,10 @@ class ImoInventarioAdapter(
                         )
                     }"
                 )
-                txtCodigo.setText(ParametroGlobal.prettyText.tituloDescricao("CODIGO: ",imobilizadoInventario.id_imobilizado.toString()))
+                txtCodigo.setText(ParametroGlobal.prettyText.tituloDescricaoDois("CODIGO: ",imobilizadoInventario.id_imobilizado.toString().padStart(6,'0'),"ORIGEM: ",ParametroGlobal.Origem.getOrigem("P")))
                 txtCodigoNovo.visibility =
                     if (imobilizadoInventario.new_codigo != 0) View.VISIBLE else View.GONE
-                txtCodigoNovo.setText(ParametroGlobal.prettyText.tituloDescricao("COD. NOVO: ",imobilizadoInventario.new_codigo.toString()))
+                txtCodigoNovo.setText(ParametroGlobal.prettyText.tituloDescricao("COD. NOVO: ",imobilizadoInventario.new_codigo.toString().padStart(6,'0')))
 
                 txtDescricao.setText(ParametroGlobal.prettyText.tituloDescricao("DESCRIÇÃO: ",imobilizadoInventario.imo_descricao))
                 txtGrupo.setText(ParametroGlobal.prettyText.tituloDescricao("GRUPO: ",imobilizadoInventario.grupo_descricao))
@@ -139,6 +139,10 @@ class ImoInventarioAdapter(
         notifyDataSetChanged()
     }
 
+    fun clearData(){
+        lista.clear()
+        notifyDataSetChanged()
+    }
     fun updateData( item: ImobilizadoinventarioModel, idx:Int ){
         lista.set(idx,item)
         notifyItemChanged(idx)

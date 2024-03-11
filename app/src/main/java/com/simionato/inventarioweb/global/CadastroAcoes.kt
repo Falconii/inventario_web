@@ -13,6 +13,7 @@ package com.simionato.inventarioweb.global
         Visualizar_Estrtura(9),
         EdicaoMultipla(10),
         Foto(20),
+        ShowNfe(21),
         Lancamento(21),
         None(99)
     }

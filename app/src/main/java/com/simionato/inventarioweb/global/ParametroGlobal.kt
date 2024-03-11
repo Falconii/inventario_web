@@ -86,6 +86,19 @@ class ParametroGlobal {
         }
     }
 
+    class Origem{
+
+        companion object {
+            public fun getOrigem(value:String):String{
+                when (value) {
+                    "P"  -> {return "PLANILHA"}
+                    "M"  -> {return "DIGITAÇÃO"}
+                    else -> {return "PLANILHA"}
+                }
+            }
+        }
+    }
+
     class prettyText {
 
         companion object {
@@ -102,20 +115,21 @@ class ParametroGlobal {
                 retorno += "<font color=${corTitulo}>${titulo2}</font><font color=${corDescricao}>${descricao2}</font>"
                 return Html.fromHtml(retorno, Html.FROM_HTML_MODE_LEGACY)!!
             }
-            public fun ambiente( ) : Spanned {
+            public fun ambiente_produto(id_produto:Int,descricao:String ) : Spanned {
                 var retorno:String = ""
                 var titulo1:String = "LOCAL: "
                 var descricao1:String = Inventario.local_razao
                 var titulo2:String = "INVENTÁRIO: "
                 var descricao2:String = Inventario.descricao
                 var titulo3:String = "PLAQUETA: "
-                var descricao3:String = "000000"
-                var titulo4:String = "DESC: "
-                var descricao4:String = "SMSMSMSMSMSMSMSMSM"
+                var descricao3:String = id_produto.toString().padStart(6,'0')
+                var titulo4:String = "DESCRIÇÃO: "
+                var descricao4:String = descricao
 
-                "Local: ${ParametroGlobal.Dados.Inventario.local_razao}\nInventário: ${ParametroGlobal.Dados.Inventario.descricao}\nPlaqueta: ${id_imobilizado}\nDescricao: ${descricao}"
-                retorno  = "<font color=${corTitulo}>${titulo1}</font><font color=${corDescricao}>${descricao1}</font>&nbsp;&nbsp;&nbsp;"
-                retorno += "<font color=${corTitulo}>${titulo2}</font><font color=${corDescricao}>${descricao2}</font>"
+                retorno  = "<font color=${corTitulo}>${titulo1}</font><font color=${corDescricao}>${descricao1}</font><br/>"
+                retorno += "<font color=${corTitulo}>${titulo2}</font><font color=${corDescricao}>${descricao2}</font><br/>"
+                retorno += "<font color=${corTitulo}>${titulo3}</font><font color=${corDescricao}>${descricao3}</font><br/>"
+                retorno += "<font color=${corTitulo}>${titulo4}</font><font color=${corDescricao}>${descricao4}</font><br/>"
                 return Html.fromHtml(retorno, Html.FROM_HTML_MODE_LEGACY)!!
             }
         }

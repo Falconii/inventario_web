@@ -24,12 +24,19 @@
         android:theme="@style/Theme.InventarioWeb"
         tools:targetApi="31">
         <activity
+            android:name=".ShowNfeValoresActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FotoCameraActivity"
+            android:exported="false" />
+        <activity
             android:name=".SplashActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -113,8 +120,17 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:label="Controle De Inventário"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.simionato.inventarioweb.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

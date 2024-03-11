@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.InputType
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,6 +36,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 class InventarioActivity : AppCompatActivity() {
 
     private val adapter = ImoInventarioAdapter() { imoInventario, idAcao, idx ->
@@ -43,6 +45,9 @@ class InventarioActivity : AppCompatActivity() {
         }
         if (idAcao == CadastrosAcoes.Foto) {
             chamaShowFotos(imoInventario)
+        }
+        if (idAcao == CadastrosAcoes.Consulta) {
+            chamaShowNfe(imoInventario)
         }
 
     }
@@ -96,13 +101,21 @@ class InventarioActivity : AppCompatActivity() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
 
-                //adapter.filter.filter(newText)
+               /* val keyBoard = if (newText != null) newText else ""
+
+                if (keyBoard ==  ""){
+                    pesquisaString = ""
+                    paramImoInventario.id_imobilizado = 0
+                    paramImoInventario.new_codigo = 0
+                    paramImoInventario.descricao = ""
+                    getInventariosContador()
+                }*/
 
                 return false
             }
 
         })
-
+        //limpezaPesquisa()
         binding.rvLista40.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -130,6 +143,19 @@ class InventarioActivity : AppCompatActivity() {
 
     }
 
+    private fun limpezaPesquisa(){
+        val clearButton: ImageView =
+            binding.svPesquisa40.findViewById(androidx.appcompat.R.id.search_close_btn)
+        clearButton.setOnClickListener { v: View? ->
+            if (binding.svPesquisa40.getQuery().length == 0) {
+                binding.svPesquisa40.setIconified(true)
+            } else {
+                binding.svPesquisa40.setQuery("", false)
+                pesquisaString = ""
+                getInventariosContador()
+            }
+        }
+    }
     private fun inicializarTooBar() {
         binding.ToolBar40.title = "Controle De Ativos"
         binding.ToolBar40.subtitle = ParametroGlobal.Dados.Inventario.descricao
@@ -352,8 +378,7 @@ class InventarioActivity : AppCompatActivity() {
                             if (response.code() == 409) {
                                 showToast("QUERY Tabela De Imobilizados Vazia")
                                 imobilizadoinventarios = mutableListOf<ImobilizadoinventarioModel>()
-                                totalPaginas = 0
-                                //paginaAtual = 1
+                                paginaAtual = 1
                                 montaLista(imobilizadoinventarios)
                             } else {
                                 showToast(message.getMessage().toString())
@@ -516,7 +541,7 @@ class InventarioActivity : AppCompatActivity() {
         adapter.setTotalPaginas(totalPaginas)
         adapter.setPaginaAtual(paginaAtual)
         if (paginaAtual == 1) {
-            adapter.loadData(imobilizados)
+                adapter.loadData(imobilizados)
             binding.rvLista40.adapter = adapter
             binding.rvLista40.layoutManager =
                 LinearLayoutManager(binding.rvLista40.context)
@@ -564,6 +589,20 @@ class InventarioActivity : AppCompatActivity() {
     }
 
     private val getRetornoShowFotos =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+            }
+        }
+
+    private fun chamaShowNfe(imoInventario: ImobilizadoinventarioModel) {
+        val intent = Intent(this, ShowNfeValoresActivity::class.java)
+        intent.putExtra("ImoInventario", imoInventario)
+        getRetornoShowNfe.launch(intent)
+    }
+
+    private val getRetornoShowNfe =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {

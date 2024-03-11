@@ -101,7 +101,8 @@ class ShowFotosActivity : AppCompatActivity() {
 
     private fun iniciar(){
         inicializarTooBar()
-        binding.txtViewSituacao30.setText("Local: ${ParametroGlobal.Dados.Inventario.local_razao}\nInventário: ${ParametroGlobal.Dados.Inventario.descricao}\nPlaqueta: ${imoinventario.id_imobilizado}\nDescricao: ${imoinventario.imo_descricao}")
+        /*"Local: ${ParametroGlobal.Dados.Inventario.local_razao}\nInventário: ${ParametroGlobal.Dados.Inventario.descricao}\nPlaqueta: ${imoinventario.id_imobilizado}\nDescricao: ${imoinventario.imo_descricao}"*/
+        binding.txtViewSituacao30.setText(ParametroGlobal.prettyText.ambiente_produto(imoinventario.id_imobilizado,imoinventario.imo_descricao))
 
         getFotos()
     }
