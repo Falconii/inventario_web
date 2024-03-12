@@ -16,6 +16,7 @@ import com.simionato.inventarioweb.databinding.ActivityShowNfeValoresBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
+import com.simionato.inventarioweb.models.NfeModel
 import com.simionato.inventarioweb.models.ValorModel
 import com.simionato.inventarioweb.parametros.ParametroNfe02
 import com.simionato.inventarioweb.services.ValorService
@@ -33,6 +34,8 @@ class ShowNfeValoresActivity : AppCompatActivity() {
     private var imoinventario :ImobilizadoinventarioModel = ImobilizadoinventarioModel()
 
     private var paramNfe = ParametroNfe02()
+
+    private var nfe: NfeModel = NfeModel()
 
 
      override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +71,7 @@ class ShowNfeValoresActivity : AppCompatActivity() {
     private fun iniciar(){
         inicializarTooBar()
         binding.txtViewSituacao75.setText(ParametroGlobal.prettyText.ambiente_produto(imoinventario.id_imobilizado,imoinventario.imo_descricao))
+        getNfe()
         getValores()
     }
 
@@ -98,6 +102,7 @@ class ShowNfeValoresActivity : AppCompatActivity() {
 
 
     private fun getNfe(){
+        loadNfe(nfe)
      /*
             param.id_empresa = imoinventario.id_empresa
             param.id_filial  = imoinventario.id_filial
@@ -172,6 +177,42 @@ class ShowNfeValoresActivity : AppCompatActivity() {
     }
     }
 
+    private fun loadNfe(nfe : NfeModel){
+        val format: NumberFormat = NumberFormat.getCurrencyInstance()
+        format.setMaximumFractionDigits(2)
+        format.setCurrency(Currency.getInstance("BRL"))
+
+        binding.editnronfe75.setText(ParametroGlobal.prettyText.tituloDescricaotres(
+            "Nro NFe: ",
+            nfe.nfe,
+            "Série: ",
+            nfe.serie,
+            "Item: ",
+            nfe.serie
+        ))
+
+        binding.editItem75.setText(ParametroGlobal.prettyText.tituloDescricao(
+            "Chave Eletronica.: ",
+            nfe.chavee
+        ))
+
+        binding.editDatas75.setText(ParametroGlobal.prettyText.tituloDescricaoDois(
+            "Emissão: ",
+            nfe.dtemissao,
+            "Lançamento: ",
+            nfe.dtlancamento
+        ))
+
+        binding.editValoresItens75.setText(ParametroGlobal.prettyText.tituloDescricaotres(
+            "Qtd: ",
+            format.format(nfe.qtd),
+            "P.Unit.: ",
+            format.format(nfe.punit),
+            "Vlr Cont.",
+            format.format(nfe.vlrcontabil),
+        ))
+    }
+
     private fun loadValor(valor:ValorModel){
 
         val format: NumberFormat = NumberFormat.getCurrencyInstance()
@@ -181,8 +222,26 @@ class ShowNfeValoresActivity : AppCompatActivity() {
         binding.editValores0175.setText(ParametroGlobal.prettyText.tituloDescricaoDois(
           "Aquisição: ",
           valor.dtaquisicao,
-          "Vlr Aquis.: ",format.format(valor.vlraquisicao)))
+          "Vlr Aquis.: ",
+            format.format(valor.vlraquisicao)))
 
+        binding.editValores0275.setText(ParametroGlobal.prettyText.tituloDescricaoDois(
+            "Tot. Depreciado: ",
+            format.format(valor.totaldepreciado),
+            "Vlr Residual: ",
+            format.format(valor.vlrresidual)))
+
+        binding.editValores0375.setText(ParametroGlobal.prettyText.tituloDescricao(
+            "Reavaliação: ",
+            format.format(valor.reavalicao)
+            ))
+
+        binding.editValores0475.setText(ParametroGlobal.prettyText.tituloDescricaoDois(
+            "DEEMED: ",
+            format.format(valor.deemed),
+            "Consolidado",
+            format.format(valor.vlrconsolidado)
+        ))
     }
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
         Toast.makeText(this, mensagem, duracao).show()
