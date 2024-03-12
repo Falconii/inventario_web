@@ -44,8 +44,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Barra De Consulta"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -95,8 +95,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="CENTRO DE CUSTO ORIGINAL"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -114,7 +114,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/ib_Limpar_cc_orig35"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/LabelCCOriginal35" />
 
                 <ImageButton
                     android:id="@+id/ib_Limpar_cc_orig35"
@@ -179,8 +180,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="NOVO CENTRO DE CUSTO"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -198,7 +199,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/ib_Limpar_cc_new35"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/LabelCCNew35" />
 
                 <ImageButton
                     android:id="@+id/ib_Limpar_cc_new35"
@@ -221,8 +223,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="USUÁRIO"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -240,7 +242,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/ib_Limpar_usuario35"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/LabelUsuario35" />
 
                 <ImageButton
                     android:id="@+id/ib_Limpar_usuario35"
@@ -263,8 +266,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="SITUAÇÃO"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -344,8 +347,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="ORIGEM"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -397,8 +400,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="FOTOS"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

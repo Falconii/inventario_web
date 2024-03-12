@@ -8,6 +8,7 @@ import android.widget.Filterable
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.simionato.inventarioweb.R
+import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.models.CentroCustoModel
 
 class CentroAdapter(
@@ -30,8 +31,8 @@ class CentroAdapter(
         }
 
         fun bind(centro:CentroCustoModel){
-            textDescricao.setText(centro.codigo)
-            txtSubTitulo.setText(centro.descricao)
+            textDescricao.setText(ParametroGlobal.prettyText.tituloDescricao("Código: ",centro.codigo.toString()))
+            txtSubTitulo.setText(ParametroGlobal.prettyText.tituloDescricao("Descrição: ",centro.descricao,true))
 
             layout.setOnClickListener {
                 clique(centro)

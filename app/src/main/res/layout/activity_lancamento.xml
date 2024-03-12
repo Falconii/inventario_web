@@ -6,6 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EAE5E5"
+    android:paddingLeft="5dp"
+    android:paddingTop="5dp"
+    android:paddingRight="5dp"
+    android:paddingBottom="5dp"
     tools:context=".LancamentoActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -187,13 +191,13 @@
                     <TextView
                         android:id="@+id/txtViewNroLancLabel02"
                         android:layout_width="wrap_content"
-                        android:layout_height="14dp"
+                        android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:layout_marginTop="5dp"
                         android:paddingLeft="6dp"
                         android:text="Nº Lançamento"
-                        android:textColor="@color/label"
-                        android:textSize="10sp"
+                        android:textColor="@color/corAzul"
+                        android:textSize="14sp"
                         android:textStyle="normal|italic"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -206,6 +210,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_weight="1"
                         android:background="@drawable/moldura_azul"
+                        android:gravity="center"
                         android:minHeight="50dp"
                         android:text="Nº Lançamento"
                         android:textAlignment="textStart"
@@ -215,15 +220,16 @@
 
                     <TextView
                         android:id="@+id/txtViewLabelData02"
-                        android:layout_width="102dp"
-                        android:layout_height="14dp"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
                         android:layout_marginTop="5dp"
                         android:paddingLeft="6dp"
-                        android:text="Data  "
-                        android:textColor="@color/label"
-                        android:textSize="10sp"
+                        android:text="DATA"
+                        android:textColor="@color/corAzul"
+                        android:textSize="14sp"
                         android:textStyle="normal|italic"
                         app:layout_constraintBottom_toBottomOf="@+id/txtViewNroLancLabel02"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/editData02"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -235,12 +241,12 @@
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
                         android:background="@drawable/moldura_azul"
+                        android:gravity="center"
                         android:minHeight="50dp"
                         android:text="Data"
                         android:textAlignment="textStart"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/editNroLanc02"
                         app:layout_constraintTop_toBottomOf="@+id/txtViewLabelData02" />
 
                     <TextView
@@ -281,9 +287,9 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
-                    android:text="Codigo Atual"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:text="@string/texto_codigo"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
@@ -294,6 +300,8 @@
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/moldura"
+                    android:gravity="center"
+                    android:hint="@string/texto_codigo"
                     android:minHeight="50dp"
                     android:text="Código Atual"
                     android:textAlignment="textStart"
@@ -316,13 +324,14 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Código Novo">
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editCodigoNovo02"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Código Novo"
+                        android:hint="@string/texto_codigo_novo"
                         android:inputType="number|numberSigned" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -347,8 +356,8 @@
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
                     android:text="Descrição"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
@@ -359,6 +368,7 @@
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/moldura"
+                    android:gravity="center"
                     android:minHeight="50dp"
                     android:text="Descrição"
                     android:textAlignment="textStart"
@@ -383,9 +393,9 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
-                    android:text="CENTRO DE CUSTO ORIGINAL"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:text="Centro de Custo Original"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
@@ -401,49 +411,14 @@
                     android:textAlignment="textStart"
                     android:textStyle="bold" />
             </LinearLayout>
-            <!--
-            <LinearLayout
-                android:id="@+id/llLinhaCCNovol02"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:padding="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/llLinhaCCOriginal02">
 
-                <TextView
-                    android:id="@+id/txtViewLabelCCNovol02"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:paddingLeft="6dp"
-                    android:text="CENTRO DE CUSTO NOVO"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
-                    android:textStyle="normal|italic" />
-
-                <TextView
-                    android:id="@+id/editCCNovol02"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/moldura"
-                    android:minHeight="50dp"
-                    android:text="CC NOVO"
-                    android:textAlignment="textStart"
-                    android:textStyle="bold" />
-            </LinearLayout>
-            -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/llLinhaCCNovol02"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/moldura">
 
                 <TextView
@@ -451,8 +426,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="NOVO CENTRO DE CUSTO"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -465,12 +440,13 @@
                     android:layout_weight="1"
                     android:gravity="center|left"
                     android:minHeight="50dp"
-                    android:text="Sem Filtro. Toque Para Alterar"
+                    android:text="@string/sem_cc_novo"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/ib_Limpar_cc_new02"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/LabelCCNew02" />
 
                 <ImageButton
                     android:id="@+id/ib_Limpar_cc_new02"
@@ -481,6 +457,7 @@
                     app:layout_constraintEnd_toEndOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/txtInputObs02"
                 android:layout_width="match_parent"
@@ -583,8 +560,6 @@
             android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

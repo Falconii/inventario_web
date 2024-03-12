@@ -23,15 +23,13 @@
 
     <SearchView
         android:id="@+id/svPesquisa10"
-        android:layout_width="402dp"
+        android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
         android:iconifiedByDefault="false"
-        android:queryHint="Busca Por Nome"
-        app:layout_constraintHorizontal_bias="0.5"
+        android:queryHint="Descrição Do Grupo"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ToolBar10"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintTop_toBottomOf="@+id/ToolBar10" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLista10"

@@ -225,7 +225,7 @@ class ProdutoActivity : AppCompatActivity() {
                     } catch (e: NumberFormatException) {
                         imobilizado.cod_cc = ""
                         imobilizado.cc_descricao = ""
-                        binding.editcc03.setText(R.string.sem_filtro)
+                        binding.editcc03.setText(R.string.sem_cc)
                         showToast("Código Inválido!", Toast.LENGTH_SHORT)
                     }
                 }

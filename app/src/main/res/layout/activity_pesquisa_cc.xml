@@ -26,7 +26,7 @@
         android:layout_height="56dp"
         android:layout_marginBottom="8dp"
         android:iconifiedByDefault="false"
-        android:queryHint="Busca Por Nome"
+        android:queryHint="Descrição CC"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ToolBar11"

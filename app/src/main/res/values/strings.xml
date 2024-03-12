@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Inventario Web</string>
     <string name="sem_filtro">Sem Filtro. Toque Para Alterar</string>
+    <string name="sem_cc">Ativo Sem CC Alocado. Toque Para Alterar</string>
+    <string name="sem_cc_novo">Ativo Não Transferido. Toque Para Alterar</string>
     <string name="titulo_barra">Controle De Imobilizados</string>
     <string name="no_user">\nUsuário Não Informado!\n\nFavor Efetuar Login.</string>
     <string name="lancamento_unico">Lançamento Individual\nPermite Inventariar O Produto\nAtravés Da Digitação Do Número Da Plaqueta\nOu Da Leitura Do Código De Barras</string>
@@ -13,6 +15,9 @@
     <string name="botao_dashboard">Resumo Do Inventário</string>
     <string name="corAmareloPretty">#87891B</string>
     <string name="corVerdePretty">#15D51D</string>
+    <string name="texto_codigo">Nº Ativo</string>
+    <string name="texto_codigo_novo">Nº Ativo Novo</string>
+
 
 
 </resources>

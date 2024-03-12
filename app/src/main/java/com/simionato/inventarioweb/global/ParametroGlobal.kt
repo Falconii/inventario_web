@@ -119,11 +119,11 @@ class ParametroGlobal {
             public fun tituloDescricaotres(titulo1:String, descricao1:String,
                                            titulo2:String, descricao2:String,
                                            titulo3:String, descricao3:String,
-                                           ) : Spanned {
+                                           quebra:Boolean = false) : Spanned {
                 var retorno:String = ""
-                retorno  = "<font color=${corTitulo}>${titulo1}</font><font color=${corDescricao}>${descricao1}</font>&nbsp;&nbsp;"
-                retorno += "<font color=${corTitulo}>${titulo2}</font><font color=${corDescricao}>${descricao2}</font>&nbsp;&nbsp;"
-                retorno += "<font color=${corTitulo}>${titulo3}</font><font color=${corDescricao}>${descricao3}</font>&nbsp;&nbsp;"
+                retorno  = "<font color=${corTitulo}>${titulo1}</font><font color=${corDescricao}>${descricao1}</font>${if(quebra) "<br/>" else "&nbsp;&nbsp;"}"
+                retorno += "<font color=${corTitulo}>${titulo2}</font><font color=${corDescricao}>${descricao2}</font>${if(quebra) "<br/>" else "&nbsp;&nbsp;"}"
+                retorno += "<font color=${corTitulo}>${titulo3}</font><font color=${corDescricao}>${descricao3}</font>"
                 return Html.fromHtml(retorno, Html.FROM_HTML_MODE_LEGACY)!!
             }
             public fun tituloDescricao4x2(titulo1:String, descricao1:String,

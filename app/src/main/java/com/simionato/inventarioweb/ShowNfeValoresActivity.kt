@@ -15,10 +15,12 @@ import com.google.gson.Gson
 import com.simionato.inventarioweb.databinding.ActivityShowNfeValoresBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.infra.InfraHelper
+import com.simionato.inventarioweb.models.GrupoModel
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
 import com.simionato.inventarioweb.models.NfeModel
 import com.simionato.inventarioweb.models.ValorModel
 import com.simionato.inventarioweb.parametros.ParametroNfe02
+import com.simionato.inventarioweb.services.NfeService
 import com.simionato.inventarioweb.services.ValorService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
 import retrofit2.Call
@@ -32,8 +34,6 @@ class ShowNfeValoresActivity : AppCompatActivity() {
     }
 
     private var imoinventario :ImobilizadoinventarioModel = ImobilizadoinventarioModel()
-
-    private var paramNfe = ParametroNfe02()
 
     private var nfe: NfeModel = NfeModel()
 
@@ -49,7 +49,6 @@ class ShowNfeValoresActivity : AppCompatActivity() {
         }
         try {
             val bundle = intent.extras
-            Log.i("zyzz", "Chegue na showfotos ${bundle}")
             if (bundle != null) {
                 imoinventario = if (Build.VERSION.SDK_INT >= 33) bundle.getParcelable(
                     "ImoInventario",
@@ -102,27 +101,68 @@ class ShowNfeValoresActivity : AppCompatActivity() {
 
 
     private fun getNfe(){
-        loadNfe(nfe)
-     /*
-            param.id_empresa = imoinventario.id_empresa
-            param.id_filial  = imoinventario.id_filial
-            param.cnpj_fornecedor = imoinventario.imo_nfe
-            param.razao_fornecedor: String ,
-            param.id_imobilizado: Int ,
-            param.nfe: String ,
-            param.serie: String ,
-            param.item: String
-        }
+        Log.i("zyzz","Pesquisa:  ${imoinventario}")
         try {
-            val imobilizadoInventarioService = InfraHelper.apiInventario.create( ImobilizadoInventarioService::class.java )
+            val nfeService = InfraHelper.apiInventario.create( NfeService::class.java )
             binding.llProgress75.visibility = View.VISIBLE
-            imobilizadoInventarioService.getImobilizadosInventarios(params).enqueue(object :
+            nfeService.getNfebyimobilizado(
+                imoinventario.id_empresa,
+                imoinventario.id_filial,
+                imoinventario.id_imobilizado,
+                imoinventario.imo_nfe,
+                imoinventario.imo_serie,
+                imoinventario.imo_item).enqueue(object :  Callback<List<NfeModel>>{
+                override fun onResponse(
+                    call: Call<List<NfeModel>>,
+                    response: Response<List<NfeModel>>
+                ) {
+                    binding.llProgress75.visibility = View.GONE
+                    if (response != null) {
+                        if (response.isSuccessful) {
 
+                            var nfes = response.body()!!
+
+                            if (nfes.size >  0){
+                                binding.llNfe75.visibility = View.VISIBLE
+                                nfe = nfes[0]
+                                loadNfe(nfe)
+                            } else {
+                                binding.llNfe75.visibility = View.GONE
+                                showToast("NFE Não Encontrada!")
+                            }
+                        }
+                        else {
+                            binding.llProgress75.visibility = View.GONE
+                            try {
+                                val gson = Gson()
+                                val message = gson.fromJson(
+                                    response.errorBody()!!.charStream(),
+                                    HttpErrorMessage::class.java
+                                )
+                                if (response.code() == 409) {
+                                    showToast("NFE Não Encontrada!")
+                                } else {
+                                    showToast(message.getMessage().toString())
+                                }
+                            } catch (error:Exception){
+                                showToast("NFE Não Encontrada!")
+                            }
+                            binding.llNfe75.visibility = View.GONE
+                        }
+                    } else {
+                        binding.llProgress75.visibility = View.GONE
+                        Toast.makeText(applicationContext,"Sem retorno Da Requisição!",Toast.LENGTH_SHORT).show()
+                    }
+                }
+                override fun onFailure(call: Call<List<NfeModel>>, t: Throwable) {
+                    binding.llProgress75.visibility = View.GONE
+                    showToast(t.message.toString())
+                }
+            })
         }catch (e: Exception){
             binding.llProgress75.visibility = View.GONE
             showToast("${e.message.toString()}",Toast.LENGTH_LONG)
         }
-       */
     }
 
     private fun getValores(){
@@ -147,17 +187,21 @@ class ShowNfeValoresActivity : AppCompatActivity() {
                     }
                     else {
                         binding.llProgress75.visibility = View.GONE
-                        val gson = Gson()
-                        val message = gson.fromJson(
-                            response.errorBody()!!.charStream(),
-                            HttpErrorMessage::class.java
-                        )
-                        if (response.code() == 409){
-                            showToast("Valores Não Encontrados!")
-                        } else {
-                            showToast(message.getMessage().toString())
+                        try {
+                            val gson = Gson()
+                            val message = gson.fromJson(
+                                response.errorBody()!!.charStream(),
+                                HttpErrorMessage::class.java
+                            )
+                            if (response.code() == 409) {
+                                showToast("VALORES Não Encontrados!")
+                            } else {
+                                showToast(message.getMessage().toString())
+                            }
+                        } catch (error:Exception){
+                            showToast("VALORES Não Encontrados!")
                         }
-                        binding.llValores.visibility = View.GONE
+                        binding.llProgress75.visibility = View.GONE
                     }
                 } else {
                     binding.llProgress75.visibility = View.GONE
@@ -167,7 +211,8 @@ class ShowNfeValoresActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ValorModel>, t: Throwable) {
-                TODO("Not yet implemented")
+                binding.llProgress75.visibility = View.GONE
+                showToast(t.message.toString())
             }
         })
 
@@ -181,6 +226,7 @@ class ShowNfeValoresActivity : AppCompatActivity() {
         val format: NumberFormat = NumberFormat.getCurrencyInstance()
         format.setMaximumFractionDigits(2)
         format.setCurrency(Currency.getInstance("BRL"))
+
 
         binding.editnronfe75.setText(ParametroGlobal.prettyText.tituloDescricaotres(
             "Nro NFe: ",
@@ -205,12 +251,30 @@ class ShowNfeValoresActivity : AppCompatActivity() {
 
         binding.editValoresItens75.setText(ParametroGlobal.prettyText.tituloDescricaotres(
             "Qtd: ",
-            format.format(nfe.qtd),
+            format.format(nfe.qtd).substring(3),
             "P.Unit.: ",
             format.format(nfe.punit),
             "Vlr Cont.",
             format.format(nfe.vlrcontabil),
+            true
         ))
+
+        binding.editValorContabil75.setText(ParametroGlobal.prettyText.tituloDescricao(
+            "Valor Contabil: ",
+            format.format(nfe.vlrcontabil),
+        ))
+
+        binding.editValoresIcms75.setText(ParametroGlobal.prettyText.tituloDescricaotres(
+            "Base Icms: ",
+            format.format(nfe.baseicms),
+            "Perc: ",
+            format.format(nfe.percicms),
+            "Vlr Icms: ",
+            format.format(nfe.vlrcicms),
+            true
+        ))
+
+
     }
 
     private fun loadValor(valor:ValorModel){
@@ -239,7 +303,7 @@ class ShowNfeValoresActivity : AppCompatActivity() {
         binding.editValores0475.setText(ParametroGlobal.prettyText.tituloDescricaoDois(
             "DEEMED: ",
             format.format(valor.deemed),
-            "Consolidado",
+            "Consolidado: ",
             format.format(valor.vlrconsolidado)
         ))
     }

@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.simionato.inventarioweb.R
+import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.models.GrupoModel
 
 class GrupoAdapter(
@@ -31,8 +32,9 @@ class GrupoAdapter(
         }
 
         fun bind(grupo:GrupoModel){
-            txtDescricao.setText(grupo.codigo.toString())
-            txtSubTitulo.setText(grupo.descricao)
+            txtDescricao.setText(ParametroGlobal.prettyText.tituloDescricao("Código: ",grupo.codigo.toString().padStart(6,'0')))
+            txtSubTitulo.setText(ParametroGlobal.prettyText.tituloDescricao("Descrição: ",grupo.descricao,true))
+
             layout.setOnClickListener{
                 clique(grupo)
             }

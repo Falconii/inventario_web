@@ -5,7 +5,6 @@ import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.text.InputFilter
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -21,7 +20,6 @@ import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
 import com.simionato.inventarioweb.models.LancamentoModel
 import com.simionato.inventarioweb.parametros.ParametroImobilizadoInventario01
-import com.simionato.inventarioweb.parametros.ParametroLocal01
 import com.simionato.inventarioweb.services.ImobilizadoInventarioService
 import com.simionato.inventarioweb.services.LancamentoService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
@@ -132,7 +130,7 @@ class LancamentoActivity : AppCompatActivity() {
         binding.ibLimparCcNew02.setOnClickListener {
             inventario.new_cc = ""
             inventario.new_cc_descricao = ""
-            binding.editCCNovol02.setText(R.string.sem_filtro)
+            binding.editCCNovol02.setText(R.string.sem_cc_novo)
         }
         binding.btExcluir02.setOnClickListener{
             val lancamento:LancamentoModel = loadLancamento()
@@ -180,7 +178,7 @@ class LancamentoActivity : AppCompatActivity() {
                 if(it.resultCode == 100){
                     inventario.new_cc = ""
                     inventario.new_cc_descricao = ""
-                    binding.editCCNovol02.setText("Ativo Não Tramferido. TOQUE Para Alterar")
+                    binding.editCCNovol02.setText(R.string.sem_cc_novo)
 
                 }
 
@@ -206,7 +204,7 @@ class LancamentoActivity : AppCompatActivity() {
                 } catch ( e : NumberFormatException ){
                     Toast.makeText(this,"Código Inválido!",Toast.LENGTH_SHORT).show()
                 }
-                binding.editCodigo01.setText(value)
+                binding.editCodigo01.setText(value?.padStart(6,'0'))
             } else {
                 binding.editCodigo01.setText("")
             }
@@ -317,6 +315,14 @@ class LancamentoActivity : AppCompatActivity() {
                                 } else {
                                     binding.cbSituacao.isChecked = false
                                 }
+
+                                when (inventario.status) {
+                                    0 -> {binding.txtViewSituac02.setTextColor(ContextCompat.getColor(applicationContext, R.color.corVermelho))}
+                                    1 -> {binding.txtViewSituac02.setTextColor(ContextCompat.getColor(applicationContext, R.color.corVerde))}
+                                    in 2..4 -> {binding.txtViewSituac02.setTextColor(ContextCompat.getColor(applicationContext, R.color.corAmarelo))}
+                                    5 -> {binding.txtViewSituac02.setTextColor(ContextCompat.getColor(applicationContext, R.color.secondary))}
+                                    else -> {binding.txtViewSituac02.setTextColor(ContextCompat.getColor(applicationContext, R.color.corVermelho))}
+                                }
                                 binding.txtViewSituac02.setText(
                                     ParametroGlobal.Situacoes.getSituacao(
                                         inventario.status
@@ -327,16 +333,18 @@ class LancamentoActivity : AppCompatActivity() {
                                 )
                                 binding.editData02.setText(inventario.lanc_dt_lanca)
                                 binding.txtViewResp02.setText("RESP: ${inventario.usu_razao}")
-                                binding.editCodigoAtual02.setText(inventario.id_imobilizado.toString())
+                                binding.editCodigoAtual02.setText(inventario.id_imobilizado.toString().padStart(6,'0'))
                                 binding.editCodigoNovo02.setText(
                                     if (inventario.new_codigo == 0) "" else inventario.new_codigo.toString()
                                 )
                                 binding.editDescricao02.setText(inventario.imo_descricao)
                                 binding.editCCOriginal02.setText(inventario.cc_descricao)
-                                binding.editCCNovol02.setText(
-                                    if (inventario.new_cc_descricao == "") "Ativo Não Tramferido. TOQUE Para Alterar" else inventario.new_cc_descricao
-                                )
-                                binding.editObs02.setText(inventario.lanc_obs)
+
+                                if (inventario.new_cc_descricao == ""){
+                                    binding.editCCNovol02.setText(R.string.sem_cc_novo)
+                                } else {
+                                    binding.editCCNovol02.setText("inventario.new_cc_descricao")
+                                }
                             }
 
                         }

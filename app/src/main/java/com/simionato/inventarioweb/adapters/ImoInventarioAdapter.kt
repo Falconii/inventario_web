@@ -79,14 +79,14 @@ class ImoInventarioAdapter(
                         )
                     }"
                 )
-                txtCodigo.setText(ParametroGlobal.prettyText.tituloDescricaoDois("CODIGO: ",imobilizadoInventario.id_imobilizado.toString().padStart(6,'0'),"ORIGEM: ",ParametroGlobal.Origem.getOrigem("P")))
+                txtCodigo.setText(ParametroGlobal.prettyText.tituloDescricaoDois("Ativo: ",imobilizadoInventario.id_imobilizado.toString().padStart(6,'0'),"ORIGEM: ",ParametroGlobal.Origem.getOrigem("P")))
                 txtCodigoNovo.visibility =
                     if (imobilizadoInventario.new_codigo != 0) View.VISIBLE else View.GONE
                 txtCodigoNovo.setText(ParametroGlobal.prettyText.tituloDescricao("COD. NOVO: ",imobilizadoInventario.new_codigo.toString().padStart(6,'0')))
 
                 txtDescricao.setText(ParametroGlobal.prettyText.tituloDescricao("DESCRIÇÃO: ",imobilizadoInventario.imo_descricao))
                 txtGrupo.setText(ParametroGlobal.prettyText.tituloDescricao("GRUPO: ",imobilizadoInventario.grupo_descricao))
-                txtCC.setText(ParametroGlobal.prettyText.tituloDescricao("CENTRO CUSTO: ",imobilizadoInventario.grupo_descricao))
+                txtCC.setText(ParametroGlobal.prettyText.tituloDescricao("CENTRO CUSTO: ",imobilizadoInventario.cc_descricao))
                 txtCCNovo.visibility =
                     if (imobilizadoInventario.new_cc != "") View.VISIBLE else View.GONE
                 txtCCNovo.setText(ParametroGlobal.prettyText.tituloDescricao("C.C. NOVO: ",imobilizadoInventario.new_cc_descricao))

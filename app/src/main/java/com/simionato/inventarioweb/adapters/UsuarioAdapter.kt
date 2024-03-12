@@ -8,6 +8,7 @@ import android.widget.Filterable
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.simionato.inventarioweb.R
+import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.models.UsuarioQuery01Model
 
 class UsuarioAdapter(
@@ -29,9 +30,8 @@ class UsuarioAdapter(
         }
 
         fun bind(usuario:UsuarioQuery01Model ){
-            textDescricao.setText(usuario.id.toString())
-            txtSubTitulo.setText(usuario.razao)
-
+            textDescricao.setText(ParametroGlobal.prettyText.tituloDescricao("Código: ",usuario.id.toString().padStart(6,'0')))
+            txtSubTitulo.setText(ParametroGlobal.prettyText.tituloDescricao("Descrição: ",usuario.razao,true))
             layout.setOnClickListener {
                 clique(usuario)
             }

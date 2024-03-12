@@ -101,15 +101,7 @@ class InventarioActivity : AppCompatActivity() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
 
-               /* val keyBoard = if (newText != null) newText else ""
 
-                if (keyBoard ==  ""){
-                    pesquisaString = ""
-                    paramImoInventario.id_imobilizado = 0
-                    paramImoInventario.new_codigo = 0
-                    paramImoInventario.descricao = ""
-                    getInventariosContador()
-                }*/
 
                 return false
             }
@@ -127,7 +119,11 @@ class InventarioActivity : AppCompatActivity() {
 
                 val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
 
-                val tam = adapter.itemCount
+                var tam = adapter.itemCount
+                if (tam <= 50){
+                    tam = -1
+                    binding.llProgress40.visibility = View.GONE
+                }
                 if (!isLoading) {
                     if (adapter.getLastEmpresa() == 0 && linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == tam - 1) {
                         Log.i("zyzz","Pagina AtuL ${paginaAtual}")
@@ -143,19 +139,7 @@ class InventarioActivity : AppCompatActivity() {
 
     }
 
-    private fun limpezaPesquisa(){
-        val clearButton: ImageView =
-            binding.svPesquisa40.findViewById(androidx.appcompat.R.id.search_close_btn)
-        clearButton.setOnClickListener { v: View? ->
-            if (binding.svPesquisa40.getQuery().length == 0) {
-                binding.svPesquisa40.setIconified(true)
-            } else {
-                binding.svPesquisa40.setQuery("", false)
-                pesquisaString = ""
-                getInventariosContador()
-            }
-        }
-    }
+
     private fun inicializarTooBar() {
         binding.ToolBar40.title = "Controle De Ativos"
         binding.ToolBar40.subtitle = ParametroGlobal.Dados.Inventario.descricao
@@ -355,7 +339,8 @@ class InventarioActivity : AppCompatActivity() {
                                     "paginaAtual ${paginaAtual} ${totalPaginas}  ${imobilizadoinventarios.size}"
                                 )
                                 if (imobilizadoinventarios !== null) {
-                                    if (paginaAtual < totalPaginas) {
+                                    Log.i("zyzz","totalPaginas ${totalPaginas} Pagina Atual ${paginaAtual} ${params}")
+                                    if ((totalPaginas > 1) && (paginaAtual < totalPaginas)) {
                                         var fimConsulta: ImobilizadoinventarioModel =
                                             ImobilizadoinventarioModel()
                                         imobilizadoinventarios.add(fimConsulta)
@@ -364,7 +349,6 @@ class InventarioActivity : AppCompatActivity() {
                                 } else {
                                     showToast("Falha No Retorno Da Requisição!")
                                 }
-
                             }
                         } else {
                             if (!unico && paginaAtual == 1) binding.llProgress40.visibility =
@@ -394,7 +378,6 @@ class InventarioActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
-
                 override fun onFailure(
                     call: Call<List<ImobilizadoinventarioModel>>,
                     t: Throwable
@@ -417,27 +400,6 @@ class InventarioActivity : AppCompatActivity() {
 
         var params: ParametroImobilizadoInventario01 = paramImoInventario
 
-        when (paramImoInventario._searchIndex) {
-            0 -> {
-                binding.svPesquisa40.queryHint = "Busca Por Código Atual"
-                binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED)
-            }
-
-            1 -> {
-                binding.svPesquisa40.queryHint = "Busca Por Código Novo"
-                binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED)
-            }
-
-            2 -> {
-                binding.svPesquisa40.queryHint = "Busca Pela Descrição"
-                binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS)
-            }
-
-            else -> {
-                binding.svPesquisa40.queryHint = "Busca Por Código Atual"
-                binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED)
-            }
-        }
 
         params.contador = "S"
 
@@ -478,6 +440,7 @@ class InventarioActivity : AppCompatActivity() {
                                                 if (resto == 0) totalPaginas else totalPaginas + 1
                                         }
                                         paginaAtual = 1
+                                        Log.i("zyzz","contador ${contador} paginaAtual ${paginaAtual} totalPaginas ${totalPaginas} ")
                                         getInventarios(false)
                                     } catch (e: NumberFormatException) {
                                         totalPaginas = 0
@@ -488,7 +451,6 @@ class InventarioActivity : AppCompatActivity() {
                                     showToast("Falha No Retorno Da Requisição!")
                                     totalPaginas = 0
                                     paginaAtual = 1
-                                    getInventarios(false)
                                 }
 
                             } else {
@@ -507,7 +469,6 @@ class InventarioActivity : AppCompatActivity() {
                                     totalPaginas = 0
                                     paginaAtual = 1
                                 }
-                                getInventarios(false)
                             }
                         } else {
                             binding.llProgress40.visibility = View.GONE
@@ -518,7 +479,6 @@ class InventarioActivity : AppCompatActivity() {
                             ).show()
                             totalPaginas = 0
                             paginaAtual = 1
-                            getInventarios(false)
                         }
                     }
 
@@ -526,7 +486,6 @@ class InventarioActivity : AppCompatActivity() {
                         binding.llProgress40.visibility = View.GONE
                         showToast(t.message.toString())
                         totalPaginas = 0
-                        getInventarios(false)
                     }
                 })
 
@@ -625,6 +584,29 @@ class InventarioActivity : AppCompatActivity() {
                 paramImoInventario.new_codigo = 0
                 paramImoInventario.id_imobilizado = 0
                 paramImoInventario.descricao = ""
+
+                when (paramImoInventario._searchIndex) {
+                    0 -> {
+                        binding.svPesquisa40.queryHint = "Busca Por Código Atual"
+                        binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED)
+                    }
+
+                    1 -> {
+                        binding.svPesquisa40.queryHint = "Busca Por Código Novo"
+                        binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED)
+                    }
+
+                    2 -> {
+                        binding.svPesquisa40.queryHint = "Busca Pela Descrição"
+                        binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS)
+                    }
+
+                    else -> {
+                        binding.svPesquisa40.queryHint = "Busca Por Código Atual"
+                        binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED)
+                    }
+                }
+
                 getInventariosContador()
             }
         }

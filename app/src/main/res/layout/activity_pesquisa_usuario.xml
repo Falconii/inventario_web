@@ -28,7 +28,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ToolBar07"
         android:iconifiedByDefault="false"
-        android:queryHint="Busca Por Nome"/>
+        android:queryHint="Nome do Usuário"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLista07"

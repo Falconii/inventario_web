@@ -89,8 +89,8 @@
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
                     android:text="Nº NFE e Série"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
@@ -103,7 +103,6 @@
                     android:background="@drawable/moldura"
                     android:minHeight="50dp"
                     android:text=""
-                    android:textAlignment="textStart"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -123,8 +122,8 @@
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
                     android:text="Item e Chave"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
@@ -137,7 +136,6 @@
                     android:background="@drawable/moldura"
                     android:minHeight="50dp"
                     android:text=""
-                    android:textAlignment="textStart"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -157,8 +155,8 @@
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
                     android:text="Datas"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
@@ -169,9 +167,9 @@
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/moldura"
+                    android:gravity="center"
                     android:minHeight="50dp"
                     android:text=""
-                    android:textAlignment="textStart"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -191,8 +189,8 @@
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
                     android:text="Valores do Item"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
@@ -206,6 +204,40 @@
                     android:minHeight="50dp"
                     android:text=""
                     android:textAlignment="textStart"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llValorContabil75"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:minWidth="60dp"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/txtViewLabelValorContabil75"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:paddingLeft="6dp"
+                    android:text="Valor Contabil"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
+                    android:textStyle="normal|italic" />
+
+                <TextView
+                    android:id="@+id/editValorContabil75"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/moldura"
+                    android:gravity="center"
+                    android:minHeight="50dp"
+                    android:text=""
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -224,9 +256,9 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
-                    android:text="Valores do Item"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:text="Valores do Icms"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
@@ -281,8 +313,8 @@
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
                     android:text="Valores do Bem"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
@@ -315,9 +347,9 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
-                    android:text="Reavaliação"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:text="Depreciação"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
@@ -351,8 +383,8 @@
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
                     android:text="Reavaliação"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
@@ -385,9 +417,9 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:paddingLeft="6dp"
-                    android:text="Reavaliação"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:text="DEEMED"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic" />
 
                 <TextView
