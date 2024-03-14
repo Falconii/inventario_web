@@ -20,7 +20,7 @@
         android:id="@+id/item_galeria_exit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:icon="@drawable/exit_branco_36"
         android:title="Voltar"
         app:showAsAction="always" />
 </menu>

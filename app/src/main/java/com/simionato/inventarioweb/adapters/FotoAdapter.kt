@@ -86,6 +86,10 @@ class FotoAdapter(
             btDelete.setOnClickListener {
                 clique(foto,CadastrosAcoes.Exclusao)
             }
+
+            btUpdate.setOnClickListener {
+                clique(foto,CadastrosAcoes.Edicao)
+            }
         }
     }
 

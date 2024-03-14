@@ -182,8 +182,8 @@ class FotosActivity : AppCompatActivity() {
         imageUri = createImageUri()!!
         binding.txtViewSituacao20.setText(ParametroGlobal.prettyText.ambiente_produto(id_imobilizado,descricao))
         binding.editUsuario20.setText(ParametroGlobal.Dados.usuario.razao)
-        binding.textAjudaGaleria20.setText(ParametroGlobal.prettyText.tituloDescricao("Atenção!","Utilize Esse Botão Para Importar As Fotos Da Galeria Do Celuar",true))
-        binding.textAjudaCamera20.setText(ParametroGlobal.prettyText.tituloDescricao("Atenção!","Utilize Esse Botão Para Importar As Fotos Da Câmera Do Celuar",true))
+        binding.textAjudaGaleria20.setText(ParametroGlobal.prettyText.tituloDescricao("Atenção!","Utilize O Botão Acima Para Importar As Fotos Da Galeria Do Celular",true))
+        binding.textAjudaCamera20.setText(ParametroGlobal.prettyText.tituloDescricao("Atenção!","Utilize O Botão Acima Para Importar As Fotos Da Câmera Do Celular",true))
 
         binding.txtInputObs.filters += InputFilter.AllCaps()
         binding.swDestaque20.isChecked = false

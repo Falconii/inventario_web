@@ -65,12 +65,6 @@ class PesquisaCcActivity : AppCompatActivity() {
                     finish()
                     return@setOnMenuItemClickListener true
                 }
-                R.id.menu_pesquisa_limpar -> {
-                    val returnIntent: Intent = Intent()
-                    setResult(100,returnIntent)
-                    finish()
-                    return@setOnMenuItemClickListener true
-                }
                 else -> {
                     return@setOnMenuItemClickListener true
                 }

@@ -11,7 +11,7 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/item_cancel"
-        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:icon="@drawable/exit_branco_36"
         android:title="Cancelar"
         app:showAsAction="always" />
 </menu>

@@ -237,6 +237,17 @@ class ShowNfeValoresActivity : AppCompatActivity() {
             nfe.serie
         ))
 
+        binding.editcnpj75.setText(ParametroGlobal.prettyText.tituloDescricao(
+            "CNPJ/CPF: ",
+            nfe.cnpj_fornecedor,
+        ))
+
+        binding.editrazao75.setText(ParametroGlobal.prettyText.tituloDescricao(
+            "Razão Social: ",
+            nfe.razao_fornecedor,
+            true
+        ))
+
         binding.editItem75.setText(ParametroGlobal.prettyText.tituloDescricao(
             "Chave Eletronica.: ",
             nfe.chavee

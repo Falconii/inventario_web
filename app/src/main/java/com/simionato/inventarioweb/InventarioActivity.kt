@@ -96,6 +96,9 @@ class InventarioActivity : AppCompatActivity() {
 
                 getInventariosContador()
 
+                binding.svPesquisa40.setQuery("", false)
+                binding.svPesquisa40.clearFocus()
+
                 return false
             }
 
@@ -269,40 +272,6 @@ class InventarioActivity : AppCompatActivity() {
                 params.pagina = paginaAtual
                 params.tamPagina = tamPagina
                 params.contador = "N"
-                params.new_codigo = 0
-                params.id_imobilizado = 0
-                params.descricao = ""
-                when (paramImoInventario._searchIndex) {
-                    0 -> {
-                        if (pesquisaString.isEmpty()) {
-                            params.id_imobilizado = 0
-                        } else {
-                            try {
-                                var chave = pesquisaString.toInt()
-                                params.id_imobilizado = chave
-                            } catch (e: NumberFormatException) {
-                                params.id_imobilizado = 0
-                            }
-                        }
-                    }
-
-                    1 -> {
-                        if (pesquisaString.isEmpty()) {
-                            params.new_codigo = 0
-                        } else {
-                            try {
-                                var chave = pesquisaString.toInt()
-                                params.new_codigo = chave
-                            } catch (e: NumberFormatException) {
-                                params.new_codigo = 0
-                            }
-                        }
-                    }
-
-                    2 -> {
-                        params.descricao = pesquisaString.trim()
-                    }
-                }
             }
         }
         Log.i("zyzz", "Buscando pagina ${paramImoInventario.pagina}")
@@ -398,9 +367,44 @@ class InventarioActivity : AppCompatActivity() {
 
     private fun getInventariosContador() {
 
+
         var params: ParametroImobilizadoInventario01 = paramImoInventario
 
+        params.new_codigo = 0
+        params.id_imobilizado = 0
+        params.descricao = ""
+        when (paramImoInventario._searchIndex) {
+            0 -> {
+                if (pesquisaString.isEmpty()) {
+                    params.id_imobilizado = 0
+                } else {
+                    try {
+                        var chave = pesquisaString.toInt()
+                        params.id_imobilizado = chave
+                    } catch (e: NumberFormatException) {
+                        params.id_imobilizado = 0
+                    }
+                }
+            }
 
+            1 -> {
+                if (pesquisaString.isEmpty()) {
+                    params.new_codigo = 0
+                } else {
+                    try {
+                        var chave = pesquisaString.toInt()
+                        params.new_codigo = chave
+                    } catch (e: NumberFormatException) {
+                        params.new_codigo = 0
+                    }
+                }
+            }
+
+            2 -> {
+                params.descricao = pesquisaString.trim()
+            }
+        }
+        pesquisaString = ""
         params.contador = "S"
 
         try {

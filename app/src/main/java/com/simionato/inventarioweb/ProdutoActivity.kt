@@ -208,6 +208,22 @@ class ProdutoActivity : AppCompatActivity() {
         getRetornoPequisaGrupo.launch(intent)
     }
 
+    private val getRetornoComplemento =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            imobilizado = ImobilizadoModel()
+            idAcao = CadastrosAcoes.None
+            binding.editCodigo03.setText("")
+            formulario(false)
+        }
+
+    private fun chamaComplemento() {
+        val intent = Intent(this, ComplementoProdutoActivity::class.java)
+        intent.putExtra("id_imobilizado", imobilizado.codigo)
+        getRetornoComplemento.launch(intent)
+    }
+
     private val getRetornoPequisaCc =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -379,11 +395,8 @@ class ProdutoActivity : AppCompatActivity() {
                         if (response.isSuccessful) {
                             var imo = response.body()
                             if (imo != null) {
-                                showToast("Imonilizado Gravado!")
-                                imobilizado = ImobilizadoModel()
-                                idAcao = CadastrosAcoes.None
-                                binding.editCodigo03.setText("")
-                                formulario(false)
+                                showToast("Imobilizado Gravado!")
+                                chamaComplemento()
                             } else {
                                 showToast("Falha Na Gravacao Do Imobilizado")
                             }

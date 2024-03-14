@@ -3,17 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_pesquisa_limpar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:icon="@android:drawable/ic_notification_clear_all"
-        android:title="Limpar"
-        app:showAsAction="always|withText" />
-    <item
         android:id="@+id/menu_pesquisa_sair"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:icon="@drawable/exit_branco_36"
         android:title="Sair"
         app:showAsAction="always" />
 </menu>

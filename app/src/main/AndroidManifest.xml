@@ -24,11 +24,20 @@
         android:theme="@style/Theme.InventarioWeb"
         tools:targetApi="31">
         <activity
-            android:name=".ShowNfeValoresActivity"
-            android:exported="false" />
+            android:name=".EditFotoActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
-            android:name=".FotoCameraActivity"
-            android:exported="false" />
+            android:name=".ComplementoProdutoActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ShowNfeValoresActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SplashActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -50,8 +59,7 @@
             android:name=".FotoWebActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
-            android:label="Visualizar Foto"
-            android:screenOrientation="portrait" />
+            android:label="Visualizar Foto" />
         <activity
             android:name=".ShowFotosActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

@@ -44,6 +44,9 @@ class ShowFotosActivity : AppCompatActivity() {
         if (idAcao == CadastrosAcoes.Exclusao) {
             showDialogDelete(foto)
         }
+        if (idAcao == CadastrosAcoes.Edicao) {
+            chamaFotoEdicao(foto)
+        }
     }
 
     private lateinit var  dialogDelete: AlertDialog
@@ -282,6 +285,23 @@ class ShowFotosActivity : AppCompatActivity() {
         intent.putExtra("id_file",foto.id_file)
         startActivity(intent)
     }
+
+
+    private fun chamaFotoEdicao(foto:FotoModel){
+
+        val intent = Intent(this,EditFotoActivity::class.java)
+        intent.putExtra("foto",foto)
+        getRetornoFoto.launch(intent)
+    }
+
+    private val getRetornoFotoEdicao =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                getFotos()
+            }
+        }
+
 
     private fun showDialogDelete(foto:FotoModel){
         val builder = AlertDialog.Builder(this)
