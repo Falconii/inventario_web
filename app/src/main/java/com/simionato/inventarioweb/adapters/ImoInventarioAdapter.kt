@@ -79,7 +79,7 @@ class ImoInventarioAdapter(
                         )
                     }"
                 )
-                txtCodigo.setText(ParametroGlobal.prettyText.tituloDescricaoDois("Ativo: ",imobilizadoInventario.id_imobilizado.toString().padStart(6,'0'),"ORIGEM: ",ParametroGlobal.Origem.getOrigem("P")))
+                txtCodigo.setText(ParametroGlobal.prettyText.tituloDescricaoDois("ATIVO: ",imobilizadoInventario.id_imobilizado.toString().padStart(6,'0'),"ORIGEM: ",ParametroGlobal.Origem.getOrigem("P")))
                 txtCodigoNovo.visibility =
                     if (imobilizadoInventario.new_codigo != 0) View.VISIBLE else View.GONE
                 txtCodigoNovo.setText(ParametroGlobal.prettyText.tituloDescricao("COD. NOVO: ",imobilizadoInventario.new_codigo.toString().padStart(6,'0')))

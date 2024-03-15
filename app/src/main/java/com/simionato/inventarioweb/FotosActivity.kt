@@ -201,7 +201,6 @@ class FotosActivity : AppCompatActivity() {
             finish()
         }
     }
-
     private fun inicializarTooBar(){
         binding.ToolBar20.title = "Controle De Ativos"
         binding.ToolBar20.subtitle = ParametroGlobal.Dados.Inventario.descricao
