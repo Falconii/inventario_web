@@ -45,6 +45,7 @@
         android:background="@drawable/moldura"
         android:text="Anexar Fotos"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btInventarioComplemento38"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
@@ -56,6 +57,7 @@
         android:layout_marginEnd="24dp"
         android:background="@drawable/moldura"
         android:text="Inventariar"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

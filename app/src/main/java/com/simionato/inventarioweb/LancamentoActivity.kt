@@ -15,8 +15,10 @@ import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.simionato.inventarioweb.databinding.ActivityLancamentoBinding
+import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.infra.InfraHelper
+import com.simionato.inventarioweb.models.ImobilizadoModel
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
 import com.simionato.inventarioweb.models.LancamentoModel
 import com.simionato.inventarioweb.parametros.ParametroImobilizadoInventario01
@@ -227,7 +229,6 @@ class LancamentoActivity : AppCompatActivity() {
         }
 
     }
-
     private fun inicializarTooBar(){
         binding.ToolBar02.title = "Controle De Ativos"
         binding.ToolBar02.subtitle = ParametroGlobal.Dados.Inventario.descricao
@@ -401,13 +402,15 @@ class LancamentoActivity : AppCompatActivity() {
 
                             formulario(false)
 
-                            Toast.makeText(
-                                applicationContext,
+                            showToast(
                                 "Ativo Inventariado Com Sucesso!",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                                Toast.LENGTH_SHORT)
                             if (id_imobilizado != 0){
                                 if (lanca != null)  finalizaOK(lanca)
+                            } else {
+                                if (lanca != null) {
+                                    chamaComplemento(lanca)
+                                }
                             }
                         } else {
                             binding.llProgress02.visibility = View.GONE
@@ -471,6 +474,11 @@ class LancamentoActivity : AppCompatActivity() {
                             ).show()
                             if (id_imobilizado != 0){
                                 if (lanca != null)  finalizaOK(lanca)
+                            }
+                            else {
+                                if (lanca != null) {
+                                    chamaComplemento(lanca)
+                                }
                             }
                         } else
                         {
@@ -634,30 +642,7 @@ class LancamentoActivity : AppCompatActivity() {
         binding.llCodigo02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
     }
     private fun clearInventario() {
-        inventario =ImobilizadoinventarioModel(0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            "",
-            0,
-            0,
-            "",
-            "",
-            0,
-            "",
-            "",
-            "" ,
-            "",
-            "",
-            0,
-            "",
-            "",
-            0,
-            "",
-            "" )
+        inventario =ImobilizadoinventarioModel()
     }
 
     private fun finalizaOK(lancamento: LancamentoModel){
@@ -668,5 +653,17 @@ class LancamentoActivity : AppCompatActivity() {
         finish()
     }
 
+    private val getRetornoComplemento =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+        }
+
+    private fun chamaComplemento(lanca : LancamentoModel) {
+        val intent = Intent(this, ComplementoProdutoActivity::class.java)
+        intent.putExtra("id_imobilizado", lanca.id_imobilizado)
+        intent.putExtra("fromLancamento", "S")
+        getRetornoComplemento.launch(intent)
+    }
 }
 

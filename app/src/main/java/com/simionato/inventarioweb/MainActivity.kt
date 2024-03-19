@@ -59,27 +59,7 @@ class MainActivity : AppCompatActivity() {
         inicializarTooBar()
         inflateTela()
 
-        /*
-       lifecycleScope.launch(Dispatchers.IO) {
-            getUserProfile().collect {
-                withContext(Dispatchers.Main) {
-                    Log.i("zyzz", "Memoria :${it}")
-                    ParametroGlobal.Dados.empresa.id = it.id_empresa
-                    ParametroGlobal.Dados.usuario.id_empresa = it.id_empresa
-                    ParametroGlobal.Dados.usuario.id = it.id_usuario
-                    if (it.id_usuario == 0){
-                        //Log.i("zyzz", "Vou chamar login, pois usuário é zero")
-                        //chamaLogin()
-                    } else {
-                        Log.i("zyzz", "Vou carregar padrao ${it.id_empresa} ${it.id_usuario}")
-                        getPadrao(it.id_empresa,it.id_usuario)
-                    }
-                }
-            }
 
-
-        }
-*/
 
         binding.ivSemUsuarioEntrar00.setOnClickListener {
            chamaLogin()
@@ -95,6 +75,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.btNovoProduto00.setOnClickListener{
             chamaProduto()
+        }
+
+        binding.btDasboard00.setOnClickListener{
+            chamaResumo()
         }
 
     }
@@ -274,6 +258,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    private fun chamaResumo(){
+        val intent = Intent(this,ResumoActivity::class.java)
+        getRetornoProduto.launch(intent)
+    }
+
+    private val getRetornoResumo =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+            }
+        }
 
     private fun chamaInventario(){
         val intent = Intent(this,InventarioActivity::class.java)

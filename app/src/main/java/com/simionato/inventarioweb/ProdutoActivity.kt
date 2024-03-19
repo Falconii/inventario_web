@@ -221,6 +221,7 @@ class ProdutoActivity : AppCompatActivity() {
     private fun chamaComplemento() {
         val intent = Intent(this, ComplementoProdutoActivity::class.java)
         intent.putExtra("id_imobilizado", imobilizado.codigo)
+        intent.putExtra("fromLancamento", "N")
         getRetornoComplemento.launch(intent)
     }
 

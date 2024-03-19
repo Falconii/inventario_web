@@ -154,6 +154,17 @@ class ParametroGlobal {
                 retorno += "<font color=${corTitulo}>${titulo4}</font><font color=${corDescricao}>${descricao4}</font><br/>"
                 return Html.fromHtml(retorno, Html.FROM_HTML_MODE_LEGACY)!!
             }
+
+            public fun ambiente() : Spanned {
+                var retorno:String = ""
+                var titulo1:String = "LOCAL: "
+                var descricao1:String = Inventario.local_razao
+                var titulo2:String = "INVENTÁRIO: "
+                var descricao2:String = Inventario.descricao
+                retorno  = "<font color=${corTitulo}>${titulo1}</font><font color=${corDescricao}>${descricao1}</font><br/>"
+                retorno += "<font color=${corTitulo}>${titulo2}</font><font color=${corDescricao}>${descricao2}</font>"
+                return Html.fromHtml(retorno, Html.FROM_HTML_MODE_LEGACY)!!
+            }
         }
     }
 

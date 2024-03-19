@@ -33,6 +33,8 @@ class ComplementoProdutoActivity : AppCompatActivity() {
     
     private var id_imobilizado:Int = 0;
 
+    private var fromLacamento:String = "N"
+
     private var imobilizadoInventario : ImobilizadoinventarioModel = ImobilizadoinventarioModel()
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +45,8 @@ class ComplementoProdutoActivity : AppCompatActivity() {
 
         id_imobilizado =  intent.getIntExtra("id_imobilizado",0)
 
+        fromLacamento  =  intent.getStringExtra("fromLancamento")!!
+
         if ( id_imobilizado == 0){
             showToast("Não Foi Informado O Código Do Imobilizado!");
             val returnIntent: Intent = Intent()
@@ -51,12 +55,23 @@ class ComplementoProdutoActivity : AppCompatActivity() {
             return
         }
 
+        if (fromLacamento == null){
+            fromLacamento = "N"
+        }
         getImoInventario()
     }
 
     private fun iniciar(){
 
         inicializarTooBar()
+
+        if (fromLacamento == "S"){
+            binding.btInventarioComplemento38.visibility = View.GONE
+            binding.textComplemento38.setText("COMPLEMENTO DE LANÇAMENTO DE INVENTÁRIO")
+        } else {
+            binding.btInventarioComplemento38.visibility = View.VISIBLE
+            binding.textComplemento38.setText("COMPLEMENTO DE CADASTRO DE PRODUTO")
+        }
 
         binding.btFotoComplemento38.setOnClickListener {
             chamaShowFotos()

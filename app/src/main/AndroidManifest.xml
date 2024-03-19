@@ -24,10 +24,15 @@
         android:theme="@style/Theme.InventarioWeb"
         tools:targetApi="31">
         <activity
+            android:name=".ResumoActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".EditFotoActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ComplementoProdutoActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
