@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.InputFilter
@@ -20,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.exifinterface.media.ExifInterface
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -41,8 +43,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.net.URL
 import java.util.Date
+import java.util.UUID
 
 class EditFotoActivity : AppCompatActivity() {
 
@@ -139,6 +143,24 @@ class EditFotoActivity : AppCompatActivity() {
         dialog.show()
     }
 
+
+    private val isExternalStorageAvailable: Boolean get() {
+        val extStorageState = Environment.getExternalStorageState()
+        return if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
+            true
+        } else{
+            false
+        }
+    }
+
+    private val isExternalStorageReadOnly: Boolean get() {
+        val extStorageState = Environment.getExternalStorageState()
+        return if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
+            true
+        } else {
+            false
+        }
+    }
 
     private lateinit var  dialog: AlertDialog
 
@@ -299,6 +321,8 @@ class EditFotoActivity : AppCompatActivity() {
 
             val id_file = RequestBody.create(MultipartBody.FORM,"")
 
+            val old_name = RequestBody.create(MultipartBody.FORM,"")
+
             val id_usuario = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.usuario.id.toString())
 
             val data = RequestBody.create(MultipartBody.FORM,getHoje())
@@ -319,6 +343,7 @@ class EditFotoActivity : AppCompatActivity() {
                     ,id_imobilizado
                     ,id_pasta
                     ,id_file
+                    ,old_name
                     ,id_usuario
                     ,data
                     ,destaque
@@ -383,13 +408,20 @@ class EditFotoActivity : AppCompatActivity() {
     private fun uploadFoto_camera(){
         try {
 
-            val filesDir = applicationContext.filesDir
+            //val filesDir = applicationContext.filesDir
 
-            val uriName = displayName(imageUri)
+            //val uriName = displayName(imageUri)
 
-            val file = File(filesDir, uriName)
+            //val file = File(filesDir, uriName)
 
-            Log.i("zyzz","Nome do arquivo enviado! ${file.name}")
+            val idUuid = UUID.randomUUID()
+            val fileUuid = idUuid.toString()
+            var fileName: String = "${ParametroGlobal.Dados.Inventario.id_empresa.toString().padStart(2,'0')}_" +
+                    "${ParametroGlobal.Dados.Inventario.id_filial.toString().padStart(6,'0')}_" +
+                    "${ParametroGlobal.Dados.Inventario.codigo.toString().padStart(6,'0')}_" +
+                    "${foto.id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
+
+            var file = saveLocal(fileName)
 
             val requestFile = RequestBody.create(MultipartBody.FORM, file)
 
@@ -399,13 +431,15 @@ class EditFotoActivity : AppCompatActivity() {
 
             val id_local = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.local.id.toString())
 
-            val id_inventario = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.Inventario.codigo.toString())
+            val id_inventario = RequestBody.create(MultipartBody.FORM, ParametroGlobal.Dados.Inventario.codigo.toString())
 
             val id_imobilizado = RequestBody.create(MultipartBody.FORM,foto.id_imobilizado.toString())
 
-            val id_pasta = RequestBody.create(MultipartBody.FORM,"")
+            val id_pasta = RequestBody.create(MultipartBody.FORM,foto.id_pasta)
 
-            val id_file = RequestBody.create(MultipartBody.FORM,"")
+            val id_file = RequestBody.create(MultipartBody.FORM,foto.id_file)
+
+            val old_name = RequestBody.create(MultipartBody.FORM,"")
 
             val id_usuario = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.usuario.id.toString())
 
@@ -427,12 +461,13 @@ class EditFotoActivity : AppCompatActivity() {
                     ,id_imobilizado
                     ,id_pasta
                     ,id_file
+                    ,old_name
                     ,id_usuario
                     ,data
                     ,destaque
                     ,obs
                     ,body)
-                    .enqueue(object : Callback<RetornoUpload> {
+                    .enqueue(object :Callback<RetornoUpload>{
                         override fun onResponse(
                             call: Call<RetornoUpload>,
                             response: Response<RetornoUpload>
@@ -440,15 +475,25 @@ class EditFotoActivity : AppCompatActivity() {
                             binding.llProgress42.visibility = View.GONE
 
                             if (response != null) {
+
                                 if (response.isSuccessful) {
 
                                     var mensagem = response.body()
 
                                     if (mensagem !== null) {
 
-                                        showToast("Foto ALTERADA!")
+                                        try {
+                                            file.delete()
+                                        } catch (e: Exception) {
+                                            showToast("Falha Na Exclusão Da Foto!", Toast.LENGTH_LONG)
+                                        }
+                                        showToast("${mensagem.message}")
 
-                                        deleteFoto(foto)
+                                        val returnIntent: Intent = Intent()
+
+                                        setResult(Activity.RESULT_OK,returnIntent)
+
+                                        finish()
 
                                     } else {
                                         showToast("Falha No Retorno Da Requisição!")
@@ -630,4 +675,51 @@ class EditFotoActivity : AppCompatActivity() {
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
         Toast.makeText(this, mensagem, duracao).show()
     }
+
+    private fun saveLocal(name:String): File {
+
+        //Busca a orientação da foto
+
+        val filesDir = applicationContext.filesDir
+
+        val uriName = displayName(imageUri)
+
+        val file = File(filesDir, uriName)
+
+        val oldExif = ExifInterface(file)
+
+        val exifOrientation: String? = oldExif.getAttribute(ExifInterface.TAG_ORIENTATION)
+
+        val filepath = "Fotos"
+
+        var fotoExternalFile: File?=null
+
+        fotoExternalFile = File(getExternalFilesDir(filepath), name)
+
+        try {
+            val fos: FileOutputStream = FileOutputStream(fotoExternalFile)
+            val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos);
+
+            if (exifOrientation != null) {
+                val newExif: ExifInterface = ExifInterface(fotoExternalFile)
+                newExif.setAttribute(ExifInterface.TAG_ORIENTATION, exifOrientation)
+                newExif.saveAttributes()
+            }
+
+        } catch (e: IOException) {
+            showToast("Falha Na Correção Da Orientação Da Foto!!");
+        }
+
+
+        return fotoExternalFile
+    }
+    private fun storageItsOk():Boolean{
+        if (!isExternalStorageAvailable || isExternalStorageReadOnly) {
+            return false
+        }
+
+        return true;
+    }
+
 }

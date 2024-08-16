@@ -68,7 +68,7 @@
         android:layout_height="19dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Power By Simionato Versão 1.0 Beta"
+        android:text="Power By Simionato Versão 1.0 "
         android:textAlignment="textEnd"
         android:textColor="@color/white"
         android:textSize="16sp"

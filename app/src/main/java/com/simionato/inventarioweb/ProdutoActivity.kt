@@ -61,7 +61,7 @@ class ProdutoActivity : AppCompatActivity() {
                 Toast.makeText(this, "Permissão Negada", Toast.LENGTH_SHORT).show()
             }
         }
-
+        setarCondicao()
         formulario(false)
         inicializar()
 
@@ -98,14 +98,15 @@ class ProdutoActivity : AppCompatActivity() {
 
         inicializarTooBar()
 
+
+
         binding.imSearch03.setOnClickListener {
 
             val inputMethodManager =
                 getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
             // on below line hiding our keyboard.
-            inputMethodManager.hideSoftInputFromWindow(binding.editCodigo03.getWindowToken(), 0)
-
+            inputMethodManager.hideSoftInputFromWindow(binding.editApelido03.getWindowToken(), 0)
             try {
                 val codigo = binding.editCodigo03.text.toString().toInt()
                 getImobilizado(
@@ -141,6 +142,20 @@ class ProdutoActivity : AppCompatActivity() {
             chamaPesquisaCc()
         }
 
+        binding.rgCondicao03  .setOnCheckedChangeListener{ _, _ ->
+            if (binding.rbBom03.isChecked) {
+                imobilizado.condicao = 1
+            }
+            if (binding.rbRegular03.isChecked) {
+                imobilizado.condicao = 2
+            }
+            if (binding.rbRuim03.isChecked) {
+                imobilizado.condicao = 3
+            }
+            if (binding.rbNaoClass3.isChecked) {
+                imobilizado.condicao = 9
+            }
+        }
         binding.btExcluir03.setOnClickListener { }
 
         binding.btCancelar03.setOnClickListener {
@@ -152,6 +167,7 @@ class ProdutoActivity : AppCompatActivity() {
             if (idAcao == CadastrosAcoes.Inclusao) {
                 imobilizado.origem = "M"
                 imobilizado.descricao = binding.editDescricao03.text.toString();
+                imobilizado.apelido = binding.editApelido03.text.toString();
                 if (imobilizado.descricao.trim() == "") {
                     showToast("Descrição Obrigatótoria!")
                     return@setOnClickListener
@@ -340,6 +356,7 @@ class ProdutoActivity : AppCompatActivity() {
                                     imobilizado.id_empresa = Inventario.id_empresa
                                     imobilizado.id_filial  = Inventario.id_filial
                                     imobilizado.codigo = codigo
+                                    imobilizado.condicao = 9
                                     loadFormulario()
                                     formulario(true)
                                 } else {
@@ -434,6 +451,25 @@ class ProdutoActivity : AppCompatActivity() {
         Toast.makeText(this, mensagem, duracao).show()
     }
 
+    fun setarCondicao(){
+        when (imobilizado.condicao) {
+            1 -> {
+                binding.rbBom03 .isChecked = true
+            }
+
+            2 -> {
+                binding.rbRegular03.isChecked = true
+            }
+
+            3 -> {
+                binding.rbRuim03.isChecked = true
+            }
+
+            else -> {
+                binding.rbNaoClass3.isChecked = true
+            }
+        }
+    }
     private fun formulario(show: Boolean) {
         if (show) {
             if (idAcao == CadastrosAcoes.Consulta) {
@@ -467,6 +503,16 @@ class ProdutoActivity : AppCompatActivity() {
             View.VISIBLE
         }
         binding.llLinhaCC03.visibility = if (!show) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
+        binding.llLinhaCondicao03.visibility = if (!show) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
+        binding.llLinhaApelido03.visibility = if (!show) {
             View.GONE
         } else {
             View.VISIBLE
@@ -518,6 +564,8 @@ class ProdutoActivity : AppCompatActivity() {
             } else {
                 editGrupo03.setText(R.string.sem_filtro)
             }
+            setarCondicao()
+            editApelido03.setText(imobilizado.apelido)
         }
 
     }

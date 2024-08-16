@@ -358,7 +358,7 @@
                     android:text="Descrição"
                     android:textColor="@color/corAzul"
                     android:textSize="14sp"
-                    android:textStyle="normal|italic" />
+                    android:textStyle="normal|italic"/>
 
                 <TextView
                     android:id="@+id/editDescricao02"
@@ -372,7 +372,8 @@
                     android:minHeight="50dp"
                     android:text="Descrição"
                     android:textAlignment="textStart"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textIsSelectable="true" />
             </LinearLayout>
 
             <LinearLayout
@@ -456,6 +457,115 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/llLinhaCondicao02"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/moldura">
+
+                <TextView
+                    android:id="@+id/LabelCondicao02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Condicao"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
+                    android:textStyle="normal|italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <RadioGroup
+                    android:id="@+id/rgCondicao02"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:gravity="start|left"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@+id/LabelCondicao02"
+                    tools:layout_editor_absoluteX="10dp">
+
+                    <RadioButton
+                        android:id="@+id/rbBom02"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Bom" />
+
+                    <RadioButton
+                        android:id="@+id/rbRegular02"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Regular" />
+
+                    <RadioButton
+                        android:id="@+id/rbRuim02"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ruim" />
+
+                    <RadioButton
+                        android:id="@+id/rbNaoClass2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Não Classificado" />
+
+                </RadioGroup>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/llLinhaBook02"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/moldura">
+
+                <TextView
+                    android:id="@+id/LabelBook02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Book"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
+                    android:textStyle="normal|italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <RadioGroup
+                    android:id="@+id/rgBook02"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:gravity="start|left"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@+id/LabelBook02"
+                    tools:layout_editor_absoluteX="10dp">
+
+                    <RadioButton
+                        android:id="@+id/rbBooSim02"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sim" />
+
+                    <RadioButton
+                        android:id="@+id/rbBooNao02"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Não" />
+
+                    <RadioButton
+                        android:id="@+id/rbBooNaoClassificado02"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Não Classificado" />
+
+                </RadioGroup>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.textfield.TextInputLayout

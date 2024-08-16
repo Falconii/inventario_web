@@ -208,6 +208,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/llLinhaInventario01">
 
 
+
                     <Button
                         android:id="@+id/btCancelar20"
                         android:layout_width="40dp"
@@ -217,6 +218,8 @@
                         android:layout_weight="1"
                         android:backgroundTint="#E4B849"
                         android:text="Cancelar" />
+
+                   
 
                     <Button
                         android:id="@+id/btGravar20"

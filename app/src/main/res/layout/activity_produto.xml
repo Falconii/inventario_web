@@ -9,7 +9,7 @@
     android:paddingTop="5dp"
     android:paddingRight="5dp"
     android:paddingBottom="5dp"
-    tools:context=".LancamentoActivity">
+    tools:context=".ProdutoActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/ToolBar03"
@@ -273,6 +273,82 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/llLinhaCondicao03"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/moldura">
+
+                <TextView
+                    android:id="@+id/LabelCondicao03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Condicao"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
+                    android:textStyle="normal|italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <RadioGroup
+                    android:id="@+id/rgCondicao03"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:gravity="start|left"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@+id/LabelCondicao03"
+                    tools:layout_editor_absoluteX="10dp">
+
+                    <RadioButton
+                        android:id="@+id/rbBom03"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Bom" />
+
+                    <RadioButton
+                        android:id="@+id/rbRegular03"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Regular" />
+
+                    <RadioButton
+                        android:id="@+id/rbRuim03"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ruim" />
+
+                    <RadioButton
+                        android:id="@+id/rbNaoClass3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Não Classificado" />
+
+                </RadioGroup>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/llLinhaApelido03"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editApelido03"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:hint="Apelido"
+                    android:maxLength="30"
+                    android:textAlignment="textStart"
+                    android:inputType="text|textCapCharacters"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:id="@+id/llLinhaBotoes03"
@@ -319,7 +395,11 @@
                     android:text="Gravar" />
             </LinearLayout>
 
+
+
         </LinearLayout>
+
+
     </ScrollView>
 
     <LinearLayout
@@ -357,4 +437,5 @@
             android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

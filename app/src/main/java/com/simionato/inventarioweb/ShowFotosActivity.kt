@@ -42,7 +42,11 @@ class ShowFotosActivity : AppCompatActivity() {
             chamaFotoWeb(foto)
         }
         if (idAcao == CadastrosAcoes.Exclusao) {
-            showDialogDelete(foto)
+            if (foto.id_pasta == "1eQuwNcfTmpYUWUIvlGBouodico8WrjoD"){
+                showDialogDelete(foto)
+            } else {
+                showToast("Não Posso Apagar ESta Foto!")
+            }
         }
         if (idAcao == CadastrosAcoes.Edicao) {
             chamaFotoEdicao(foto)
@@ -122,6 +126,11 @@ class ShowFotosActivity : AppCompatActivity() {
         binding.ToolBar30.inflateMenu(R.menu.menu_show_fotos)
         binding.ToolBar30.setOnMenuItemClickListener { menuItem ->
             when( menuItem.itemId ){
+
+                R.id.menu_show_fotos_refresh -> {
+                    getFotos()
+                    return@setOnMenuItemClickListener true
+                }
                 R.id.menu_show_fotos_exit -> {
                     val returnIntent: Intent = Intent()
                     setResult(Activity.RESULT_CANCELED,returnIntent)
@@ -277,7 +286,7 @@ class ShowFotosActivity : AppCompatActivity() {
             ActivityResultContracts.StartActivityForResult()) {
             if(it.resultCode == Activity.RESULT_OK){
                 getFotos()
-            }
+            } 
         }
 
     fun chamaFotoWeb(foto:FotoModel){

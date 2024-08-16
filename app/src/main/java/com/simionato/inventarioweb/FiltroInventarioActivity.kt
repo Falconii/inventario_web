@@ -33,6 +33,7 @@ class FiltroInventarioActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.llProgress35.visibility = View.GONE
+        binding.llFoto35.visibility = View.GONE
         iniciar()
     }
 
@@ -83,7 +84,7 @@ class FiltroInventarioActivity : AppCompatActivity() {
                 paramImoInventario.status = 0
             }
             if (binding.rbInventariado35.isChecked) {
-                paramImoInventario.status = 0
+                paramImoInventario.status = 1
             }
             if (binding.rbInventariadoTrocaCodigo35.isChecked) {
                 paramImoInventario.status = 2

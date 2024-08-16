@@ -37,32 +37,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ToolBar38" />
 
-    <Button
-        android:id="@+id/btFotoComplemento38"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:background="@drawable/moldura"
-        android:text="Anexar Fotos"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btInventarioComplemento38"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
 
     <Button
         android:id="@+id/btInventarioComplemento38"
         android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
         android:background="@drawable/moldura"
         android:text="Inventariar"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
 
+    <Button
+        android:id="@+id/btFotoComplemento38"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/moldura"
+        android:text="Anexar Fotos"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/llProgress38"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
 
     <LinearLayout
         android:id="@+id/llProgress38"
@@ -72,11 +74,11 @@
         android:layout_marginRight="5dp"
         android:background="#D1C9C9"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btFotoComplemento38"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textComplemento38"
         app:layout_constraintVertical_bias="0.5">
 
         <ProgressBar

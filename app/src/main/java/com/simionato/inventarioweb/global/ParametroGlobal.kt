@@ -1,20 +1,16 @@
 package com.simionato.inventarioweb.global
 
 import android.Manifest
-import android.content.Context
 import android.text.Html
-import android.text.Spannable
 import android.text.Spanned
-import android.util.Log
-import androidx.core.content.res.ResourcesCompat
-import com.simionato.inventarioweb.R
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.Inventario
 import com.simionato.inventarioweb.models.EmpresaModel
 import com.simionato.inventarioweb.models.InventarioModel
 import com.simionato.inventarioweb.models.LocalModel
 import com.simionato.inventarioweb.models.UsuarioModel
 import com.simionato.inventarioweb.parametros.ParametroImobilizadoInventario01
-import com.simionato.inventarioweb.parametros.ParametroInventario01
+import java.text.Normalizer
+import java.util.regex.Pattern
 
 class ParametroGlobal {
     class Dados {
@@ -53,7 +49,7 @@ class ParametroGlobal {
                     }
 
                     5 -> {
-                        retorno = "Inven. Como 'Não Encontrado'"
+                        retorno = "Não Encontrado!"
                     }
 
                     else -> {
@@ -66,9 +62,57 @@ class ParametroGlobal {
         }
     }
 
+    class Condicoes {
+        companion object {
+            public fun getCondicao(idx: Int): String {
+                var retorno: String = "";
+
+                when (idx) {
+                    1 -> {
+                        retorno = "Boa"
+                    }
+
+                    2 -> {
+                        retorno = "Regular"
+                    }
+
+                    3 -> {
+                        retorno = "Ruim"
+                    }
+                    else -> {
+                        retorno = "Não Avaliado"
+                    }
+                }
+
+                return retorno
+            }
+        }
+    }
+
+    class SimNao {
+        companion object {
+            public fun getSimNao(resp: String): String {
+                var retorno: String = "";
+
+                when (resp) {
+                    "S" -> {
+                        retorno = "Sim"
+                    }
+                    "N" -> {
+                        retorno = "Não"
+                    }
+                    else -> {
+                        retorno = "Não"
+                    }
+                }
+                return retorno
+            }
+        }
+    }
     class Permissoes{
         companion object{
             val PERMISSAO_GALERIA  = Manifest.permission.READ_MEDIA_IMAGES
+            val PERMISSAO_CAMERA   = Manifest.permission.CAMERA
         }
     }
 
@@ -126,10 +170,12 @@ class ParametroGlobal {
                 retorno += "<font color=${corTitulo}>${titulo3}</font><font color=${corDescricao}>${descricao3}</font>"
                 return Html.fromHtml(retorno, Html.FROM_HTML_MODE_LEGACY)!!
             }
-            public fun tituloDescricao4x2(titulo1:String, descricao1:String,
-                                          titulo2:String, descricao2:String,
-                                          titulo3:String, descricao3:String,
-                                          titulo4:String, descricao4:String,) : Spanned {
+            public fun tituloDescricao4x2(
+                titulo1: String, descricao1: String,
+                titulo2: String, descricao2: String,
+                titulo3: String, descricao3: String,
+                titulo4: String, descricao4: String,
+            ) : Spanned {
                 var retorno:String = ""
                 retorno  = "<font color=${corTitulo}>${titulo1}</font><font color=${corDescricao}>${descricao1}</font>&nbsp;&nbsp;&nbsp;"
                 retorno += "<font color=${corTitulo}>${titulo2}</font><font color=${corDescricao}>${descricao2}</font><br/>"
@@ -164,6 +210,17 @@ class ParametroGlobal {
                 retorno  = "<font color=${corTitulo}>${titulo1}</font><font color=${corDescricao}>${descricao1}</font><br/>"
                 retorno += "<font color=${corTitulo}>${titulo2}</font><font color=${corDescricao}>${descricao2}</font>"
                 return Html.fromHtml(retorno, Html.FROM_HTML_MODE_LEGACY)!!
+            }
+        }
+    }
+
+    class Acentos{
+
+        companion object {
+            public fun semAcento(value:String):String{
+                val nfdNormalizedString: String = Normalizer.normalize(value, Normalizer.Form.NFD)
+                val pattern: Pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+")
+                return pattern.matcher(nfdNormalizedString).replaceAll("")
             }
         }
     }

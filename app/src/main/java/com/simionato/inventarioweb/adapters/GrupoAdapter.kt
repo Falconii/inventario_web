@@ -75,7 +75,8 @@ class GrupoAdapter(
                 resultList.addAll(lista)
             } else {
                 lista
-                    .filter { it.descricao.lowercase().contains(text.lowercase())}
+                    .filter { ParametroGlobal.Acentos.semAcento(it.descricao.lowercase()).contains(
+                        ParametroGlobal.Acentos.semAcento(text.lowercase()))}
                     .forEach({obj -> resultList.add(obj) })
             }
             return FilterResults().apply {

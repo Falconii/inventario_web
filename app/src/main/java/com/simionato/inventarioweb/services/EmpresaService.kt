@@ -1,10 +1,8 @@
 package com.simionato.inventarioweb.services
 
 import com.simionato.inventarioweb.models.EmpresaModel
-import com.simionato.inventarioweb.models.LancamentoModel
 import com.simionato.inventarioweb.parametros.ParametroEmpresa01
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST

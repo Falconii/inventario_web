@@ -68,9 +68,11 @@ class ComplementoProdutoActivity : AppCompatActivity() {
         if (fromLacamento == "S"){
             binding.btInventarioComplemento38.visibility = View.GONE
             binding.textComplemento38.setText("COMPLEMENTO DE LANÇAMENTO DE INVENTÁRIO")
+            binding.btFotoComplemento38.visibility = View.VISIBLE
         } else {
             binding.btInventarioComplemento38.visibility = View.VISIBLE
             binding.textComplemento38.setText("COMPLEMENTO DE CADASTRO DE PRODUTO")
+            binding.btFotoComplemento38.visibility = View.GONE
         }
 
         binding.btFotoComplemento38.setOnClickListener {
@@ -115,7 +117,8 @@ class ComplementoProdutoActivity : AppCompatActivity() {
         ) {
             if ((it.resultCode == Activity.RESULT_OK) && (it.data?.extras != null)) {
                 try {
-                   //desprezo o retorno
+                    binding.btInventarioComplemento38.visibility = View.GONE
+                    binding.btFotoComplemento38.visibility = View.VISIBLE
                 } catch (error: Exception) {
                     showToast("Erro No Retorno: ${error.message}")
                     finish()

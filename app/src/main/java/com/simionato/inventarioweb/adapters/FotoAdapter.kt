@@ -44,6 +44,7 @@ class FotoAdapter(
             textDescricao = ItemView.findViewById(R.id.foto_item_txt_descricao)
             textObservacao = ItemView.findViewById(R.id.foto_item_txt_obs)
             textUsuario  = ItemView.findViewById(R.id.foto_item_txt_usuario)
+            btUpdate.visibility = View.GONE
         }
 
         fun bind(foto:FotoModel){
@@ -82,14 +83,16 @@ class FotoAdapter(
             btShow.setOnClickListener {
                clique(foto,CadastrosAcoes.Consulta)
             }
-            
+
+
             btDelete.setOnClickListener {
                 clique(foto,CadastrosAcoes.Exclusao)
             }
+/*
+           btUpdate.setOnClickListener {
+               clique(foto,CadastrosAcoes.Edicao)
+           }*/
 
-            btUpdate.setOnClickListener {
-                clique(foto,CadastrosAcoes.Edicao)
-            }
         }
     }
 

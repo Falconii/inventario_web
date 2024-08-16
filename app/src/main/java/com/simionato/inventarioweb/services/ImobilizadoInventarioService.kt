@@ -33,6 +33,10 @@ interface ImobilizadoInventarioService {
         @Body params: ParametroImobilizadoInventario01
     ):  Call<JsonObject>
 
+    @POST("imobilizadosinventariosexcel")
+    fun getimobilizadosinventariosexcel(
+        @Body params: ParametroImobilizadoInventario01
+    ):  Call<JsonObject>
     @Multipart
     @POST("imobilizadoinventariofoto")
     fun postImobilizadoInventarioFoto(

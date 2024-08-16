@@ -5,7 +5,10 @@ import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.text.InputFilter
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -15,10 +18,8 @@ import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.simionato.inventarioweb.databinding.ActivityLancamentoBinding
-import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.infra.InfraHelper
-import com.simionato.inventarioweb.models.ImobilizadoModel
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
 import com.simionato.inventarioweb.models.LancamentoModel
 import com.simionato.inventarioweb.parametros.ParametroImobilizadoInventario01
@@ -44,7 +45,10 @@ class LancamentoActivity : AppCompatActivity() {
 
     private var idx:Int = 0;
 
+    private lateinit var  dialogDelete: androidx.appcompat.app.AlertDialog
+
     private var requestCamara: ActivityResultLauncher<String>? = null
+    private var requestCamara2: ActivityResultLauncher<String>? = null
     private lateinit var inventario: ImobilizadoinventarioModel
     private val binding by lazy {
         ActivityLancamentoBinding.inflate(layoutInflater)
@@ -68,7 +72,7 @@ class LancamentoActivity : AppCompatActivity() {
                 descricao = bundle.getString("descricao")!!
                 idx = bundle.getInt("idx",0)
             } else {
-                showToast("Parâmetro Foto Incorreto!!")
+                showToast("Parâmetro Lançamento Incorretos !!")
                 finish()
             }
         }  catch (error:Exception){
@@ -80,10 +84,19 @@ class LancamentoActivity : AppCompatActivity() {
             binding.txtViewSituacao02.setVisibility(View.GONE)
         }
 
-        requestCamara = registerForActivityResult(ActivityResultContracts.RequestPermission(),){
+        requestCamara = registerForActivityResult(ActivityResultContracts.RequestPermission()){
             if (it){
                 val intent = Intent(this,ScanBarCodeActivity::class.java)
                 getResult.launch(intent)
+            } else {
+                Toast.makeText(this,"Permissão Negada",Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        requestCamara2 = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+            if (it){
+                val intent = Intent(this,ScanBarCodeActivity::class.java)
+                getResult2.launch(intent)
             } else {
                 Toast.makeText(this,"Permissão Negada",Toast.LENGTH_SHORT).show()
             }
@@ -107,13 +120,13 @@ class LancamentoActivity : AppCompatActivity() {
 
         inicializarTooBar()
 
+        val inputMethodManager =
+            getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+
+        // on below line hiding our keyboard.
+        inputMethodManager.hideSoftInputFromWindow(binding.editCodigo01.getWindowToken(), 0)
+
         binding.imSearch01.setOnClickListener{
-
-            val inputMethodManager =
-                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-
-            // on below line hiding our keyboard.
-            inputMethodManager.hideSoftInputFromWindow(binding.editCodigo01.getWindowToken(), 0)
 
             try {
                 val codigo = binding.editCodigo01.text.toString().toInt()
@@ -123,6 +136,10 @@ class LancamentoActivity : AppCompatActivity() {
             }
         }
 
+        binding.editCodigoNovo02.setOnLongClickListener {
+            requestCamara2?.launch(android.Manifest.permission.CAMERA)
+            false
+        }
         binding.editObs02.filters += InputFilter.AllCaps()
 
         binding.editCCNovol02.setOnClickListener {
@@ -134,9 +151,48 @@ class LancamentoActivity : AppCompatActivity() {
             inventario.new_cc_descricao = ""
             binding.editCCNovol02.setText(R.string.sem_cc_novo)
         }
+
+        binding.rgCondicao02 .setOnCheckedChangeListener{ _, _ ->
+            if (binding.rbBom02.isChecked) {
+                inventario.condicao = 1
+            }
+            if (binding.rbRegular02.isChecked) {
+                inventario.condicao = 2
+            }
+            if (binding.rbRuim02.isChecked) {
+                inventario.condicao = 3
+            }
+            if (binding.rbNaoClass2.isChecked) {
+                inventario.condicao = 9
+            }
+        }
+
+        binding.rgBook02 .setOnCheckedChangeListener{ _, _ ->
+            if (binding.rbBooSim02.isChecked) {
+                inventario.book = "S"
+            }
+            if (binding.rbBooNao02.isChecked) {
+                inventario.book = "N"
+            }
+            if (binding.rbBooNaoClassificado02.isChecked) {
+                inventario.book = ""
+            }
+        }
+
         binding.btExcluir02.setOnClickListener{
-            val lancamento:LancamentoModel = loadLancamento()
-            deleteApontamento(lancamento)
+            val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Atenção")
+                .setMessage("Confirma A exclusão Do Lançamento ?")
+                .setNegativeButton("Não"){_,_  -> dialogDelete.dismiss()
+                }
+                .setPositiveButton("Sim"){_,_ ->
+                    val lancamento:LancamentoModel = loadLancamento()
+                    deleteApontamento(lancamento)
+                }
+            dialogDelete = builder.create()
+
+            dialogDelete.show()
+
         }
 
         binding.btCancelar02.setOnClickListener {
@@ -151,10 +207,27 @@ class LancamentoActivity : AppCompatActivity() {
 
         binding.btGravar02.setOnClickListener{
             val lancamento:LancamentoModel = loadLancamento()
-            if (lancamento.id_lanca == 0){
-                saveApontamento(lancamento)
+            if (lancamento.new_codigo == 0 || lancamento.condicao == 9 || lancamento.book =="" || lancamento.new_cc.trim() == ""){
+                var mensagem = "";
+                if (lancamento.new_codigo == 0){
+                    mensagem = "Código Novo Não Pode Ser Zerado!"
+                }
+                if (lancamento.condicao == 9){
+                    mensagem += "Condição Usada Não É Aceita!"
+                }
+                if (lancamento.new_cc.trim() == ""){
+                    mensagem += "Centro De Custo Novo Obrigatório!"
+                }
+                if (lancamento.book.trim() == ""){
+                    mensagem += "Book É Obrigatorio!"
+                }
+                showToast(mensagem);
             } else {
-                updateApontamento(lancamento)
+                if (lancamento.id_lanca == 0) {
+                    saveApontamento(lancamento)
+                } else {
+                    updateApontamento(lancamento)
+                }
             }
         }
     }
@@ -209,6 +282,26 @@ class LancamentoActivity : AppCompatActivity() {
                 binding.editCodigo01.setText(value?.padStart(6,'0'))
             } else {
                 binding.editCodigo01.setText("")
+            }
+        }
+
+    private val getResult2 =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                val value = it.data?.getStringExtra("codigo")
+                try {
+                    if (value != null){
+                        val codigo = value.toInt()
+                    } else {
+                        Toast.makeText(this,"Código Retornado Inválido!",Toast.LENGTH_SHORT).show()
+                    }
+                } catch ( e : NumberFormatException ){
+                    Toast.makeText(this,"Código Inválido!",Toast.LENGTH_SHORT).show()
+                }
+                binding.editCodigoNovo02.setText(value?.padStart(6,'0'))
+            } else {
+                binding.editCodigoNovo02.setText("")
             }
         }
     fun getHoje():String{
@@ -286,6 +379,8 @@ class LancamentoActivity : AppCompatActivity() {
                                 0,
                                 0,
                                 "",
+                                9,
+                                "",
                                 0,
                                 0,
                                 "",
@@ -307,6 +402,8 @@ class LancamentoActivity : AppCompatActivity() {
                             if (inventario.id_lanca !== 0) {
                                 showToast( "Ativo Já Inventariado!",
                                     Toast.LENGTH_SHORT)
+                            } else {
+                                inventario.book = "";
                             }
 
                             with(binding) {
@@ -344,8 +441,9 @@ class LancamentoActivity : AppCompatActivity() {
                                 if (inventario.new_cc_descricao == ""){
                                     binding.editCCNovol02.setText(R.string.sem_cc_novo)
                                 } else {
-                                    binding.editCCNovol02.setText("inventario.new_cc_descricao")
+                                    binding.editCCNovol02.setText(inventario.new_cc_descricao)
                                 }
+                                binding.editObs02.setText(inventario.lanc_obs)
                             }
 
                         }
@@ -420,7 +518,7 @@ class LancamentoActivity : AppCompatActivity() {
                                     HttpErrorMessage::class.java
                                 )
                                 if (response.code() == 409){
-                                    showToast("Ativo Não Encontrado!",Toast.LENGTH_SHORT)
+                                    showToast("lançamento Não Efetuado! Talvez Código Novo Já Exista",Toast.LENGTH_SHORT)
                                 } else {
                                     showToast(message.getMessage().toString(),Toast.LENGTH_SHORT)
                                 }
@@ -488,7 +586,7 @@ class LancamentoActivity : AppCompatActivity() {
                                 HttpErrorMessage::class.java
                             )
                             if (response.code() == 409){
-                                showToast("Ativo Não Encontrado!",Toast.LENGTH_SHORT)
+                                showToast("lançamento Não Alterado! Talvez Código Novo Já Exista",Toast.LENGTH_SHORT)
                             } else {
                                 showToast(message.getMessage().toString(),Toast.LENGTH_SHORT)
                             }
@@ -600,6 +698,8 @@ class LancamentoActivity : AppCompatActivity() {
             inventario.lanc_estado,
             inventario.new_codigo,
             inventario.new_cc,
+            inventario.condicao,
+            inventario.book,
             if (inventario.id_lanca !== 0)   inventario.user_insert else ParametroGlobal.Dados.usuario.id,
             if (inventario.id_lanca !== 0)  ParametroGlobal.Dados.usuario.id else 0,
             0,
@@ -615,6 +715,8 @@ class LancamentoActivity : AppCompatActivity() {
         Toast.makeText(this, mensagem, duracao).show()
     }
     private fun formulario(show:Boolean){
+        setarCondicao()
+        setarBook()
        if (show){
            binding.txtViewSituacao02.setText("lançamento de Inventário")
        }
@@ -624,8 +726,10 @@ class LancamentoActivity : AppCompatActivity() {
        binding.llLinhaCodigoAtual02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
        binding.llLinhaCodigoNovo02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
        binding.llLinhaDescricao02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
+        binding.llLinhaCCOriginal02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
        binding.llLinhaCCNovol02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
-       binding.llLinhaCCOriginal02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
+       binding.llLinhaCondicao02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
+        binding.llLinhaBook02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
        binding.txtInputObs02.visibility = if (!show) { View.GONE} else {View.VISIBLE}
        if (inventario.id_lanca == 0){
            binding.btExcluir02.visibility = View.GONE
@@ -664,6 +768,41 @@ class LancamentoActivity : AppCompatActivity() {
         intent.putExtra("id_imobilizado", lanca.id_imobilizado)
         intent.putExtra("fromLancamento", "S")
         getRetornoComplemento.launch(intent)
+    }
+
+    fun setarCondicao(){
+        when (inventario.condicao) {
+            1 -> {
+                binding.rbBom02.isChecked = true
+            }
+
+            2 -> {
+                binding.rbRegular02.isChecked = true
+            }
+
+            3 -> {
+                binding.rbRuim02.isChecked = true
+            }
+
+            else -> {
+                binding.rbNaoClass2.isChecked = true
+            }
+        }
+    }
+
+    fun setarBook(){
+        when (inventario.book.trim()) {
+            "S" -> {
+                binding.rbBooSim02.isChecked = true
+            }
+
+            "N" -> {
+                binding.rbBooNao02.isChecked = true
+            }
+            "" -> {
+                binding.rbBooNaoClassificado02.isChecked = true
+            }
+        }
     }
 }
 

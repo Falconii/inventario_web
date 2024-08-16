@@ -35,6 +35,7 @@ class ImoInventarioAdapter(
         lateinit var  txtTituloLancamento:TextView
         lateinit var  txtLancamento:TextView
         lateinit var  txtResponsavel:TextView
+        lateinit var  txtCondicaoBook:TextView
         lateinit var  txtObs :TextView
         lateinit var btLancamento:ImageButton
         lateinit var btFoto:ImageButton
@@ -60,6 +61,7 @@ class ImoInventarioAdapter(
                 txtTituloLancamento = ItemView.findViewById(R.id.item_inventario_lancamento_view)
                 txtLancamento = ItemView.findViewById(R.id.item_inventario_lancamento_nro_data)
                 txtResponsavel = ItemView.findViewById(R.id.item_inventario_lancamento_resp)
+                txtCondicaoBook = ItemView.findViewById(R.id.item_inventario_lancamento_condicao_book)
                 txtObs = ItemView.findViewById(R.id.item_inventario_obs)
                 btLancamento = ItemView.findViewById(R.id.item_inventario_lancamento)
                 btFoto = ItemView.findViewById(R.id.item_inventario_foto)
@@ -79,7 +81,7 @@ class ImoInventarioAdapter(
                         )
                     }"
                 )
-                txtCodigo.setText(ParametroGlobal.prettyText.tituloDescricaoDois("ATIVO: ",imobilizadoInventario.id_imobilizado.toString().padStart(6,'0'),"ORIGEM: ",ParametroGlobal.Origem.getOrigem("P")))
+                txtCodigo.setText(ParametroGlobal.prettyText.tituloDescricao("ATIVO: ",imobilizadoInventario.id_imobilizado.toString().padStart(6,'0')))
                 txtCodigoNovo.visibility =
                     if (imobilizadoInventario.new_codigo != 0) View.VISIBLE else View.GONE
                 txtCodigoNovo.setText(ParametroGlobal.prettyText.tituloDescricao("COD. NOVO: ",imobilizadoInventario.new_codigo.toString().padStart(6,'0')))
@@ -100,11 +102,13 @@ class ImoInventarioAdapter(
                 txtTituloLancamento.visibility = visivel
                 txtLancamento.visibility = visivel
                 txtResponsavel.visibility = visivel
+                txtCondicaoBook.visibility = visivel
                 txtObs.visibility = visivel
 
                 txtTituloLancamento.setText("** INFORMAÇÕES DO LANÇAMENTO **")
                 txtLancamento.setText(ParametroGlobal.prettyText.tituloDescricaoDois("DATA: ",imobilizadoInventario.lanc_dt_lanca,"Nº: ",imobilizadoInventario.id_lanca.toString()))
                 txtResponsavel.setText(ParametroGlobal.prettyText.tituloDescricao("RESP: ",imobilizadoInventario.usu_razao))
+                txtCondicaoBook.setText(ParametroGlobal.prettyText.tituloDescricaoDois("Condição: ",ParametroGlobal.Condicoes.getCondicao(imobilizadoInventario.condicao),"Book: ",ParametroGlobal.SimNao.getSimNao(imobilizadoInventario.book)))
                 txtObs.setText(ParametroGlobal.prettyText.tituloDescricao("OBSERVAÇÃO: ",imobilizadoInventario.lanc_obs))
 
                 btLancamento.setOnClickListener {

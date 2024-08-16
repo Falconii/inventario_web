@@ -16,6 +16,8 @@ data class LancamentoModel(
     val estado:Int ,
     val new_codigo:Int ,
     val new_cc:String ,
+    var condicao: Int,
+    var book: String ,
     val user_insert:Int ,
     val user_update:Int ,
     val imo_inv_status:Int ,

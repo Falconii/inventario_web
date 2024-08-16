@@ -3,6 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/menu_show_fotos_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Atualizar" />
+        <item
         android:id="@+id/menu_show_fotos_new"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
