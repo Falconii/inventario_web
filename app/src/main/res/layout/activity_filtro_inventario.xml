@@ -79,6 +79,12 @@
                         android:layout_height="wrap_content"
                         android:text="Descricao" />
 
+                    <RadioButton
+                        android:id="@+id/rbObservacao35"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Observação" />
+
                 </RadioGroup>
 
 

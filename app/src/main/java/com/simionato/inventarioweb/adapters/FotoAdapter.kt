@@ -50,11 +50,11 @@ class FotoAdapter(
         fun bind(foto:FotoModel){
             try {
                 val url = URL("https://drive.google.com/uc?export=view&id=${foto.id_file}")
-                val thumbnailUrl = URL("https://drive.google.com/thumbnail?id=${foto.id_file}&sz=w10O")
+                val thumbnailUrl = URL("https://drive.google.com/thumbnail?id=${foto.id_file}&sz=w200")
 
 
                 Glide.with(layout.context)
-                    .load(url)
+                    .load(thumbnailUrl)
                     .placeholder(R.drawable.no_foto)
                     .into(image);
                 /*

@@ -3,9 +3,7 @@ package com.simionato.inventarioweb
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -54,6 +52,9 @@ class FiltroInventarioActivity : AppCompatActivity() {
             }
             if (binding.rbDescricao35.isChecked) {
                 paramImoInventario._searchIndex = 2
+            }
+            if (binding.rbObservacao35.isChecked) {
+                paramImoInventario._searchIndex = 3
             }
         }
 
@@ -410,6 +411,9 @@ class FiltroInventarioActivity : AppCompatActivity() {
                 binding.rbDescricao35.isChecked = true
             }
 
+            3 -> {
+                binding.rbObservacao35.isChecked = true
+            }
             else -> {
                 binding.rbDescricao35.isChecked = true
             }

@@ -179,7 +179,7 @@ class InventarioActivity : AppCompatActivity() {
             parametroService.getParametro(
                 empresa.id,
                 "inventariomobile",
-                "V1.00 29/02/24",
+                "V1.00 21/08/2024",
                 usuario.id
             )
                 .enqueue(object : Callback<ParametroModel> {
@@ -373,6 +373,8 @@ class InventarioActivity : AppCompatActivity() {
         params.new_codigo = 0
         params.id_imobilizado = 0
         params.descricao = ""
+        params.observacao = ""
+
         when (paramImoInventario._searchIndex) {
             0 -> {
                 if (pesquisaString.isEmpty()) {
@@ -402,6 +404,10 @@ class InventarioActivity : AppCompatActivity() {
 
             2 -> {
                 params.descricao = pesquisaString.trim()
+            }
+
+            3 -> {
+                params.observacao = pesquisaString.trim()
             }
         }
         pesquisaString = ""
@@ -605,6 +611,10 @@ class InventarioActivity : AppCompatActivity() {
                         binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS)
                     }
 
+                    3 ->{
+                        binding.svPesquisa40.queryHint = "Busca Pela Observação"
+                        binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS)
+                    }
                     else -> {
                         binding.svPesquisa40.queryHint = "Busca Por Código Atual"
                         binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED)
