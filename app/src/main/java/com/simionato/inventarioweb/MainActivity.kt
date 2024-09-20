@@ -59,6 +59,9 @@ class MainActivity : AppCompatActivity() {
         inicializarTooBar()
         inflateTela()
 
+        binding.buttonCheckUpdate.setOnClickListener {
+            openUpdateCheckActivity()
+        }
 
 
         binding.ivSemUsuarioEntrar00.setOnClickListener {
@@ -389,6 +392,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun openUpdateCheckActivity() {
+        val intent = Intent(this, UpdateCheckActivity::class.java)
+        startActivity(intent)
+    }
 }
 
 

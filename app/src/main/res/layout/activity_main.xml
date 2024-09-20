@@ -98,7 +98,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
+            <Button
+                android:id="@+id/button_check_update"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Check for Updates"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:toggleCheckedStateOnClick="false" />
             <LinearLayout
                 android:id="@+id/llParametros00"
                 android:layout_width="match_parent"

@@ -92,7 +92,7 @@ class SplashActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<mensagemModel>, t: Throwable) {
-                    showToast("Falha Na Comunicação. Erro Na Chamada")
+                    showToast("${t.message}")
                     finish()
                 }
             })
