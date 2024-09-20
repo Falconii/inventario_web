@@ -21,7 +21,6 @@ import java.net.URL
 class FotoAdapter(
     private val clique: (foto: FotoModel,idAcao:CadastrosAcoes) -> Unit
 ): RecyclerView.Adapter<FotoAdapter.FotoViewHolder>(){
-
     var lista : List<FotoModel> = listOf()
     inner class FotoViewHolder(val ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val  layout: View
@@ -33,7 +32,6 @@ class FotoAdapter(
         val  textDescricao : TextView
         val  textObservacao : TextView
         val  textUsuario: TextView
-
         init {
             layout =  ItemView.findViewById(R.id.foto_item_layout)
             image =  ItemView.findViewById(R.id.foto_item_image)
@@ -44,9 +42,7 @@ class FotoAdapter(
             textDescricao = ItemView.findViewById(R.id.foto_item_txt_descricao)
             textObservacao = ItemView.findViewById(R.id.foto_item_txt_obs)
             textUsuario  = ItemView.findViewById(R.id.foto_item_txt_usuario)
-            btUpdate.visibility = View.GONE
         }
-
         fun bind(foto:FotoModel){
             try {
                 val url = URL("https://drive.google.com/uc?export=view&id=${foto.id_file}")
@@ -88,10 +84,10 @@ class FotoAdapter(
             btDelete.setOnClickListener {
                 clique(foto,CadastrosAcoes.Exclusao)
             }
-/*
-           btUpdate.setOnClickListener {
+
+            btUpdate.setOnClickListener {
                clique(foto,CadastrosAcoes.Edicao)
-           }*/
+           }
 
         }
     }

@@ -3,4 +3,5 @@
   <files-path name="internal_files" path="." />
   <external-path name="camera_foto" path="DCIM/Camera/" />
   <cache-path name="cache" path="." />
+  <external-path name="external_files" path="." />
 </paths>

@@ -42,11 +42,14 @@ class ShowFotosActivity : AppCompatActivity() {
             chamaFotoWeb(foto)
         }
         if (idAcao == CadastrosAcoes.Exclusao) {
-            if (foto.id_pasta == "1eQuwNcfTmpYUWUIvlGBouodico8WrjoD"){
+            showDialogDelete(foto)
+            /*
+            if (foto.id_pasta == "1eQuwNcfTmpYUWUIvlGBouodico8WrjoD") {
                 showDialogDelete(foto)
             } else {
                 showToast("Não Posso Apagar ESta Foto!")
             }
+             */
         }
         if (idAcao == CadastrosAcoes.Edicao) {
             chamaFotoEdicao(foto)

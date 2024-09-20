@@ -204,10 +204,13 @@ class EditFotoActivity : AppCompatActivity() {
         try {
             val url = URL("https://drive.google.com/uc?export=view&id=${foto.id_file}")
 
+            // val url = URL("https://drive.google.com/uc?export=view&id=${foto.id_file}")
+            val thumbnailUrl = URL("https://drive.google.com/thumbnail?id=${foto.id_file}&sz=w300")
             Glide.with(applicationContext)
-                .load(url)
+                .load(thumbnailUrl)
                 .placeholder(R.drawable.no_foto)
                 .into(binding.imView42);
+
         } catch (e:Exception){
             Log.i("zyzz","Erro-> ${e.message}")
         }
@@ -220,10 +223,10 @@ class EditFotoActivity : AppCompatActivity() {
         binding.txtInputObs.setText(foto.obs)
         binding.ivTrocaImagem42.setOnClickListener {
             try {
-                val url = URL("https://drive.google.com/uc?export=view&id=${foto.id_file}")
-
+               // val url = URL("https://drive.google.com/uc?export=view&id=${foto.id_file}")
+                val thumbnailUrl = URL("https://drive.google.com/thumbnail?id=${foto.id_file}&sz=w300")
                 Glide.with(applicationContext)
-                    .load(url)
+                    .load(thumbnailUrl)
                     .placeholder(R.drawable.no_foto)
                     .into(binding.imView42);
                 binding.llTrocaImagem.visibility = View.GONE

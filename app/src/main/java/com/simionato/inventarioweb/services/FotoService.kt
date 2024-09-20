@@ -19,7 +19,7 @@ interface FotoService {
         @Body params: ParametroFoto01
     ): Call<List<FotoModel>>
 
-    @POST("deleteuploadfotov2")
+    @POST("deleteuploadfotov5")
     fun DeleteFoto(
         @Body params: FotoModel
     ): Call<JsonObject>
@@ -30,7 +30,7 @@ interface FotoService {
     ): Call<JsonObject>
 
     @Multipart
-    @POST("uploadfotov2")
+    @POST("uploadfotov5")
     fun postUploadFoto(
         @Part("id_empresa") id_empresa: RequestBody,
         @Part("id_local") id_local: RequestBody,
