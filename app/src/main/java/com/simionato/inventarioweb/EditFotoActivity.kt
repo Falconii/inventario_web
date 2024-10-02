@@ -324,7 +324,7 @@ class EditFotoActivity : AppCompatActivity() {
 
             val id_file = RequestBody.create(MultipartBody.FORM,"")
 
-            val old_name = RequestBody.create(MultipartBody.FORM,"")
+            val old_name = RequestBody.create(MultipartBody.FORM,foto.file_name_original)
 
             val id_usuario = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.usuario.id.toString())
 
@@ -417,6 +417,8 @@ class EditFotoActivity : AppCompatActivity() {
 
             //val file = File(filesDir, uriName)
 
+            Log.i("file_name_original",foto.file_name_original)
+
             val idUuid = UUID.randomUUID()
             val fileUuid = idUuid.toString()
             var fileName: String = "${ParametroGlobal.Dados.Inventario.id_empresa.toString().padStart(2,'0')}_" +
@@ -442,7 +444,7 @@ class EditFotoActivity : AppCompatActivity() {
 
             val id_file = RequestBody.create(MultipartBody.FORM,foto.id_file)
 
-            val old_name = RequestBody.create(MultipartBody.FORM,"")
+            val old_name = RequestBody.create(MultipartBody.FORM,foto.file_name_original)
 
             val id_usuario = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.usuario.id.toString())
 
@@ -522,13 +524,13 @@ class EditFotoActivity : AppCompatActivity() {
 
                         override fun onFailure(call: Call<RetornoUpload>, t: Throwable) {
                             binding.llProgress42.visibility = View.GONE
-                            showToast("${t.message.toString()}", Toast.LENGTH_LONG)
+                            showToast("override ${t.message.toString()}", Toast.LENGTH_LONG)
                         }
                     })
 
             } catch (e: Exception){
                 binding.llProgress42.visibility = View.GONE
-                showToast("${e.message.toString()}", Toast.LENGTH_LONG)
+                showToast("catch ${e.message.toString()}", Toast.LENGTH_LONG)
             }
 
 

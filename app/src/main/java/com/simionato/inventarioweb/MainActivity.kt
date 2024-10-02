@@ -58,11 +58,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         inicializarTooBar()
         inflateTela()
-
+        binding.buttonCheckUpdate.visibility = View.GONE;
+        /*
         binding.buttonCheckUpdate.setOnClickListener {
             openUpdateCheckActivity()
         }
-
+*/
 
         binding.ivSemUsuarioEntrar00.setOnClickListener {
            chamaLogin()
@@ -86,79 +87,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    /*private fun getPadrao(id_empresa: Int,id_usuario: Int) {
-        try {
-            val padraoService = InfraHelper.apiInventario.create(PadraoService::class.java)
-            //binding.llProgress02.visibility = View.VISIBLE
-            padraoService.getPadrao(
-                id_empresa,
-                id_usuario
-            ).enqueue(object :
-                Callback<PadraoModel> {
-                override fun onResponse(
-                    call: Call<PadraoModel>,
-                    response: Response<PadraoModel>
-                ) {
-                    //binding.llProgress02.visibility = View.GONE
-                    Log.i("zyzz","Retornei da request ${response}")
-                    if (response != null) {
-                        if (response.isSuccessful) {
 
-                            var padrao = response.body()
-
-                            padrao = (padrao ?: PadraoModel()) as PadraoModel
-
-
-                            Log.i("zyz","Achei O Padrão ${padrao}")
-
-                            ParametroGlobal.Dados.empresa.id = padrao.id_empresa_padrao
-
-                            ParametroGlobal.Dados.usuario.id_empresa = padrao.id_empresa_padrao
-                            ParametroGlobal.Dados.usuario.id = padrao.id_usuario
-
-                            ParametroGlobal.Dados.local.id_empresa = padrao.id_empresa_padrao
-                            ParametroGlobal.Dados.local.id = padrao.id_local_padrao
-
-                            ParametroGlobal.Dados.Inventario.id_empresa = padrao.id_empresa_padrao
-                            ParametroGlobal.Dados.Inventario.id_filial = padrao.id_local_padrao
-                            ParametroGlobal.Dados.Inventario.codigo = padrao.id_inv_padrao
-                            loadParametros()
-
-                        } else {
-                            //binding.llProgress02.visibility = View.GONE
-                            val gson = Gson()
-                            val message = gson.fromJson(
-                                response.errorBody()!!.charStream(),
-                                HttpErrorMessage::class.java
-                            )
-                            if (response.code() == 409) {
-                                showToast(
-                                    "Usuário Não Tem Padrao! ${message.getMessage().toString()}",
-                                    Toast.LENGTH_SHORT
-                                )
-                            } else {
-                                showToast(message.getMessage().toString())
-                            }
-                        }
-                    } else {
-                        //binding.llProgress02.visibility = View.GONE
-                        showToast("Sem retorno Da Requisição!")
-                    }
-                }
-
-                override fun onFailure(call: Call<PadraoModel>, t: Throwable) {
-                    //binding.llProgress02.visibility = View.GONE
-                    showToast(t.message.toString())
-                }
-            })
-
-        } catch (e: Exception) {
-            //binding.llProgress02.visibility = View.GONE
-            showToast("${e.message.toString()}", Toast.LENGTH_LONG)
-        }
-
-    }
-*/
     private fun inicializarTooBar() {
         binding.ToolBar00.setTitle(R.string.titulo_barra)
         binding.ToolBar00.subtitle = "Tela Principal"

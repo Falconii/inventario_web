@@ -329,7 +329,7 @@ class InventarioActivity : AppCompatActivity() {
                                 HttpErrorMessage::class.java
                             )
                             if (response.code() == 409) {
-                                showToast("QUERY Tabela De Imobilizados Vazia")
+                                showToast("Nenhuma Informação Encontrada!")
                                 imobilizadoinventarios = mutableListOf<ImobilizadoinventarioModel>()
                                 paginaAtual = 1
                                 montaLista(imobilizadoinventarios)
