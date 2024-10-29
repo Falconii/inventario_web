@@ -35,6 +35,8 @@ class ComplementoProdutoActivity : AppCompatActivity() {
 
     private var fromLacamento:String = "N"
 
+    private var estado:Int = 0;
+
     private var imobilizadoInventario : ImobilizadoinventarioModel = ImobilizadoinventarioModel()
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +48,8 @@ class ComplementoProdutoActivity : AppCompatActivity() {
         id_imobilizado =  intent.getIntExtra("id_imobilizado",0)
 
         fromLacamento  =  intent.getStringExtra("fromLancamento")!!
+
+        estado = intent.getIntExtra("estado",0);
 
         if ( id_imobilizado == 0){
             showToast("Não Foi Informado O Código Do Imobilizado!");
@@ -117,8 +121,12 @@ class ComplementoProdutoActivity : AppCompatActivity() {
         ) {
             if ((it.resultCode == Activity.RESULT_OK) && (it.data?.extras != null)) {
                 try {
-                    binding.btInventarioComplemento38.visibility = View.GONE
-                    binding.btFotoComplemento38.visibility = View.VISIBLE
+                    if ( it.data?.getIntExtra("estado",0)!! < 5) {
+                        binding.btInventarioComplemento38.visibility = View.GONE
+                        binding.btFotoComplemento38.visibility = View.VISIBLE
+                    } else {
+                        finish()
+                    }
                 } catch (error: Exception) {
                     showToast("Erro No Retorno: ${error.message}")
                     finish()

@@ -122,6 +122,12 @@ class ProdutoActivity : AppCompatActivity() {
 
         binding.editDescricao03.filters += InputFilter.AllCaps()
 
+        binding.ibapelido03.visibility = View.GONE
+
+        binding.ibapelido03.setOnClickListener {
+            chamaPesquisaApelido()
+        }
+
         binding.ibLimparGrupo03.setOnClickListener {
             imobilizado.cod_grupo = 0
             imobilizado.grupo_descricao = ""
@@ -219,9 +225,38 @@ class ProdutoActivity : AppCompatActivity() {
             }
         }
 
+    private val getRetornoPequisaApelido =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                if (it.resultCode == Activity.RESULT_OK) {
+                    val codigo = it.data?.getIntExtra("codigo", 0)
+                    val descricao = it.data?.getStringExtra("descricao")
+                    try {
+                        if (codigo != null && codigo != 0) {
+
+                        }
+                    } catch (e: NumberFormatException) {
+                        showToast("Código Inválido!", Toast.LENGTH_SHORT)
+                    }
+                }
+            }
+            if (it.resultCode == 100) {
+                //binding.editGrupo03.setText(R.string.sem_filtro)
+            }
+        }
+
+
+
     private fun chamaPesquisaGrupo() {
         val intent = Intent(this, PesquisaGrupoActivity::class.java)
         getRetornoPequisaGrupo.launch(intent)
+    }
+
+    private fun chamaPesquisaApelido() {
+        val intent = Intent(this, PesquisaApelido::class.java)
+        getRetornoPequisaApelido.launch(intent)
     }
 
     private val getRetornoComplemento =
@@ -238,6 +273,7 @@ class ProdutoActivity : AppCompatActivity() {
         val intent = Intent(this, ComplementoProdutoActivity::class.java)
         intent.putExtra("id_imobilizado", imobilizado.codigo)
         intent.putExtra("fromLancamento", "N")
+        intent.putExtra("estado", 0)
         getRetornoComplemento.launch(intent)
     }
 

@@ -20,8 +20,12 @@ class ParametroGlobal {
             var local:LocalModel = LocalModel()
             var Inventario: InventarioModel = InventarioModel()
             var paramImoInventario:ParametroImobilizadoInventario01 = ParametroImobilizadoInventario01()
+            var url_local : String = "http://192.168.0.116:3000/api/"
+            var url_web   : String = "https://simionatoativobackend-production.up.railway.app/api/"
         }
     }
+
+
 
     class Situacoes {
         companion object {
@@ -50,6 +54,10 @@ class ParametroGlobal {
 
                     5 -> {
                         retorno = "Não Encontrado!"
+                    }
+
+                    6 -> {
+                        retorno = "Baixado!"
                     }
 
                     else -> {
@@ -139,6 +147,15 @@ class ParametroGlobal {
                     "M"  -> {return "DIGITAÇÃO"}
                     else -> {return "PLANILHA"}
                 }
+            }
+        }
+    }
+
+    class Versao{
+
+        companion object {
+            public fun getVersao(value:String):String{
+                return "Versão 28 10 A"
             }
         }
     }

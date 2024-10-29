@@ -42,11 +42,13 @@ class FotoAdapter(
             textDescricao = ItemView.findViewById(R.id.foto_item_txt_descricao)
             textObservacao = ItemView.findViewById(R.id.foto_item_txt_obs)
             textUsuario  = ItemView.findViewById(R.id.foto_item_txt_usuario)
+
+            btUpdate.visibility = View.GONE;
         }
         fun bind(foto:FotoModel){
             try {
                 val url = URL("https://drive.google.com/uc?export=view&id=${foto.id_file}")
-                val thumbnailUrl = URL("https://drive.google.com/thumbnail?id=${foto.id_file}&sz=w200")
+                val thumbnailUrl = URL("https://drive.google.com/thumbnail?id=${foto.id_file}&sz=w500")
 
 
                 Glide.with(layout.context)

@@ -704,7 +704,7 @@ class EditFotoActivity : AppCompatActivity() {
         try {
             val fos: FileOutputStream = FileOutputStream(fotoExternalFile)
             val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, fos);
 
             if (exifOrientation != null) {
                 val newExif: ExifInterface = ExifInterface(fotoExternalFile)

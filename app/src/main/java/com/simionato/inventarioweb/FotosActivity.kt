@@ -4,6 +4,7 @@ package com.simionato.inventarioweb
    https://stackoverflow.com/questions/7286714/android-get-orientation-of-a-camera-bitmap-and-rotate-back-90-degrees
  */
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -302,6 +303,14 @@ class FotosActivity : AppCompatActivity() {
     private fun uploadFoto_galeria(){
         try {
 
+            /*
+            val idUuid = UUID.randomUUID()
+            val fileUuid = idUuid.toString()
+            var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
+                    "${Inventario.id_filial.toString().padStart(6,'0')}_" +
+                    "${Inventario.codigo.toString().padStart(6,'0')}_" +
+                    "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
+
             val filesDir = applicationContext.filesDir
 
             val uriName = displayName(uri)
@@ -315,6 +324,16 @@ class FotosActivity : AppCompatActivity() {
             inputStream!!.copyTo(outPutStream)
 
             Log.i("zyzz","Nome do arquivo enviado! ${file.name}")
+            */
+
+            val idUuid = UUID.randomUUID()
+            val fileUuid = idUuid.toString()
+            var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
+                    "${Inventario.id_filial.toString().padStart(6,'0')}_" +
+                    "${Inventario.codigo.toString().padStart(6,'0')}_" +
+                    "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
+
+            var file = saveLocalGaleria(fileName)
 
             val requestFile = RequestBody.create(MultipartBody.FORM, file)
 
@@ -424,19 +443,13 @@ class FotosActivity : AppCompatActivity() {
                 showToast("${e.message.toString()}", Toast.LENGTH_LONG)
             }
 
-
         } catch (error:Exception){
+            Log.e("ww","${error.message}")
             showToast("Falha Ao Preparar A Foto Para Transmissão!")
         }
     }
     private fun uploadFoto_camera(){
         try {
-
-            //val filesDir = applicationContext.filesDir
-
-            //val uriName = displayName(imageUri)
-
-            //val file = File(filesDir, uriName)
 
             val idUuid = UUID.randomUUID()
             val fileUuid = idUuid.toString()
@@ -639,6 +652,55 @@ class FotosActivity : AppCompatActivity() {
         save_local = true;
         return fotoExternalFile
     }
+
+    private fun saveLocalGaleria(name:String): File {
+
+        //Busca a orientação da foto
+
+        val filesDir = applicationContext.filesDir
+
+        val uriName = displayName(uri)
+
+        val file = File(filesDir, uriName)
+
+        val inputStream = contentResolver.openInputStream(uri)
+
+        val outPutStream = FileOutputStream(file)
+
+        inputStream!!.copyTo(outPutStream)
+
+        Log.i("zyzz","Nome do arquivo enviado! ${file.name}")
+
+        val oldExif = ExifInterface(file)
+
+        val exifOrientation: String? = oldExif.getAttribute(ExifInterface.TAG_ORIENTATION)
+
+        val filepath = "Fotos"
+
+        var fotoExternalFile: File?=null
+
+        fotoExternalFile = File(getExternalFilesDir(filepath), name)
+
+        try {
+            val fos: FileOutputStream = FileOutputStream(fotoExternalFile)
+            val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, fos);
+
+            if (exifOrientation != null) {
+                val newExif: ExifInterface = ExifInterface(fotoExternalFile)
+                newExif.setAttribute(ExifInterface.TAG_ORIENTATION, exifOrientation)
+                newExif.saveAttributes()
+            }
+
+        } catch (e: IOException) {
+            showToast("Falha Na Correção Da Orientação Da Foto!!");
+        }
+
+        save_local = true;
+
+        return fotoExternalFile
+
+    }
     private fun storageItsOk():Boolean{
         if (!isExternalStorageAvailable || isExternalStorageReadOnly) {
             return false
@@ -647,5 +709,14 @@ class FotosActivity : AppCompatActivity() {
         return true;
     }
 
+    fun getFileFromUri(context: Context, uri: Uri): File? {
+        val filePathColumn = arrayOf(android.provider.MediaStore.Images.Media.DATA)
+        val cursor = context.contentResolver.query(uri, filePathColumn, null, null, null)
+        cursor?.moveToFirst()
+        val columnIndex = cursor?.getColumnIndex(filePathColumn[0])
+        val filePath = columnIndex?.let { cursor.getString(it) }
+        cursor?.close()
+        return filePath?.let { File(it) }
+    }
 
 }

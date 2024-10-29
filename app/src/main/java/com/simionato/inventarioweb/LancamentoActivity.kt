@@ -19,6 +19,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.simionato.inventarioweb.databinding.ActivityLancamentoBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
+import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.paramImoInventario
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
 import com.simionato.inventarioweb.models.LancamentoModel
@@ -33,7 +34,6 @@ import java.util.Date
 
 
 class LancamentoActivity : AppCompatActivity() {
-
 
     private var params:ParametroImobilizadoInventario01 = ParametroImobilizadoInventario01()
 
@@ -142,6 +142,23 @@ class LancamentoActivity : AppCompatActivity() {
         }
         binding.editObs02.filters += InputFilter.AllCaps()
 
+        binding.rgSituacao02.setOnCheckedChangeListener{ _, _ ->
+            if (binding.rbNaoEncontrado02.isChecked) {
+                inventario.lanc_estado = 5
+            }
+            if (binding.rbBaixado02.isChecked) {
+                inventario.lanc_estado = 6
+            }
+            if (binding.rbAutomatica02.isChecked) {
+                inventario.lanc_estado = 0
+            }
+            binding.txtViewSituac02.setText(
+                ParametroGlobal.Situacoes.getSituacao(
+                    inventario.lanc_estado
+                )
+            )
+        }
+
         binding.editCCNovol02.setOnClickListener {
             chamaPesquisaCc()
         }
@@ -207,7 +224,8 @@ class LancamentoActivity : AppCompatActivity() {
 
         binding.btGravar02.setOnClickListener{
             val lancamento:LancamentoModel = loadLancamento()
-            if (lancamento.new_codigo == 0 || lancamento.condicao == 9 || lancamento.book =="" || lancamento.new_cc.trim() == ""){
+            if ((lancamento.estado < 5) &&
+                (lancamento.new_codigo == 0 || lancamento.condicao == 9 || lancamento.book =="" || lancamento.new_cc.trim() == "")) {
                 var mensagem = "";
                 if (lancamento.new_codigo == 0){
                     mensagem = "Código Novo Não Pode Ser Zerado!"
@@ -408,17 +426,22 @@ class LancamentoActivity : AppCompatActivity() {
 
                             with(binding) {
                                 formulario(true)
+
+                                binding.rbAutomatica02.isChecked = true;
+
                                 if (inventario.status == 5){
-                                    binding.cbSituacao.isChecked = true
-                                } else {
-                                    binding.cbSituacao.isChecked = false
+                                    binding.rbNaoEncontrado02.isChecked = true
+                                }
+
+                                if (inventario.status == 6){
+                                    binding.rbBaixado02.isChecked = true
                                 }
 
                                 when (inventario.status) {
                                     0 -> {binding.txtViewSituac02.setTextColor(ContextCompat.getColor(applicationContext, R.color.corVermelho))}
                                     1 -> {binding.txtViewSituac02.setTextColor(ContextCompat.getColor(applicationContext, R.color.corVerde))}
                                     in 2..4 -> {binding.txtViewSituac02.setTextColor(ContextCompat.getColor(applicationContext, R.color.corAmarelo))}
-                                    5 -> {binding.txtViewSituac02.setTextColor(ContextCompat.getColor(applicationContext, R.color.secondary))}
+                                    in 5..8 -> {binding.txtViewSituac02.setTextColor(ContextCompat.getColor(applicationContext, R.color.secondary))}
                                     else -> {binding.txtViewSituac02.setTextColor(ContextCompat.getColor(applicationContext, R.color.corVermelho))}
                                 }
                                 binding.txtViewSituac02.setText(
@@ -683,7 +706,7 @@ class LancamentoActivity : AppCompatActivity() {
         } catch ( e : NumberFormatException ){
             inventario.id_lanca = 0
         }
-        inventario.lanc_estado = if (binding.cbSituacao.isChecked()) { 5 } else {0}
+        //inventario.lanc_estado = if (binding.cbSituacao.isChecked()) { 5 } else {0}
         inventario.lanc_dt_lanca = getHoje()
         inventario.lanc_obs = binding.editObs02.text.toString()
         val lancamento = LancamentoModel(
@@ -767,6 +790,7 @@ class LancamentoActivity : AppCompatActivity() {
         val intent = Intent(this, ComplementoProdutoActivity::class.java)
         intent.putExtra("id_imobilizado", lanca.id_imobilizado)
         intent.putExtra("fromLancamento", "S")
+        intent.putExtra("estado",lanca.estado)
         getRetornoComplemento.launch(intent)
     }
 

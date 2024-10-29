@@ -2,18 +2,18 @@ package com.simionato.inventarioweb
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.simionato.inventarioweb.adapters.UsuarioAdapter
-import com.simionato.inventarioweb.databinding.ActivityPesquisaUsuarioBinding
+import com.simionato.inventarioweb.adapters.ApelidoAdapter
+import com.simionato.inventarioweb.databinding.ActivityPesquisaApelidoBinding
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.UsuarioQuery01Model
 import com.simionato.inventarioweb.parametros.ParametroUsuario01
@@ -23,7 +23,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PesquisaUsuarioActivity : AppCompatActivity() {
+class PesquisaApelido : AppCompatActivity() {
+
     val params : ParametroUsuario01 = ParametroUsuario01(
         1,
         0,
@@ -40,12 +41,16 @@ class PesquisaUsuarioActivity : AppCompatActivity() {
     private var usuarios = listOf<UsuarioQuery01Model>()
 
     private val binding by lazy {
-        ActivityPesquisaUsuarioBinding.inflate(layoutInflater)
+        ActivityPesquisaApelidoBinding.inflate(layoutInflater)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
         setContentView(binding.root)
+
         iniciar()
+
     }
 
     private fun iniciar(){
@@ -57,17 +62,17 @@ class PesquisaUsuarioActivity : AppCompatActivity() {
     }
 
     private fun inicializarTooBar(){
-        binding.ToolBar07.title = "Controle De Ativos"
-        binding.ToolBar07.subtitle = "Pesquisa De Usuário"
-        binding.ToolBar07.setTitleTextColor(
+        binding.ToolBar101.title = "Controle De Ativos"
+        binding.ToolBar101.subtitle = "Pesquisa Apelidos"
+        binding.ToolBar101.setTitleTextColor(
             ContextCompat.getColor(this,R.color.white)
         )
-        binding.ToolBar07.setSubtitleTextColor(
+        binding.ToolBar101.setSubtitleTextColor(
             ContextCompat.getColor(this,R.color.white)
         )
 
-        binding.ToolBar07.inflateMenu(R.menu.menu_pesquisa)
-        binding.ToolBar07.setOnMenuItemClickListener { menuItem ->
+        binding.ToolBar101.inflateMenu(R.menu.menu_pesquisa)
+        binding.ToolBar101.setOnMenuItemClickListener { menuItem ->
             when( menuItem.itemId ){
                 R.id.menu_pesquisa_sair -> {
                     val returnIntent: Intent = Intent()
@@ -84,13 +89,14 @@ class PesquisaUsuarioActivity : AppCompatActivity() {
     private  fun getUsuarios(){
         try {
             val usuarioService = InfraHelper.apiInventario.create( UsuarioService::class.java )
-            binding.llProgress07.visibility = View.VISIBLE
-            usuarioService.getUsuarios(params).enqueue(object : Callback<List<UsuarioQuery01Model>> {
+            binding.llProgress101.visibility = View.VISIBLE
+            usuarioService.getUsuarios(params).enqueue(object :
+                Callback<List<UsuarioQuery01Model>> {
                 override fun onResponse(
                     call: Call<List<UsuarioQuery01Model>>,
                     response: Response<List<UsuarioQuery01Model>>
                 ) {
-                    binding.llProgress07.visibility = View.GONE
+                    binding.llProgress101.visibility = View.GONE
                     if (response != null) {
                         if (response.isSuccessful) {
 
@@ -101,23 +107,23 @@ class PesquisaUsuarioActivity : AppCompatActivity() {
 
                             if (usuarios !== null) {
 
-                                val adapter = UsuarioAdapter(usuarios){usuario ->
+                                val adapter = ApelidoAdapter(usuarios){usuario ->
                                     val returnIntent: Intent = Intent()
                                     returnIntent.putExtra("id_usuario",usuario.id)
                                     returnIntent.putExtra("razao",usuario.razao)
-                                    setResult(Activity.RESULT_OK,returnIntent)
+                                    setResult(RESULT_OK,returnIntent)
                                     finish()
                                 }
-                                binding.rvLista07.adapter = adapter
-                                binding.rvLista07.layoutManager =
-                                    LinearLayoutManager(binding.rvLista07.context)
-                                binding.rvLista07.addItemDecoration(
+                                binding.rvLista101.adapter = adapter
+                                binding.rvLista101.layoutManager =
+                                    LinearLayoutManager(binding.rvLista101.context)
+                                binding.rvLista101.addItemDecoration(
                                     DividerItemDecoration(
-                                        binding.rvLista07.context,
+                                        binding.rvLista101.context,
                                         RecyclerView.VERTICAL
                                     )
                                 )
-                                binding.svPesquisa07.setOnQueryTextListener(object :
+                                binding.svPesquisa101.setOnQueryTextListener(object :
                                     OnQueryTextListener {
                                     override fun onQueryTextSubmit(p0: String?): Boolean {
                                         return false
@@ -135,7 +141,7 @@ class PesquisaUsuarioActivity : AppCompatActivity() {
 
                         }
                         else {
-                            binding.llProgress07.visibility = View.GONE
+                            binding.llProgress101.visibility = View.GONE
                             val gson = Gson()
                             val message = gson.fromJson(
                                 response.errorBody()!!.charStream(),
@@ -150,25 +156,24 @@ class PesquisaUsuarioActivity : AppCompatActivity() {
                             }
                         }
                     } else {
-                        binding.llProgress07.visibility = View.GONE
+                        binding.llProgress101.visibility = View.GONE
                         showToast("Sem retorno Da Requisição!", Toast.LENGTH_SHORT)
                     }
                 }
                 override fun onFailure(call: Call<List<UsuarioQuery01Model>>, t: Throwable) {
-                    binding.llProgress07.visibility = View.GONE
+                    binding.llProgress101.visibility = View.GONE
                     showToast(t.message.toString())
                 }
             })
 
         }catch (e: Exception){
-            binding.llProgress07.visibility = View.GONE
+            binding.llProgress101.visibility = View.GONE
             showToast("${e.message.toString()}", Toast.LENGTH_LONG)
         }
 
-        }
+    }
 
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
         Toast.makeText(this, mensagem, duracao).show()
     }
-
 }

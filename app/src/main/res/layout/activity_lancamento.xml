@@ -149,13 +149,50 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/TextInputLayoutCodigo02">
 
-                <CheckBox
-                    android:id="@+id/cbSituacao"
+                <TextView
+                    android:id="@+id/txtViewSituacoesEspeciais"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:text="Ativo Não Encontrado!"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="Situações Especiais"
+                    android:textColor="#E10C0C"
                     android:textSize="20sp" />
 
+
+
+                <RadioGroup
+                    android:id="@+id/rgSituacao02"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:gravity="start|left"
+                    android:orientation="vertical"
+                    tools:layout_editor_absoluteX="10dp">
+
+                    <RadioButton
+                        android:id="@+id/rbNaoEncontrado02"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Não Encontrado"
+                        android:textSize="20sp"/>
+
+                    <RadioButton
+                        android:id="@+id/rbBaixado02"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Baixado"
+                        android:textSize="20sp"/>
+
+                    <RadioButton
+                        android:id="@+id/rbAutomatica02"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Classificação Automática"
+                        android:textSize="20sp"
+                        android:checked="true"/>
+
+                </RadioGroup>
 
                 <TextView
                     android:id="@+id/txtViewSituac02"
@@ -163,11 +200,12 @@
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     android:gravity="center_horizontal|center_vertical"
-                    android:text="Não Inventariado"
+                    android:text=""
                     android:textColor="#E10C0C"
                     android:textSize="20sp" />
 
             </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/llLinhaData02"

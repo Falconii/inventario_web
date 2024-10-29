@@ -59,11 +59,11 @@ class MainActivity : AppCompatActivity() {
         inicializarTooBar()
         inflateTela()
         binding.buttonCheckUpdate.visibility = View.GONE;
-        /*
+
         binding.buttonCheckUpdate.setOnClickListener {
             openUpdateCheckActivity()
         }
-*/
+
 
         binding.ivSemUsuarioEntrar00.setOnClickListener {
            chamaLogin()

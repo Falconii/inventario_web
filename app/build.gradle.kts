@@ -53,6 +53,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-vision:20.1.3")
     implementation("androidx.activity:activity-ktx:1.9.2")
     implementation ("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.6.0")
+    implementation("androidx.navigation:navigation-ui-ktx:2.6.0")
+    implementation("androidx.activity:activity:1.9.2")
     testImplementation("junit:junit:4.13.2")
 
 }

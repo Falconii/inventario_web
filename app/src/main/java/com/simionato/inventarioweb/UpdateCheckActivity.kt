@@ -1,8 +1,6 @@
 package com.simionato.inventarioweb
 
-import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -29,21 +27,24 @@ import java.util.concurrent.TimeUnit
 
 class UpdateCheckActivity : AppCompatActivity() {
 
-    private val updateUrl = "https://github.com/Falconii/arquivos_apk/releases/download/apk/app-release.apk"
+    private var updateUrl = "https://github.com/Falconii/arquivos_apk/releases/download/apk/app-release.apk"
 
     private lateinit var progressBar: ProgressBar
     private lateinit var statusMessage: TextView
     private lateinit var restoreButton: Button
     private lateinit var checkUpdateButton: Button
+    private lateinit var testeButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update_check)
 
         progressBar = findViewById(R.id.progress_bar)
+        showProgressBar(false)
         statusMessage = findViewById(R.id.status_message)
         restoreButton = findViewById(R.id.restore_button)
         checkUpdateButton = findViewById(R.id.check_update_button)
+        testeButton = findViewById(R.id.teste_button)
 
         statusMessage.text = "Você está na versão mais recente."
 
@@ -62,6 +63,29 @@ class UpdateCheckActivity : AppCompatActivity() {
             Log.d("UpdateCheckActivity", "Botão de verificação de atualizações clicado.")
             checkForUpdates()
         }
+
+        testeButton.setOnClickListener {
+            try {
+                val file = File("/simionato/app-02_10_24.apk")
+                val fileUri: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    FileProvider.getUriForFile(applicationContext, "com.simionato.inventarioweb.fileProvider", file)
+                } else {
+                    Uri.fromFile(file)
+                }
+                /*
+                FileProvider.getUriForFile(
+                    applicationContext,
+                    "com.simionato.inventarioweb.fileProvider",
+                    image
+                )*/
+
+                showToast("${fileUri.path}", Toast.LENGTH_LONG)
+            } catch (e: Exception) {
+                //binding.llProgress01.visibility = View.GONE
+                showToast("${e.message}", Toast.LENGTH_LONG)
+            }
+        }
+
     }
 
     private fun checkForUpdates() {
@@ -69,16 +93,18 @@ class UpdateCheckActivity : AppCompatActivity() {
         statusMessage.text = "Fazendo backup do aplicativo atual..."
 
         val apkBackup = File(cacheDir, "app-backup.apk")
-        backupCurrentApk(apkBackup) { success ->
+        backupCurrentApk(apkBackup, { success ->
             if (success) {
                 Log.d("UpdateCheckActivity", "Backup concluído. Verificando atualizações...")
+                statusMessage.text = "Backup concluído. Verificando atualizações..."
+                showProgressBar(false)
                 checkForNewUpdates()
             } else {
                 showProgressBar(false)
                 statusMessage.text = "Falha ao fazer backup do aplicativo."
                 showToast("Falha ao fazer backup do aplicativo")
             }
-        }
+        })
     }
 
     private fun checkForNewUpdates() {
@@ -286,5 +312,9 @@ class UpdateCheckActivity : AppCompatActivity() {
 
     companion object {
         private const val REQUEST_INSTALL_PACKAGES = 100
+    }
+
+    private fun showToast(mensagem: String, duracao: Int = Toast.LENGTH_SHORT) {
+        Toast.makeText(baseContext, mensagem, duracao).show()
     }
 }

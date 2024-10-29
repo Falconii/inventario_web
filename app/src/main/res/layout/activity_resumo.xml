@@ -50,7 +50,7 @@
                 android:layout_marginRight="5dp"
                 android:background="#DCA622"
                 android:gravity="center_horizontal|center_vertical"
-                android:paddingLeft="6dp"
+                android:paddingStart="6dp"
                 android:text="Documento Disponível Apenas Para Consulta"
                 android:textAlignment="center"
                 android:textColor="@color/design_default_color_error"
