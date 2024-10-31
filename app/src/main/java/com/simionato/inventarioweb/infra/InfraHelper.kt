@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class InfraHelper {
     companion object {
         val apiInventario = Retrofit.Builder()
-            .baseUrl(ParametroGlobal.Dados.url_local)
+            .baseUrl(ParametroGlobal.Dados.url_local_copper)
             .addConverterFactory( GsonConverterFactory.create() )//json ou XML
             .build()
 

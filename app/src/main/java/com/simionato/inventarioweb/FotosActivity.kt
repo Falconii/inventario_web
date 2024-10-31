@@ -289,13 +289,17 @@ class FotosActivity : AppCompatActivity() {
         binding.btGravar20.setEnabled(false)
         binding.btCancelar20.setEnabled(false)
         if (origem == "GALERIA"){
-            uploadFoto_galeria()
+            if (!save_local){
+                uploadFoto_galeria()
+            } else {
+                showToast("Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
+                binding.btCancelar20.setEnabled(true)
+            }
         } else {
             if (!save_local) {
                 uploadFoto_camera()
             } else {
                 showToast("Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
-                binding.btGravar20.setEnabled(true)
                 binding.btCancelar20.setEnabled(true)
             }
         }
