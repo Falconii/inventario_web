@@ -28,10 +28,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import com.google.gson.Gson
+import com.simionato.inventarioweb.dao.daofotodownload
 import com.simionato.inventarioweb.databinding.ActivityFotosBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.Inventario
+import com.simionato.inventarioweb.infra.DatabaseHelper
 import com.simionato.inventarioweb.infra.InfraHelper
+import com.simionato.inventarioweb.models.FotoUpload
 import com.simionato.inventarioweb.models.RetornoUpload
 import com.simionato.inventarioweb.services.FotoService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
@@ -237,7 +240,10 @@ class FotosActivity : AppCompatActivity() {
         }
 
         binding.btGravar20.setOnClickListener {
-            uploadFoto()
+            //uploadFoto()
+            registroFotoUpload()
+            finish();
+
         }
         binding.btCancelar20.setOnClickListener {
             val returnIntent: Intent = Intent()
@@ -451,6 +457,22 @@ class FotosActivity : AppCompatActivity() {
             Log.e("ww","${error.message}")
             showToast("Falha Ao Preparar A Foto Para Transmissão!")
         }
+    }
+    private fun registroFotoUpload(){
+        try {
+            val idUuid = UUID.randomUUID()
+            val fileUuid = idUuid.toString()
+            var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
+                    "${Inventario.id_filial.toString().padStart(6,'0')}_" +
+                    "${Inventario.codigo.toString().padStart(6,'0')}_" +
+                    "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
+            val dao = daofotodownload(DatabaseHelper(applicationContext));
+            dao.insertPhoto(fileName,"local")
+            showToast("Foto Gravada Com Sucesso!")
+        }catch (error:Exception){
+            showToast("Falha Ao Gravar Foto Localmente!")
+        }
+
     }
     private fun uploadFoto_camera(){
         try {

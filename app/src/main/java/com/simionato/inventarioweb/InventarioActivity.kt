@@ -165,6 +165,11 @@ class InventarioActivity : AppCompatActivity() {
                     return@setOnMenuItemClickListener true
                 }
 
+                R.id.menu_inventario_upload-> {
+                    chamaUpload()
+                    return@setOnMenuItemClickListener true
+                }
+
                 else -> {
                     return@setOnMenuItemClickListener true
                 }
@@ -529,6 +534,20 @@ class InventarioActivity : AppCompatActivity() {
             adapter.anexarData(imobilizados)
         }
     }
+
+    private fun chamaUpload() {
+        val intent = Intent(this, FotosUploadServicoActivity::class.java)
+        getRetornoChamaUpload.launch(intent)
+    }
+
+    private val getRetornoChamaUpload =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                getInventariosContador()
+            }
+        }
 
     private val getRetornoLancamento =
         registerForActivityResult(

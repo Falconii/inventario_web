@@ -1,26 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
-        android:id="@+id/menu_inventario_filtro"
+        android:id="@+id/menu_upload_srv_atualizar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/filter_branco_noicon36"
         android:title="Filtro"
         app:showAsAction="never|ifRoom|withText" />
     <item
-        android:id="@+id/menu_inventario_sair"
+        android:id="@+id/menu_upload_srv_sair"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/exit_branco_36"
         android:title="Sair"
         app:showAsAction="always|withText" />
-    <item
-        android:id="@+id/menu_inventario_upload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:icon="@drawable/exit_branco_36"
-        android:title="UpLoad Fotos"
-        app:showAsAction="withText" />
 </menu>
