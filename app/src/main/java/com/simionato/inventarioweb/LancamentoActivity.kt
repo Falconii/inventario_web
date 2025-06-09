@@ -388,34 +388,7 @@ class LancamentoActivity : AppCompatActivity() {
 
                             var inventarios = response.body()
 
-                            inventario = (inventarios?.get(0) ?: ImobilizadoinventarioModel(
-                                0,
-                                0,
-                                0,
-                                0,
-                                0,
-                                0,
-                                0,
-                                "",
-                                9,
-                                "",
-                                0,
-                                0,
-                                "",
-                                "",
-                                0,
-                                "",
-                                "",
-                                "",
-                                "",
-                                "",
-                                0,
-                                "",
-                                "",
-                                0,
-                                "",
-                                ""
-                            )) as ImobilizadoinventarioModel
+                            inventario = (inventarios?.get(0) ?: ImobilizadoinventarioModel()) as ImobilizadoinventarioModel
 
                             if (inventario.id_lanca !== 0) {
                                 showToast( "Ativo Já Inventariado!",
@@ -729,6 +702,7 @@ class LancamentoActivity : AppCompatActivity() {
             "",
             "",
             0,
+            "",
             "",
             ""
         )

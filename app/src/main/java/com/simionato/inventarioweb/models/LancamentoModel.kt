@@ -25,5 +25,6 @@ data class LancamentoModel(
     val imo_cod_cc:String ,
     val imo_cod_grupo:Int ,
     val imo_descricao:String ,
+    val imo_apelido:String,
     val usu_razao:String ,
 ): Parcelable

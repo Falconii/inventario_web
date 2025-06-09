@@ -20,6 +20,8 @@ data class ParametroImobilizadoInventario01(
     var book: String ,
     var dtinicial: String ,
     var dtfinal: String ,
+    var id_principal: Int,
+    var apelido:String,
     var pagina:Int,
     var tamPagina:Int,
     var contador:String,
@@ -30,7 +32,8 @@ data class ParametroImobilizadoInventario01(
     var _descricaoCC: String,
     var _descricaoGrupo:String,
     var _descricaoNewCC:String,
-    var _nomeUsuario:String
+    var _nomeUsuario:String,
+    var _descricaoPrincipal:String
 ){
     constructor():this(
         ParametroGlobal.Dados.Inventario.id_empresa,
@@ -50,6 +53,8 @@ data class ParametroImobilizadoInventario01(
         "",
         "",
         "",
+        0,
+        "",
     0,
     50,
     "N",
@@ -60,6 +65,7 @@ data class ParametroImobilizadoInventario01(
         "",
     "",
     "",
-    ""
+    "",
+        ""
     )
 }

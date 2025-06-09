@@ -56,6 +56,13 @@ class FiltroInventarioActivity : AppCompatActivity() {
             if (binding.rbObservacao35.isChecked) {
                 paramImoInventario._searchIndex = 3
             }
+            if (binding.rbApelido35.isChecked) {
+                paramImoInventario._searchIndex = 4
+            }
+        }
+
+        binding.editPrincipal35.setOnClickListener {
+            chamaPesquisaPrincipal()
         }
 
         binding.editCCOriginal35.setOnClickListener {
@@ -125,6 +132,10 @@ class FiltroInventarioActivity : AppCompatActivity() {
             }
         }
 
+        binding.ibLimparPrincipal35.setOnClickListener {
+            paramImoInventario.id_principal = 0
+            binding.editPrincipal35.setText(R.string.sem_filtro)
+        }
         binding.ibLimparCcOrig35.setOnClickListener {
             paramImoInventario.id_cc = ""
             binding.editCCOriginal35.setText(R.string.sem_filtro)
@@ -297,9 +308,41 @@ class FiltroInventarioActivity : AppCompatActivity() {
 
         }
 
+    private val getRetornoPequisaPrincipal =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                if (it.resultCode == Activity.RESULT_OK) {
+                    val codigo = it.data?.getIntExtra("codigo",0)
+                    val descricao = it.data?.getStringExtra("descricao")
+                    try {
+                        if (codigo != 0) {
+                            paramImoInventario.id_principal = codigo ?: 0
+                            paramImoInventario._descricaoPrincipal = descricao!!
+                            binding.editPrincipal35.setText(paramImoInventario._descricaoPrincipal)
+                        }
+                    } catch (e: NumberFormatException) {
+                        showToast("Código Inválido!", Toast.LENGTH_SHORT)
+                    }
+                }
+            }
+            if (it.resultCode == 100) {
+                paramImoInventario.id_cc = ""
+                binding.editCCOriginal35.setText("Sem Filtro. Toque Para Alterar!")
+
+            }
+
+        }
+
     private fun chamaPesquisaCc() {
         val intent = Intent(this, PesquisaCcActivity::class.java)
         getRetornoPequisaCc.launch(intent)
+    }
+
+    private fun chamaPesquisaPrincipal() {
+        val intent = Intent(this, PesquisaPrincipalActivity::class.java)
+        getRetornoPequisaPrincipal.launch(intent)
     }
 
     private val getRetornoPequisaNewCc =
@@ -512,6 +555,15 @@ class FiltroInventarioActivity : AppCompatActivity() {
                 binding.editGrupo35.setText(paramImoInventario._descricaoGrupo)
             } else {
                 binding.editGrupo35.setText(R.string.sem_filtro)
+            }
+        } catch (e: NumberFormatException) {
+            binding.editGrupo35.setText(R.string.sem_filtro)
+        }
+        try {
+            if (paramImoInventario.id_principal != 0) {
+                binding.editPrincipal35.setText(paramImoInventario._descricaoPrincipal)
+            } else {
+                binding.editPrincipal35.setText(R.string.sem_filtro)
             }
         } catch (e: NumberFormatException) {
             binding.editGrupo35.setText(R.string.sem_filtro)

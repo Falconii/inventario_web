@@ -24,6 +24,9 @@ data class ImobilizadoinventarioModel(
     var imo_nfe:String ,
     var imo_serie:String ,
     var imo_item:String ,
+    var imo_origem:String,
+    var imo_principal:Int,
+    var imo_apelido:String,
     var cc_descricao:String ,
     var grupo_descricao:String ,
     var lanc_id_usuario:Int ,
@@ -31,10 +34,11 @@ data class ImobilizadoinventarioModel(
     var lanc_obs:String ,
     var lanc_estado:Int ,
     var usu_razao:String ,
-    var new_cc_descricao:String
+    var new_cc_descricao:String,
+    var princ_descricao:String
 ) : Parcelable {
     constructor() : this(
-        0,
+        1,
         0,
         0,
         0,
@@ -53,11 +57,15 @@ data class ImobilizadoinventarioModel(
         "",
         "",
         "",
+        0,
+        "",
+        "",
         "",
         0,
         "",
         "",
         0,
+        "",
         "",
         ""
     )

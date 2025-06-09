@@ -62,6 +62,17 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/item_inventario_principal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="item_inventario_principal"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll_item_inventario_situacao" />
+
+    <TextView
         android:id="@+id/item_inventario_codigo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -70,7 +81,7 @@
         android:textColor="@color/black"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ll_item_inventario_situacao" />
+        app:layout_constraintTop_toBottomOf="@+id/item_inventario_principal" />
 
     <TextView
         android:id="@+id/item_inventario_codigo_novo"
@@ -81,7 +92,7 @@
         android:textColor="@color/black"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ll_item_inventario_situacao" />
+        app:layout_constraintTop_toBottomOf="@+id/item_inventario_principal" />
 
     <TextView
         android:id="@+id/item_inventario_descricao"
@@ -96,6 +107,18 @@
         app:layout_constraintTop_toBottomOf="@+id/item_inventario_codigo" />
 
     <TextView
+        android:id="@+id/item_inventario_apelido"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="item_inventario_apelido"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/item_inventario_descricao" />
+
+    <TextView
         android:id="@+id/item_inventario_grupo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -105,7 +128,7 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/item_inventario_descricao" />
+        app:layout_constraintTop_toBottomOf="@+id/item_inventario_apelido" />
 
     <TextView
         android:id="@+id/item_inventario_cc"
@@ -188,7 +211,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/item_inventario_lancamento_resp" />
 
-
     <TextView
         android:id="@+id/item_inventario_obs"
         android:layout_width="0dp"
@@ -203,4 +225,43 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/item_inventario_lancamento_condicao_book" />
+
+    <LinearLayout
+        android:id="@+id/llitem_inventario_progress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#D1C9C9"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/item_inventario_progress"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#BDACE8"
+            android:padding="5dp" />
+
+        <TextView
+            android:id="@+id/text_inventario_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="3"
+            android:text="Aguarde...Carregando Mais Itens"
+            android:textAlignment="center"
+            android:textColor="#E41A1A"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

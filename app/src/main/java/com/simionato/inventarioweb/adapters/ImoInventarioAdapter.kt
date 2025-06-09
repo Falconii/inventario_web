@@ -7,6 +7,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Visibility
 import com.simionato.inventarioweb.R
 import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.global.ParametroGlobal
@@ -24,9 +25,12 @@ class ImoInventarioAdapter(
     private var paginaAtual:Int = 0
     inner class InventarioViewHolder(val ItemView: View, val view_Type : Int):RecyclerView.ViewHolder(ItemView) {
 
-        lateinit var layout:View
+        lateinit var  layout:View
+        lateinit var  ll_item_inventario_situacao:View
         lateinit var  txtSituacao : TextView
         lateinit var  txtDescricao : TextView
+        lateinit var  txtApelido : TextView
+        lateinit var  txtPrincipal : TextView
         lateinit var  txtCodigo:TextView
         lateinit var  txtCodigoNovo :TextView
         lateinit var  txtGrupo :TextView
@@ -40,8 +44,7 @@ class ImoInventarioAdapter(
         lateinit var btLancamento:ImageButton
         lateinit var btFoto:ImageButton
         lateinit var btConsulta:ImageButton
-
-        lateinit var textViewProgressXX:TextView
+        lateinit var llitem_inventario_progress:View
 
         init {}
 
@@ -50,14 +53,17 @@ class ImoInventarioAdapter(
             if (view_Type == VIEW_TYPE_ITEM)
             {
 
-                layout       = ItemView.findViewById(R.id.llI_item_inventario_master)
-                txtSituacao     = ItemView.findViewById(R.id.item_inventario_situacao)
+                layout        = ItemView.findViewById(R.id.llI_item_inventario_master)
+                ll_item_inventario_situacao = ItemView.findViewById(R.id.ll_item_inventario_situacao)
+                txtSituacao   = ItemView.findViewById(R.id.item_inventario_situacao)
+                txtPrincipal  = ItemView.findViewById(R.id.item_inventario_principal)
                 txtCodigo     = ItemView.findViewById(R.id.item_inventario_codigo)
                 txtCodigoNovo = ItemView.findViewById(R.id.item_inventario_codigo_novo)
-                txtDescricao = ItemView.findViewById(R.id.item_inventario_descricao)
-                txtGrupo = ItemView.findViewById(R.id.item_inventario_grupo)
-                txtCC = ItemView.findViewById(R.id.item_inventario_cc)
-                txtCCNovo = ItemView.findViewById(R.id.item_inventario_cc_novo)
+                txtDescricao  = ItemView.findViewById(R.id.item_inventario_descricao)
+                txtApelido    = ItemView.findViewById(R.id.item_inventario_apelido)
+                txtGrupo      = ItemView.findViewById(R.id.item_inventario_grupo)
+                txtCC         = ItemView.findViewById(R.id.item_inventario_cc)
+                txtCCNovo     = ItemView.findViewById(R.id.item_inventario_cc_novo)
                 txtTituloLancamento = ItemView.findViewById(R.id.item_inventario_lancamento_view)
                 txtLancamento = ItemView.findViewById(R.id.item_inventario_lancamento_nro_data)
                 txtResponsavel = ItemView.findViewById(R.id.item_inventario_lancamento_resp)
@@ -66,6 +72,31 @@ class ImoInventarioAdapter(
                 btLancamento = ItemView.findViewById(R.id.item_inventario_lancamento)
                 btFoto = ItemView.findViewById(R.id.item_inventario_foto)
                 btConsulta = ItemView.findViewById(R.id.item_inventario_consulta)
+                llitem_inventario_progress = ItemView.findViewById(R.id.llitem_inventario_progress)
+
+                llitem_inventario_progress.visibility = if ( imobilizadoInventario.id_imobilizado == 0 ) {View.VISIBLE} else {View.GONE}
+
+                if ( llitem_inventario_progress.visibility == View.GONE) {
+
+                    ll_item_inventario_situacao.visibility = View.VISIBLE
+                    txtPrincipal.visibility = View.VISIBLE
+                    txtCodigo.visibility = View.VISIBLE
+                    txtCodigoNovo.visibility = View.VISIBLE
+                    txtDescricao.visibility = View.VISIBLE
+                    txtApelido.visibility = View.VISIBLE
+                    txtGrupo.visibility = View.VISIBLE
+                    txtCC.visibility = View.VISIBLE
+
+                } else {
+                    ll_item_inventario_situacao.visibility = View.GONE
+                    txtPrincipal.visibility = View.GONE
+                    txtCodigo.visibility = View.GONE
+                    txtCodigoNovo.visibility = View.GONE
+                    txtDescricao.visibility = View.GONE
+                    txtApelido.visibility = View.GONE
+                    txtGrupo.visibility = View.GONE
+                    txtCC.visibility = View.GONE
+                }
                 when (imobilizadoInventario.status) {
                     0 -> {txtSituacao.setTextColor(ContextCompat.getColor(layout.context, R.color.corVermelho))}
                     1 -> {txtSituacao.setTextColor(ContextCompat.getColor(layout.context, R.color.corVerde))}
@@ -81,12 +112,21 @@ class ImoInventarioAdapter(
                         )
                     }"
                 )
+
+                if (imobilizadoInventario.imo_principal == 0){
+                    txtPrincipal.setText("")
+                } else {
+                    txtPrincipal.setText(ParametroGlobal.prettyText.tituloDescricao("PRINC: ",imobilizadoInventario.imo_principal.toString().padStart(6,'0')+"-"+imobilizadoInventario.princ_descricao))
+                }
+
                 txtCodigo.setText(ParametroGlobal.prettyText.tituloDescricao("ATIVO: ",imobilizadoInventario.id_imobilizado.toString().padStart(6,'0')))
+
                 txtCodigoNovo.visibility =
                     if (imobilizadoInventario.new_codigo != 0) View.VISIBLE else View.GONE
                 txtCodigoNovo.setText(ParametroGlobal.prettyText.tituloDescricao("COD. NOVO: ",imobilizadoInventario.new_codigo.toString().padStart(6,'0')))
 
                 txtDescricao.setText(ParametroGlobal.prettyText.tituloDescricao("DESCRIÇÃO: ",imobilizadoInventario.imo_descricao))
+                txtApelido.setText(ParametroGlobal.prettyText.tituloDescricao("APELIDO: ",imobilizadoInventario.imo_apelido))
                 txtGrupo.setText(ParametroGlobal.prettyText.tituloDescricao("GRUPO: ",imobilizadoInventario.grupo_descricao))
                 txtCC.setText(ParametroGlobal.prettyText.tituloDescricao("CENTRO CUSTO: ",imobilizadoInventario.cc_descricao))
                 txtCCNovo.visibility =
@@ -110,7 +150,6 @@ class ImoInventarioAdapter(
                 txtResponsavel.setText(ParametroGlobal.prettyText.tituloDescricao("RESP: ",imobilizadoInventario.usu_razao))
                 txtCondicaoBook.setText(ParametroGlobal.prettyText.tituloDescricaoDois("Condição: ",ParametroGlobal.Condicoes.getCondicao(imobilizadoInventario.condicao),"Book: ",ParametroGlobal.SimNao.getSimNao(imobilizadoInventario.book)))
                 txtObs.setText(ParametroGlobal.prettyText.tituloDescricao("OBSERVAÇÃO: ",imobilizadoInventario.lanc_obs))
-
                 btLancamento.setOnClickListener {
                     onClickc(imobilizadoInventario, CadastrosAcoes.Lancamento, idx)
                 }
@@ -122,10 +161,6 @@ class ImoInventarioAdapter(
                 btConsulta.setOnClickListener {
                     onClickc(imobilizadoInventario, CadastrosAcoes.Consulta, idx)
                 }
-            }
-            else {
-                txtSituacao     = ItemView.findViewById(R.id.textViewProgressXX)
-                txtSituacao.setText("Carregando Página ${paginaAtual+1}/${totalPaginas}")
             }
         }
     }
@@ -163,6 +198,7 @@ class ImoInventarioAdapter(
     fun getLastEmpresa():Int{
         return if (lista != null)  lista[lista.size-1].id_empresa else  1
     }
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InventarioViewHolder {

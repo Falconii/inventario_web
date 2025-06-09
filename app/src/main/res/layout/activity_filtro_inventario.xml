@@ -50,7 +50,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <RadioGroup
+                    <RadioGroup
                     android:id="@+id/rgCodigos35"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -61,11 +61,11 @@
                     tools:layout_editor_absoluteX="10dp">
 
                     <RadioButton
-                        android:id="@+id/rbAntigo35"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:text="Código Original" />
+                            android:id="@+id/rbAntigo35"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="Código Original" />
 
                     <RadioButton
                         android:id="@+id/rbNovo35"
@@ -85,8 +85,57 @@
                         android:layout_height="wrap_content"
                         android:text="Observação" />
 
+                    <RadioButton
+                        android:id="@+id/rbApelido35"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Apelido" />
+
                 </RadioGroup>
 
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/moldura">
+
+                <TextView
+                    android:id="@+id/LabelPrincipal35"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text = "PRINCIPAL"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
+                    android:textStyle="normal|italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/editPrincipal35"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="3dp"
+                    android:layout_weight="1"
+                    android:gravity="center|left"
+                    android:minHeight="50dp"
+                    android:text="Sem Filtro. Toque Para Alterar"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/ib_Limpar_principal35"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/LabelPrincipal35" />
+
+                <ImageButton
+                    android:id="@+id/ib_Limpar_principal35"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -144,8 +193,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="GRUPO DO PRODUTO"
-                    android:textColor="@color/label"
-                    android:textSize="10sp"
+                    android:textColor="@color/corAzul"
+                    android:textSize="14sp"
                     android:textStyle="normal|italic"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -163,7 +212,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/ib_Limpar_grupo35"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/LabelGrupo35" />
 
                 <ImageButton
                     android:id="@+id/ib_Limpar_grupo35"

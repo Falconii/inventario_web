@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.simionato.inventarioweb.R;
 import com.simionato.inventarioweb.models.InventarioModel;
-import com.simionato.inventarioweb.models.InventarioModel;
 
 import java.util.List;
 

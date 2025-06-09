@@ -128,8 +128,8 @@ class InventarioActivity : AppCompatActivity() {
                     binding.llProgress40.visibility = View.GONE
                 }
                 if (!isLoading) {
-                    if (adapter.getLastEmpresa() == 0 && linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == tam - 1) {
-                        Log.i("zyzz","Pagina AtuL ${paginaAtual}")
+                    if (adapter.getLastEmpresa() == 1 && linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == tam - 1) {
+                        Log.i("zyzz","Pagina Atual..Indo Para Carga ${paginaAtual}")
                         atualizaPagina(PaginasAcoes.Avancar)
                         getInventarios(false)
                     }
@@ -281,7 +281,7 @@ class InventarioActivity : AppCompatActivity() {
             if (!unico && paginaAtual == 1) {
                 binding.textViewProgress40.setText("Carregando Página ${paginaAtual}/${totalPaginas}")
                 if (unico) binding.textViewProgress40.setText("Atualizando Registro")
-                else binding.textViewProgress40.setText("Busncado Página ${paginaAtual}/${totalPaginas}")
+                else binding.textViewProgress40.setText("Buscando Página ${paginaAtual}/${totalPaginas}")
                 binding.llProgress40.visibility = View.VISIBLE
             }
             imobilizadoInventarioService.getImobilizadosInventarios(params).enqueue(object :
@@ -408,6 +408,10 @@ class InventarioActivity : AppCompatActivity() {
 
             3 -> {
                 params.observacao = pesquisaString.trim()
+            }
+
+            4 -> {
+                params.apelido = pesquisaString.trim()
             }
         }
         pesquisaString = ""
@@ -613,6 +617,11 @@ class InventarioActivity : AppCompatActivity() {
 
                     3 ->{
                         binding.svPesquisa40.queryHint = "Busca Pela Observação"
+                        binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS)
+                    }
+
+                    4 ->{
+                        binding.svPesquisa40.queryHint = "Busca Pelo Apelido"
                         binding.svPesquisa40.setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS)
                     }
                     else -> {
