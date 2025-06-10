@@ -240,7 +240,7 @@ class FotosActivity : AppCompatActivity() {
         }
 
         binding.btGravar20.setOnClickListener {
-            //uploadFoto()
+            uploadFoto()
             registroFotoUpload()
             finish();
 

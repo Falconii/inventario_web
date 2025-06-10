@@ -35,8 +35,8 @@ class FotoUploadAdapter(
 
         fun bind(foto: FotoUpload){
             foto_item_load_txt_descricao.setText(ParametroGlobal.prettyText.tituloDescricao("Código: ",foto.id.toString(),true))
-            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Descrição: ",foto.name,true))
-            foto_item_load_txt_usuario.setText(ParametroGlobal.prettyText.tituloDescricao("Usuario: ","Usuario",true))
+            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Nome: ",foto.name,true))
+            foto_item_load_txt_usuario.setText(ParametroGlobal.prettyText.tituloDescricao("Status: ",foto.status.toString(),true))
 
         }
 

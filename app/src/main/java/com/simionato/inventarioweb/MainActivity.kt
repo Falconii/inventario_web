@@ -14,7 +14,13 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.gson.Gson
+import com.simionato.inventarioweb.agendamentos.UploadWorker
 import com.simionato.inventarioweb.databinding.ActivityMainBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.Inventario
@@ -44,6 +50,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.TimeUnit
 
 //val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "INVENTARIO_PREFERS")
 //private val id_empresa_key = intPreferencesKey("id_empresa")
@@ -55,6 +62,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ativarServicoUploadFotos()
         setContentView(binding.root)
         inicializarTooBar()
         inflateTela()
@@ -324,6 +332,25 @@ class MainActivity : AppCompatActivity() {
     private fun openUpdateCheckActivity() {
         val intent = Intent(this, UpdateCheckActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun ativarServicoUploadFotos(){
+
+        val uploadWorkRequest = PeriodicWorkRequestBuilder<UploadWorker>(2, TimeUnit.MINUTES)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED) // Garante que só roda com internet
+                    .build()
+            )
+            .build()
+
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "photo_upload_work",
+            ExistingPeriodicWorkPolicy.KEEP, // Mantém a tarefa recorrente
+            uploadWorkRequest
+        )
+
+        Log.i("SRV","Serviço ativado!");
     }
 }
 

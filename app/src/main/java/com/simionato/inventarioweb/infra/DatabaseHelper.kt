@@ -4,10 +4,14 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DatabaseHelper(context: Context) : SQLiteOpenHelper(
+    context,
+    "${context.filesDir}/simionato_ativo.db", // Caminho personalizado dentro de filesDir
+    null,
+    DATABASE_VERSION
+) {
 
     companion object {
-        private const val DATABASE_NAME = "photos.db"
         private const val DATABASE_VERSION = 1
         const val TABLE_NAME = "photos"
         const val COLUMN_ID = "id"
@@ -29,7 +33,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
-        onCreate(db)
+        // Evita destruir o banco ao atualizar a versão
+        if (oldVersion < newVersion) {
+            db.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN nova_coluna TEXT")
+        }
     }
 }

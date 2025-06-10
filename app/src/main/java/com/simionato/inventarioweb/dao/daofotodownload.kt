@@ -46,4 +46,29 @@ class daofotodownload(private val dbHelper: DatabaseHelper) {
         cursor.close()
         return photos
     }
+
+
+    fun getAllPhotos(): List<FotoUpload> {
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            DatabaseHelper.TABLE_NAME,
+            arrayOf(DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_NAME, DatabaseHelper.COLUMN_PATH),
+            null,
+            null, null, null, null
+        )
+
+        val photos = mutableListOf<FotoUpload>()
+        while (cursor.moveToNext()) {
+            photos.add(
+                FotoUpload(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PATH)),
+                    0
+                )
+            )
+        }
+        cursor.close()
+        return photos
+    }
 }

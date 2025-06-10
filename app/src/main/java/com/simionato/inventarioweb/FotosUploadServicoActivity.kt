@@ -98,7 +98,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
 
         try {
              binding.llProgress77.visibility = View.VISIBLE
-             this.fotos = daoFoto.getPendingPhotos()
+             this.fotos = daoFoto.getAllPhotos()
              binding.llProgress77.visibility = View.GONE
              val adapter = FotoUploadAdapter(fotos,{foto ->
                 finish()

@@ -151,7 +151,7 @@ class UpdateCheckActivity : AppCompatActivity() {
     private fun backupCurrentApk(backupFile: File, callback: (Boolean) -> Unit) {
         try {
             val packageInfo = packageManager.getPackageInfo(packageName, 0)
-            val apkPath = packageInfo.applicationInfo.sourceDir
+            val apkPath = packageInfo.applicationInfo?.sourceDir
             val inputStream = FileInputStream(apkPath)
             val outputStream = FileOutputStream(backupFile)
 
