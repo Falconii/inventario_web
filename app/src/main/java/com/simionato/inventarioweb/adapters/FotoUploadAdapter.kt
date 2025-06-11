@@ -9,12 +9,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.simionato.inventarioweb.R
 import com.simionato.inventarioweb.global.ParametroGlobal
-import com.simionato.inventarioweb.models.FotoUpload
-import com.simionato.inventarioweb.models.UsuarioQuery01Model
+import com.simionato.inventarioweb.models.FotoUploadModel
 
 class FotoUploadAdapter(
-    private val lista : List<FotoUpload>,
-    private val clique: (foto:FotoUpload) -> Unit) :
+    private val lista : List<FotoUploadModel>,
+    private val clique: (foto:FotoUploadModel) -> Unit) :
     RecyclerView.Adapter<FotoUploadAdapter.PesquisaViewHolder>(),Filterable {
 
     private var listaFiltered = lista
@@ -33,10 +32,10 @@ class FotoUploadAdapter(
 
         }
 
-        fun bind(foto: FotoUpload){
+        fun bind(foto: FotoUploadModel){
             foto_item_load_txt_descricao.setText(ParametroGlobal.prettyText.tituloDescricao("Código: ",foto.id.toString(),true))
-            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Nome: ",foto.name,true))
-            foto_item_load_txt_usuario.setText(ParametroGlobal.prettyText.tituloDescricao("Status: ",foto.status.toString(),true))
+            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Nome: ",foto.fileNameOriginal,true))
+            foto_item_load_txt_usuario.setText(ParametroGlobal.prettyText.tituloDescricao("Status: ",foto.destaque.toString(),true))
 
         }
 
@@ -70,13 +69,13 @@ class FotoUploadAdapter(
         override fun performFiltering(constraint: CharSequence?): FilterResults {
             val text = constraint.toString().orEmpty()
 
-            val resultList = ArrayList<FotoUpload>()
+            val resultList = ArrayList<FotoUploadModel>()
 
             if (text.isEmpty()){
                 resultList.addAll(lista)
             } else {
                 lista
-                    .filter { it.name .lowercase().contains(text.lowercase())}
+                    .filter { it.fileNameOriginal .lowercase().contains(text.lowercase())}
                     .forEach({obj -> resultList.add(obj) })
             }
             return FilterResults().apply {
@@ -90,14 +89,14 @@ class FotoUploadAdapter(
             val result = if (results?.values == null){
                 ArrayList()
             } else {
-                results.values as ArrayList<FotoUpload>
+                results.values as ArrayList<FotoUploadModel>
             }
             setNewData(result)
         }
 
     }
 
-    fun setNewData(data:List<FotoUpload>){
+    fun setNewData(data:List<FotoUploadModel>){
         listaFiltered = data.orEmpty()
         notifyDataSetChanged()
     }

@@ -1,36 +1,29 @@
 package com.simionato.inventarioweb
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.simionato.inventarioweb.adapters.CentroAdapter
 import com.simionato.inventarioweb.adapters.FotoUploadAdapter
-import com.simionato.inventarioweb.dao.daofotodownload
-import com.simionato.inventarioweb.databinding.ActivityFotosBinding
+import com.simionato.inventarioweb.dao.daoFotoUpload
 import com.simionato.inventarioweb.databinding.ActivityFotosUploadServicoBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.infra.DatabaseHelper
-import com.simionato.inventarioweb.models.FotoUpload
+import com.simionato.inventarioweb.models.FotoUploadModel
 
 class FotosUploadServicoActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityFotosUploadServicoBinding.inflate(layoutInflater)
     }
     private val daoFoto by lazy {
-        daofotodownload(DatabaseHelper(applicationContext));
+        daoFotoUpload(DatabaseHelper(applicationContext));
     }
 
-    private var fotos:List<FotoUpload> = listOf();
+    private var fotos:List<FotoUploadModel> = listOf();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +91,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
 
         try {
              binding.llProgress77.visibility = View.VISIBLE
-             this.fotos = daoFoto.getAllPhotos()
+             this.fotos = daoFoto.getPhotos()
              binding.llProgress77.visibility = View.GONE
              val adapter = FotoUploadAdapter(fotos,{foto ->
                 finish()

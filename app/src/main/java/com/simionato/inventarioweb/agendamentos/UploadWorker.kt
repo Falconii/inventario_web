@@ -9,14 +9,13 @@ import android.content.Context
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.simionato.inventarioweb.dao.daofotodownload
 import com.simionato.inventarioweb.infra.DatabaseHelper
 
 class UploadWorker(
     context: Context,
     workerParams: WorkerParameters
 ): Worker(context, workerParams){
-    override fun doWork(): Result {
+    override fun doWork(): Result {/*
         val photoRepository = daofotodownload(DatabaseHelper(applicationContext))
         val pendingPhotos = photoRepository.getPendingPhotos()
         Log.i("SRV","pendingPhotos -> ${pendingPhotos.count()}")
@@ -25,7 +24,7 @@ class UploadWorker(
         pendingPhotos.forEach { photo ->
             photoRepository.updatePhotoStatus(photo.id, 2) // Atualiza no banco
         }
-
+*/
         return Result.success()
 
     }

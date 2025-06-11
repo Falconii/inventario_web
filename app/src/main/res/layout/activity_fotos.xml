@@ -216,18 +216,28 @@
                         android:layout_marginRight="5dp"
                         android:layout_weight="1"
                         android:backgroundTint="#E4B849"
-                        android:text="Cancelar" />
+                        android:text="Cancelar Ação" />
 
 
                     <Button
-                        android:id="@+id/btGravar20"
+                        android:id="@+id/btGravarNuvem20"
                         android:layout_width="60dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
                         android:layout_weight="1"
                         android:backgroundTint="#1FE828"
-                        android:text="Gravar" />
+                        android:text="Gravar Nuvem" />
+
+                    <Button
+                        android:id="@+id/btGravarLocal20"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="#1FE828"
+                        android:text="Gravar   Local" />
                 </LinearLayout>
 
             </LinearLayout>

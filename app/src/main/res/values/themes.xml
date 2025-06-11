@@ -6,7 +6,8 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorSecondary">@color/secondary</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowFullscreen">false</item>
     </style>
 
-    <style name="Theme.InventarioWeb" parent="Base.Theme.InventarioWeb" />
+    <style name="Theme.InventarioWeb" parent="Base.Theme.InventarioWeb"/>
 </resources>

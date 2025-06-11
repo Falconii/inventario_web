@@ -4,11 +4,14 @@ package com.simionato.inventarioweb
    https://stackoverflow.com/questions/7286714/android-get-orientation-of-a-camera-bitmap-and-rotate-back-90-degrees
  */
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.graphics.Matrix
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Build
@@ -28,13 +31,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import com.google.gson.Gson
-import com.simionato.inventarioweb.dao.daofotodownload
 import com.simionato.inventarioweb.databinding.ActivityFotosBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.Inventario
 import com.simionato.inventarioweb.infra.DatabaseHelper
 import com.simionato.inventarioweb.infra.InfraHelper
-import com.simionato.inventarioweb.models.FotoUpload
 import com.simionato.inventarioweb.models.RetornoUpload
 import com.simionato.inventarioweb.services.FotoService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
@@ -43,6 +44,7 @@ import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -239,8 +241,12 @@ class FotosActivity : AppCompatActivity() {
             binding.swDestaque20.setText(if (binding.swDestaque20.isChecked) "Foto Está Em Destaque" else "Foto Não Está Em Destaque" )
         }
 
-        binding.btGravar20.setOnClickListener {
+        binding.btGravarNuvem20.setOnClickListener {
             uploadFoto()
+            finish();
+
+        }
+        binding.btGravarLocal20.setOnClickListener {
             registroFotoUpload()
             finish();
 
@@ -292,7 +298,8 @@ class FotosActivity : AppCompatActivity() {
         }
     }
     private fun uploadFoto(){
-        binding.btGravar20.setEnabled(false)
+        binding.btGravarNuvem20.setEnabled(false)
+        binding.btGravarLocal20.setEnabled(false)
         binding.btCancelar20.setEnabled(false)
         if (origem == "GALERIA"){
             if (!save_local){
@@ -309,6 +316,29 @@ class FotosActivity : AppCompatActivity() {
                 binding.btCancelar20.setEnabled(true)
             }
         }
+    }
+
+    private fun registroFotoUpload(){
+        try {
+            val idUuid = UUID.randomUUID()
+            val fileUuid = idUuid.toString()
+            var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
+                    "${Inventario.id_filial.toString().padStart(6,'0')}_" +
+                    "${Inventario.codigo.toString().padStart(6,'0')}_" +
+                    "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
+            val newImageUri = saveCompressedImageToGallery(this, imageUri, fileName)
+
+            if (newImageUri != null) {
+                showToast("Foto Gravada Com Sucesso!")
+            } else {
+                showToast("Falha Na Gravação Da Foto!")
+            }
+            //val dao = daofotodownload(DatabaseHelper(applicationContext));
+            //dao.insertPhoto(fileName,"local")
+        }catch (error:Exception){
+            showToast("Falha Ao Gravar Foto Localmente!")
+        }
+
     }
     private fun uploadFoto_galeria(){
         try {
@@ -416,7 +446,8 @@ class FotosActivity : AppCompatActivity() {
                                         showToast("Falha No Retorno Da Requisição!")
 
 
-                                        binding.btGravar20.setEnabled(true)
+                                        binding.btGravarNuvem20.setEnabled(true)
+                                        binding.btGravarLocal20.setEnabled(true)
                                         binding.btCancelar20.setEnabled(true)
                                     }
 
@@ -430,14 +461,16 @@ class FotosActivity : AppCompatActivity() {
                                     )
                                     showToast("${message.getMessage().toString()}",Toast.LENGTH_SHORT)
 
-                                    binding.btGravar20.setEnabled(true)
+                                    binding.btGravarNuvem20.setEnabled(true)
+                                    binding.btGravarLocal20.setEnabled(true)
                                     binding.btCancelar20.setEnabled(true)
                                 }
                             }
                             else {
                                 binding.llProgress20.visibility = View.GONE
                                 showToast("Não Foi Possivel Inserir A Foto Na Nuvem")
-                                binding.btGravar20.setEnabled(true)
+                                binding.btGravarNuvem20.setEnabled(true)
+                                binding.btGravarLocal20.setEnabled(true)
                                 binding.btCancelar20.setEnabled(true)
                             }
                         }
@@ -458,22 +491,7 @@ class FotosActivity : AppCompatActivity() {
             showToast("Falha Ao Preparar A Foto Para Transmissão!")
         }
     }
-    private fun registroFotoUpload(){
-        try {
-            val idUuid = UUID.randomUUID()
-            val fileUuid = idUuid.toString()
-            var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
-                    "${Inventario.id_filial.toString().padStart(6,'0')}_" +
-                    "${Inventario.codigo.toString().padStart(6,'0')}_" +
-                    "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
-            val dao = daofotodownload(DatabaseHelper(applicationContext));
-            dao.insertPhoto(fileName,"local")
-            showToast("Foto Gravada Com Sucesso!")
-        }catch (error:Exception){
-            showToast("Falha Ao Gravar Foto Localmente!")
-        }
 
-    }
     private fun uploadFoto_camera(){
         try {
 
@@ -560,7 +578,8 @@ class FotosActivity : AppCompatActivity() {
 
                                     } else {
                                         showToast("Falha No Retorno Da Requisição!")
-                                        binding.btGravar20.setEnabled(true)
+                                        binding.btGravarNuvem20.setEnabled(true)
+                                        binding.btGravarLocal20.setEnabled(true)
                                         binding.btCancelar20.setEnabled(true)
                                     }
 
@@ -573,14 +592,16 @@ class FotosActivity : AppCompatActivity() {
                                         HttpErrorMessage::class.java
                                     )
                                     showToast("${message.getMessage().toString()}",Toast.LENGTH_SHORT)
-                                    binding.btGravar20.setEnabled(true)
+                                    binding.btGravarNuvem20.setEnabled(true)
+                                    binding.btGravarLocal20.setEnabled(true)
                                     binding.btCancelar20.setEnabled(true)
                                 }
                             }
                             else {
                                 binding.llProgress20.visibility = View.GONE
                                 showToast("Não Foi Possivel Inserir A Foto Na Nuvem")
-                                binding.btGravar20.setEnabled(false)
+                                binding.btGravarNuvem20.setEnabled(false)
+                                binding.btGravarLocal20.setEnabled(false)
                                 binding.btCancelar20.setEnabled(true)
                             }
                         }
@@ -592,7 +613,8 @@ class FotosActivity : AppCompatActivity() {
                             } else {
                                 showToast("${t.message.toString()}", Toast.LENGTH_LONG)
                             }
-                            binding.btGravar20.setEnabled(true)
+                            binding.btGravarNuvem20.setEnabled(true)
+                            binding.btGravarLocal20.setEnabled(true)
                             binding.btCancelar20.setEnabled(true)
                         }
                     })
@@ -745,4 +767,110 @@ class FotosActivity : AppCompatActivity() {
         return filePath?.let { File(it) }
     }
 
+    fun saveImageToGallery(context: Context, imageUri: Uri, fileName: String): Uri? {
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg") // Ajuste conforme necessário
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Simionato") // Pasta dentro da galeria
+        }
+
+        val resolver = context.contentResolver
+        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+
+        val imageUriSaved = resolver.insert(imageCollection, contentValues) ?: return null
+
+        resolver.openOutputStream(imageUriSaved).use { outputStream ->
+            resolver.openInputStream(imageUri)?.use { inputStream ->
+                inputStream.copyTo(outputStream!!)
+            }
+        }
+
+        return imageUriSaved // Retorna a URI da imagem salva na galeria
+    }
+
+    fun saveCompressedImageToGalleryOld(context: Context, imageUri: Uri, fileName: String): Uri? {
+        val resolver = context.contentResolver
+
+        // Obtém o bitmap original
+        val inputStream = resolver.openInputStream(imageUri) ?: return null
+        val originalBitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
+
+        // Verifica a orientação original da imagem
+        val exif = resolver.openInputStream(imageUri)?.use { ExifInterface(it) }
+        val rotationDegrees = when (exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270
+            else -> 0
+        }
+
+        // Ajusta a rotação da imagem
+        val matrix = Matrix().apply { postRotate(rotationDegrees.toFloat()) }
+        val rotatedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
+
+        // Compacta a imagem para 40%
+        val outputStream = ByteArrayOutputStream()
+        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 40, outputStream)
+        val compressedBitmap = BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.size())
+
+        // Define os metadados para salvar na galeria
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Simionato")
+        }
+
+        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        val imageUriSaved = resolver.insert(imageCollection, contentValues) ?: return null
+
+        // Salva a imagem compactada na galeria
+        resolver.openOutputStream(imageUriSaved).use { output ->
+            compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 40, output!!)
+        }
+
+        return imageUriSaved // Retorna a URI da imagem compactada e corrigida na galeria
+    }
+
+    fun saveCompressedImageToGallery(context: Context, imageUri: Uri, fileName: String): Uri? {
+        val resolver = context.contentResolver
+
+        // Obtém o bitmap original
+        val inputStream = resolver.openInputStream(imageUri) ?: return null
+        val originalBitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
+
+        // Verifica e corrige a orientação da imagem
+        val exif = resolver.openInputStream(imageUri)?.use { ExifInterface(it) }
+        val rotationDegrees = when (exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270
+            else -> 0
+        }
+
+        val matrix = Matrix().apply { postRotate(rotationDegrees.toFloat()) }
+        val rotatedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
+
+        // Compacta a imagem uma única vez
+        val outputStream = ByteArrayOutputStream()
+        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 40, outputStream)
+
+        // Define os metadados para salvar na galeria
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Simionato")
+        }
+
+        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        val imageUriSaved = resolver.insert(imageCollection, contentValues) ?: return null
+
+        // Salva a imagem já compactada na galeria
+        resolver.openOutputStream(imageUriSaved).use { output ->
+            output?.write(outputStream.toByteArray()) // Agora salvamos diretamente os bytes compactados
+        }
+
+        return imageUriSaved
+    }
 }
