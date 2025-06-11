@@ -4,6 +4,7 @@ package com.simionato.inventarioweb
    https://stackoverflow.com/questions/7286714/android-get-orientation-of-a-camera-bitmap-and-rotate-back-90-degrees
  */
 import android.app.Activity
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -31,11 +32,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import com.google.gson.Gson
+import com.simionato.inventarioweb.dao.daoFotoUpload
 import com.simionato.inventarioweb.databinding.ActivityFotosBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.Inventario
 import com.simionato.inventarioweb.infra.DatabaseHelper
 import com.simionato.inventarioweb.infra.InfraHelper
+import com.simionato.inventarioweb.models.FotoUploadModel
 import com.simionato.inventarioweb.models.RetornoUpload
 import com.simionato.inventarioweb.services.FotoService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
@@ -318,8 +321,30 @@ class FotosActivity : AppCompatActivity() {
         }
     }
 
+    private fun uploadFotoLocal(){
+        binding.btGravarNuvem20.setEnabled(false)
+        binding.btGravarLocal20.setEnabled(false)
+        binding.btCancelar20.setEnabled(false)
+        if (origem == "GALERIA"){
+            if (!save_local){
+                uploadFoto_galeria()
+            } else {
+                showToast("Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
+                binding.btCancelar20.setEnabled(true)
+            }
+        } else {
+            if (!save_local) {
+                //uploadFoto_camera()
+            } else {
+                showToast("Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
+                binding.btCancelar20.setEnabled(true)
+            }
+        }
+    }
+
     private fun registroFotoUpload(){
         try {
+            var foto = FotoUploadModel();
             val idUuid = UUID.randomUUID()
             val fileUuid = idUuid.toString()
             var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
@@ -333,8 +358,27 @@ class FotosActivity : AppCompatActivity() {
             } else {
                 showToast("Falha Na Gravação Da Foto!")
             }
-            //val dao = daofotodownload(DatabaseHelper(applicationContext));
-            //dao.insertPhoto(fileName,"local")
+
+            val file = File(newImageUri?.path!!) // Obtém o caminho completo
+            val filePath = file.parent ?: "" // Caminho da pasta onde o arquivo está
+            val fileNameOriginal = file.name // Nome original do arquivo
+
+            foto.idEmpresa			= ParametroGlobal.Dados.empresa.id
+            foto.idLocal			= ParametroGlobal.Dados.local.id
+            foto.idInventario		= ParametroGlobal.Dados.Inventario.codigo
+            foto.idImobilizado		= ParametroGlobal.Dados.empresa.id
+            foto.idPasta			= filePath
+            foto.idFile				= newImageUri.toString()
+            foto.fileName			= fileNameOriginal
+            foto.fileNameOriginal	= fileNameOriginal
+            foto.idUsuario		 	= ParametroGlobal.Dados.usuario.id
+            foto.data			 	= getHoje()
+            foto.destaque        	= if(binding.swDestaque20.isChecked) "S" else "N"
+            foto.obs             	= binding.txtInputObs.text.toString()
+            foto.userInsert      	= ParametroGlobal.Dados.usuario.id
+            foto.userUpdate      	= 0
+            val dao = daoFotoUpload(DatabaseHelper(applicationContext));
+            dao.insertPhoto(foto)
         }catch (error:Exception){
             showToast("Falha Ao Gravar Foto Localmente!")
         }
@@ -871,6 +915,56 @@ class FotosActivity : AppCompatActivity() {
             output?.write(outputStream.toByteArray()) // Agora salvamos diretamente os bytes compactados
         }
 
-        return imageUriSaved
+        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/Simionato/${fileName}")
+        val uriNova = FileProvider.getUriForFile(context, "com.simionato.inventarioweb.fileProvider", file)
+
+        return uriNova
+    }
+
+    fun getSavedImageUriOld(context: Context, fileName: String): Uri? {
+        val resolver = context.contentResolver
+        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+
+        val selection = "${MediaStore.Images.Media.DISPLAY_NAME} = ? AND ${MediaStore.Images.Media.RELATIVE_PATH} = ?"
+        val selectionArgs = arrayOf(fileName, "Pictures/Simionato")
+
+        val cursor = resolver.query(
+            imageCollection,
+            arrayOf(MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.RELATIVE_PATH),
+            selection,
+            selectionArgs,
+            null
+        )
+
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val id = it.getLong(it.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
+                return ContentUris.withAppendedId(imageCollection, id)
+            }
+        }
+
+        return null
+    }
+
+    fun getSavedImageUri(context: Context, fileName: String): Uri? {
+        val resolver = context.contentResolver
+        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+
+        val cursor = resolver.query(
+            imageCollection,
+            arrayOf(MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME),
+            "${MediaStore.Images.Media.DISPLAY_NAME} = ?",
+            arrayOf(fileName),
+            null
+        )
+
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val id = it.getLong(it.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
+                return ContentUris.withAppendedId(imageCollection, id)
+            }
+        }
+
+        return null
     }
 }

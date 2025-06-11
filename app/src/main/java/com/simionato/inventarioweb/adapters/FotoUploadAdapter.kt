@@ -20,22 +20,19 @@ class FotoUploadAdapter(
     inner class PesquisaViewHolder(val ItemView: View) : RecyclerView.ViewHolder(ItemView) {
 
         val  layout: View
-        val  foto_item_load_txt_descricao : TextView
         val  foto_item_load_txt_obs: TextView
         var  foto_item_load_txt_usuario:TextView
 
         init {
             layout =  ItemView.findViewById(R.id.ll_load_foto)
-            foto_item_load_txt_descricao = ItemView.findViewById(R.id.foto_item_load_txt_descricao)
             foto_item_load_txt_obs  = ItemView.findViewById(R.id.foto_item_load_txt_obs)
             foto_item_load_txt_usuario = ItemView.findViewById(R.id.foto_item_load_txt_usuario)
 
         }
 
         fun bind(foto: FotoUploadModel){
-            foto_item_load_txt_descricao.setText(ParametroGlobal.prettyText.tituloDescricao("Código: ",foto.id.toString(),true))
-            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Nome: ",foto.fileNameOriginal,true))
-            foto_item_load_txt_usuario.setText(ParametroGlobal.prettyText.tituloDescricao("Status: ",foto.destaque.toString(),true))
+            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Obs: ",foto.obs,true))
+            foto_item_load_txt_usuario.setText(ParametroGlobal.prettyText.tituloDescricao("Usuário: ",foto.idUsuario.toString(),true))
 
         }
 

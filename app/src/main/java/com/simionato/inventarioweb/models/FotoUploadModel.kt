@@ -5,21 +5,21 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class FotoUploadModel(
-    val id: Int,
-    val idEmpresa: Int,
-    val idLocal: Int,
-    val idInventario: Int,
-    val idImobilizado: Int,
-    val idPasta: String,
-    val idFile: String,
-    val fileName: String,
-    val fileNameOriginal: String,
-    val idUsuario: Int,
-    val data: String, // Pode ser LocalDate se estiver usando Java 8+
-    val destaque: String, // CHAR(1), pode ser tratado como Boolean
-    val obs: String?,
-    val userInsert: Int,
-    val userUpdate: Int?
+    var id: Int,
+    var idEmpresa: Int,
+    var idLocal: Int,
+    var idInventario: Int,
+    var idImobilizado: Int,
+    var idPasta: String,
+    var idFile: String,
+    var fileName: String,
+    var fileNameOriginal: String,
+    var idUsuario: Int,
+    var data: String, // Pode ser LocalDate se estiver usando Java 8+
+    var destaque: String, // CHAR(1), pode ser tratado como Boolean
+    var obs: String,
+    var userInsert: Int,
+    var userUpdate: Int?
 ): Parcelable {
     constructor() : this(
         1,

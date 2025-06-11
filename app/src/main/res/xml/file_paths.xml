@@ -2,6 +2,7 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
   <files-path name="internal_files" path="." />
   <external-path name="camera_foto" path="DCIM/Camera/" />
+  <external-path name="simionato_foto" path="Pictures/Simionato" />
   <cache-path name="cache" path="." />
   <external-path name="external_files" path="." />
 </paths>

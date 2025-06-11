@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+<androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/ScrollLancamento"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EAE5E5"
     android:paddingLeft="5dp"
-    android:paddingTop="5dp"
+    android:paddingTop="1dp"
     android:paddingRight="5dp"
     android:paddingBottom="5dp"
     tools:context=".LancamentoActivity">
@@ -711,3 +716,4 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

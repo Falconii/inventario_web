@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ScrollFotoService"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="8dp"
+    android:paddingTop="1dp"
+    android:paddingRight="8dp"
+    android:paddingBottom="8dp"
     android:background="#EAE5E5"
-    android:paddingLeft="5dp"
-    android:paddingTop="5dp"
-    android:paddingRight="5dp"
-    android:paddingBottom="5dp"
     tools:context=".FotosUploadServicoActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -88,3 +95,4 @@
             android:textStyle="bold" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
