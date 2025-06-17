@@ -27,11 +27,31 @@ class FiltroInventarioActivity : AppCompatActivity() {
         ActivityFiltroInventarioBinding.inflate(layoutInflater)
     }
 
+    private var codigosCcAntigos:String = ""
+
+
+    private var codigosCcNovos:String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.llProgress35.visibility = View.GONE
         binding.llFoto35.visibility = View.GONE
+        try {
+            val bundle = intent.extras
+
+            if (bundle != null) {
+                codigosCcAntigos = bundle.getString("codigosCcAntigos", "")
+                codigosCcNovos = bundle.getString("codigosCcNovos", "")
+            } else {
+                showToast("Parâmetro Centro De Custos Incorretos !!")
+                finish()
+            }
+        }  catch (error:Exception){
+            showToast("Erro Nos Parametros: ${error.message}")
+            finish()
+        }
+
         iniciar()
     }
 
@@ -336,7 +356,7 @@ class FiltroInventarioActivity : AppCompatActivity() {
         }
 
     private fun chamaPesquisaCc() {
-        val intent = Intent(this, PesquisaCcActivity::class.java)
+        val intent = Intent(this, PesquisaMultCcActivity::class.java)
         getRetornoPequisaCc.launch(intent)
     }
 

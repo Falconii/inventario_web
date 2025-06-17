@@ -489,7 +489,6 @@ class FotosActivity : AppCompatActivity() {
                                     } else {
                                         showToast("Falha No Retorno Da Requisição!")
 
-
                                         binding.btGravarNuvem20.setEnabled(true)
                                         binding.btGravarLocal20.setEnabled(true)
                                         binding.btCancelar20.setEnabled(true)
@@ -546,7 +545,8 @@ class FotosActivity : AppCompatActivity() {
                     "${Inventario.codigo.toString().padStart(6,'0')}_" +
                     "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
 
-            var file = saveLocal(fileName)
+            var file = saveCompressedImage(applicationContext,imageUri, fileName)
+                ?: return// saveLocal(fileName)
 
             val requestFile = RequestBody.create(MultipartBody.FORM, file)
 
@@ -577,22 +577,23 @@ class FotosActivity : AppCompatActivity() {
             binding.llProgress20.visibility = View.VISIBLE
 
             try {
-                val fotoService = InfraHelper.apiInventario.create( FotoService::class.java )
+                val fotoService = InfraHelper.apiInventario.create(FotoService::class.java)
 
                 fotoService.postUploadFoto(
-                    id_empresa
-                    ,id_local
-                    ,id_inventario
-                    ,id_imobilizado
-                    ,id_pasta
-                    ,id_file
-                    ,old_name
-                    ,id_usuario
-                    ,data
-                    ,destaque
-                    ,obs
-                    ,body)
-                    .enqueue(object :Callback<RetornoUpload>{
+                    id_empresa,
+                    id_local,
+                    id_inventario,
+                    id_imobilizado,
+                    id_pasta,
+                    id_file,
+                    old_name,
+                    id_usuario,
+                    data,
+                    destaque,
+                    obs,
+                    body
+                )
+                    .enqueue(object : Callback<RetornoUpload> {
                         override fun onResponse(
                             call: Call<RetornoUpload>,
                             response: Response<RetornoUpload>
@@ -610,13 +611,16 @@ class FotosActivity : AppCompatActivity() {
                                         try {
                                             file.delete()
                                         } catch (e: Exception) {
-                                            showToast("Falha Na Exclusão Da Foto!", Toast.LENGTH_LONG)
+                                            showToast(
+                                                "Falha Na Exclusão Da Foto!",
+                                                Toast.LENGTH_LONG
+                                            )
                                         }
                                         showToast("${mensagem.message}")
 
                                         val returnIntent: Intent = Intent()
 
-                                        setResult(Activity.RESULT_OK,returnIntent)
+                                        setResult(Activity.RESULT_OK, returnIntent)
 
                                         finish()
 
@@ -627,21 +631,22 @@ class FotosActivity : AppCompatActivity() {
                                         binding.btCancelar20.setEnabled(true)
                                     }
 
-                                }
-                                else {
+                                } else {
                                     binding.llProgress20.visibility = View.GONE
                                     val gson = Gson()
                                     val message = gson.fromJson(
                                         response.errorBody()!!.charStream(),
                                         HttpErrorMessage::class.java
                                     )
-                                    showToast("${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+                                    showToast(
+                                        "${message.getMessage().toString()}",
+                                        Toast.LENGTH_SHORT
+                                    )
                                     binding.btGravarNuvem20.setEnabled(true)
                                     binding.btGravarLocal20.setEnabled(true)
                                     binding.btCancelar20.setEnabled(true)
                                 }
-                            }
-                            else {
+                            } else {
                                 binding.llProgress20.visibility = View.GONE
                                 showToast("Não Foi Possivel Inserir A Foto Na Nuvem")
                                 binding.btGravarNuvem20.setEnabled(false)
@@ -652,8 +657,11 @@ class FotosActivity : AppCompatActivity() {
 
                         override fun onFailure(call: Call<RetornoUpload>, t: Throwable) {
                             binding.llProgress20.visibility = View.GONE
-                            if (t.message.toString() == "timeout"){
-                                showToast("Excedeu O Tempo De Espera!\nCancele E Atualize A Tela Anterior", Toast.LENGTH_LONG)
+                            if (t.message.toString() == "timeout") {
+                                showToast(
+                                    "Excedeu O Tempo De Espera!\nCancele E Atualize A Tela Anterior",
+                                    Toast.LENGTH_LONG
+                                )
                             } else {
                                 showToast("${t.message.toString()}", Toast.LENGTH_LONG)
                             }
@@ -921,50 +929,53 @@ class FotosActivity : AppCompatActivity() {
         return uriNova
     }
 
-    fun getSavedImageUriOld(context: Context, fileName: String): Uri? {
+    fun saveCompressedImage(context: Context, imageUri: Uri, fileName: String): File? {
         val resolver = context.contentResolver
-        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
 
-        val selection = "${MediaStore.Images.Media.DISPLAY_NAME} = ? AND ${MediaStore.Images.Media.RELATIVE_PATH} = ?"
-        val selectionArgs = arrayOf(fileName, "Pictures/Simionato")
+        // Obtém o bitmap original
+        val inputStream = resolver.openInputStream(imageUri) ?: return null
+        val originalBitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
 
-        val cursor = resolver.query(
-            imageCollection,
-            arrayOf(MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.RELATIVE_PATH),
-            selection,
-            selectionArgs,
-            null
-        )
-
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val id = it.getLong(it.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
-                return ContentUris.withAppendedId(imageCollection, id)
-            }
+        // Verifica e corrige a orientação da imagem
+        val exif = resolver.openInputStream(imageUri)?.use { ExifInterface(it) }
+        val rotationDegrees = when (exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270
+            else -> 0
         }
 
-        return null
-    }
+        val matrix = Matrix().apply { postRotate(rotationDegrees.toFloat()) }
+        val rotatedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
 
-    fun getSavedImageUri(context: Context, fileName: String): Uri? {
-        val resolver = context.contentResolver
-        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        // Compacta a imagem uma única vez
+        val outputStream = ByteArrayOutputStream()
+        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 40, outputStream)
 
-        val cursor = resolver.query(
-            imageCollection,
-            arrayOf(MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME),
-            "${MediaStore.Images.Media.DISPLAY_NAME} = ?",
-            arrayOf(fileName),
-            null
-        )
-
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val id = it.getLong(it.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
-                return ContentUris.withAppendedId(imageCollection, id)
-            }
+        // Define os metadados para salvar na galeria
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Simionato")
         }
 
-        return null
+        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        val imageUriSaved = resolver.insert(imageCollection, contentValues) ?: return null
+
+        // Salva a imagem já compactada na galeria
+        resolver.openOutputStream(imageUriSaved).use { output ->
+            output?.write(outputStream.toByteArray()) // Agora salvamos diretamente os bytes compactados
+        }
+
+        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/Simionato/${fileName}")
+        val uriNova = FileProvider.getUriForFile(context, "com.simionato.inventarioweb.fileProvider", file)
+
+
+        save_local = true;
+
+        return file
     }
+
+
 }

@@ -536,11 +536,22 @@ class InventarioActivity : AppCompatActivity() {
     }
 
     private fun chamaUpload() {
-        val intent = Intent(this, FotosUploadServicoActivity::class.java)
-        getRetornoChamaUpload.launch(intent)
+        //val intent = Intent(this, FotosUploadServicoActivity::class.java)
+        //getRetornoChamaUpload.launch(intent)
+        val intent = Intent(this, FotoTesteActivity::class.java)
+        getRetornoChamaTeste.launch(intent)
     }
 
     private val getRetornoChamaUpload =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                getInventariosContador()
+            }
+        }
+
+    private val getRetornoChamaTeste =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {

@@ -20,7 +20,7 @@ class ParametroGlobal {
             var local:LocalModel = LocalModel()
             var Inventario: InventarioModel = InventarioModel()
             var paramImoInventario:ParametroImobilizadoInventario01 = ParametroImobilizadoInventario01()
-            var url_local : String = "http://192.168.0.146:3000/api/"
+            var url_local : String = "http://192.168.0.225:3000/api/"
             var url_local_copper : String = "http://192.168.0.186:3000/api/"
             var url_web   : String = "https://simionatoativobackend-production.up.railway.app/api/"
         }

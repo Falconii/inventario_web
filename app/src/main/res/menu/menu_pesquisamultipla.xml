@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_pesquisa_multipla_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/warranty"
+        android:title="Ok"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_pesquisa_multipla_sair"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/exit_branco_36"
+        android:title="Sair"
+        app:showAsAction="always" />
+</menu>
