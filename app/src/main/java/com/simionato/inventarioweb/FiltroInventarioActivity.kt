@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.simionato.inventarioweb.databinding.ActivityFiltroInventarioBinding
+import com.simionato.inventarioweb.global.ParametroGlobal
+import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.empresa
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.paramImoInventario
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.usuario
 import com.simionato.inventarioweb.infra.InfraHelper
@@ -27,31 +29,11 @@ class FiltroInventarioActivity : AppCompatActivity() {
         ActivityFiltroInventarioBinding.inflate(layoutInflater)
     }
 
-    private var codigosCcAntigos:String = ""
-
-
-    private var codigosCcNovos:String = ""
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.llProgress35.visibility = View.GONE
         binding.llFoto35.visibility = View.GONE
-        try {
-            val bundle = intent.extras
-
-            if (bundle != null) {
-                codigosCcAntigos = bundle.getString("codigosCcAntigos", "")
-                codigosCcNovos = bundle.getString("codigosCcNovos", "")
-            } else {
-                showToast("Parâmetro Centro De Custos Incorretos !!")
-                finish()
-            }
-        }  catch (error:Exception){
-            showToast("Erro Nos Parametros: ${error.message}")
-            finish()
-        }
-
         iniciar()
     }
 
@@ -179,6 +161,7 @@ class FiltroInventarioActivity : AppCompatActivity() {
             binding.editUsusario35.setText(R.string.sem_filtro)
         }
 
+        getParametro()
     }
 
     private fun inicializarTooBar() {
@@ -224,7 +207,7 @@ class FiltroInventarioActivity : AppCompatActivity() {
             var parametro = ParametroModel(
                 usuario.id_empresa,
                 "inventariomobile",
-                "V1.00 29/02/24",
+                ParametroGlobal.Dados.parametro_assinatura,
                 usuario.id,
                 "",
                 usuario.id,
@@ -357,6 +340,7 @@ class FiltroInventarioActivity : AppCompatActivity() {
 
     private fun chamaPesquisaCc() {
         val intent = Intent(this, PesquisaMultCcActivity::class.java)
+        intent.putExtra("filtrosCCs", paramImoInventario.id_cc)
         getRetornoPequisaCc.launch(intent)
     }
 
@@ -607,6 +591,89 @@ class FiltroInventarioActivity : AppCompatActivity() {
         val returnIntent: Intent = Intent()
         setResult(Activity.RESULT_OK, returnIntent)
         finish()
+    }
+
+    fun getParametro() {
+
+        try {
+            val parametroService = InfraHelper.apiInventario.create(ParametroService::class.java)
+            binding.llProgress35.visibility = View.VISIBLE
+            parametroService.getParametro(
+                empresa.id,
+                "inventariomobile",
+                ParametroGlobal.Dados.parametro_assinatura,
+                usuario.id
+            )
+                .enqueue(object : Callback<ParametroModel> {
+                    override fun onResponse(
+                        call: Call<ParametroModel>,
+                        response: Response<ParametroModel>
+                    ) {
+                        binding.llProgress35.visibility = View.GONE
+                        if (response != null) {
+                            if (response.isSuccessful) {
+
+                                val parametro = response.body()
+
+                                if (parametro !== null) {
+
+                                    val gson = Gson()
+
+                                    val par = gson.fromJson(
+                                        parametro.parametro,
+                                        ParametroImobilizadoInventario01::class.java
+                                    )
+
+                                    paramImoInventario = par
+
+                                } else {
+                                    paramImoInventario = ParametroImobilizadoInventario01()
+
+                                }
+                            } else {
+                                binding.llProgress35.visibility = View.GONE
+                                val gson = Gson()
+                                val message = gson.fromJson(
+                                    response.errorBody()!!.charStream(),
+                                    HttpErrorMessage::class.java
+                                )
+                                if (response.code() == 409) {
+                                    paramImoInventario = ParametroImobilizadoInventario01()
+                                } else {
+                                    showToast(message.getMessage().toString())
+                                }
+
+                            }
+                            loadParametros()
+                        } else {
+                            binding.llProgress35.visibility = View.GONE
+                            val gson = Gson()
+                            val message = gson.fromJson(
+                                response.errorBody()!!.charStream(),
+                                HttpErrorMessage::class.java
+                            )
+                            if (response.code() == 409) {
+                                paramImoInventario = ParametroImobilizadoInventario01()
+                            } else {
+                                showToast(message.getMessage().toString())
+                            }
+                            loadParametros()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ParametroModel>, t: Throwable) {
+                        binding.llProgress35.visibility = View.GONE
+                        showToast(t.message.toString())
+                        loadParametros()
+                    }
+                })
+
+        } catch (e: Exception) {
+            binding.llProgress35.visibility = View.GONE
+            showToast("${e.message.toString()}", Toast.LENGTH_LONG)
+            loadParametros()
+        }
+
     }
 
 }

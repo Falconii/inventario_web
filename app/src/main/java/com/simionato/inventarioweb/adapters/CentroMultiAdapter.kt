@@ -16,17 +16,21 @@ import com.simionato.inventarioweb.models.CentroCustoMultiModel
 class CentroMultiAdapter(
     private val lista : List<CentroCustoMultiModel>,
     private val clique: (centro:CentroCustoMultiModel) -> Unit,
-    private val check :  (centro:CentroCustoMultiModel, check:Boolean) -> Unit
     ) :
     RecyclerView.Adapter<CentroMultiAdapter.PesquisaViewHolder>(),Filterable {
 
     private var listaFiltered = lista
+
+
+    val filterCheck: Filter
+        get() = pesquisaFilterCheck
+
     inner class PesquisaViewHolder(val ItemView: View) : RecyclerView.ViewHolder(ItemView) {
 
         val  layout: View
         val  textDescricao : TextView
         val  txtSubTitulo: TextView
-        val   checkBox: CheckBox
+        val  checkBox: CheckBox
 
         init {
             layout =  ItemView.findViewById(R.id.llMainItemLista101)
@@ -41,11 +45,12 @@ class CentroMultiAdapter(
             txtSubTitulo.setText(ParametroGlobal.prettyText.tituloDescricao("Descrição: ",centro.centro_custo.descricao,true))
 
             layout.setOnClickListener {
-                clique(centro)
+                //clique(centro)
             }
 
             checkBox.setOnClickListener{
                 centro.check = checkBox.isChecked
+                atualizaListaOriginal(centro)
             }
 
 
@@ -97,6 +102,38 @@ class CentroMultiAdapter(
             }
         }
 
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+
+            val result = if (results?.values == null){
+                ArrayList()
+            } else {
+                results.values as ArrayList<CentroCustoMultiModel>
+            }
+            setNewData(result)
+        }
+
+    }
+
+    private val pesquisaFilterCheck = object : Filter(){
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+            val check = constraint.toString().orEmpty()
+
+            val resultList = ArrayList<CentroCustoMultiModel>()
+
+            if (check.isEmpty()){
+                resultList.addAll(lista)
+            } else {
+                val validar = if (check == "T") {true} else {false}
+                lista
+                    .filter { (it.check == validar)}
+                    .forEach({obj -> resultList.add(obj) })
+            }
+            return FilterResults().apply {
+                values = resultList
+                count= resultList.size
+            }
+        }
+
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
 
             val result = if (results?.values == null){
@@ -109,8 +146,42 @@ class CentroMultiAdapter(
 
     }
 
+    fun setMarcacao(flag:Boolean) {
+        listaFiltered.forEach { cc -> cc.check = flag }
+        sincronizarCheck()
+        notifyDataSetChanged()
+    }
     fun setNewData(data:List<CentroCustoMultiModel>){
         listaFiltered = data.orEmpty()
         notifyDataSetChanged()
+    }
+
+    private fun atualizaListaOriginal(centro:CentroCustoMultiModel){
+        val indice = lista.indexOfFirst { cc -> cc.centro_custo.codigo == centro.centro_custo.codigo }
+        if (indice != -1){
+            lista.get(indice).check = centro.check
+        }
+
+    }
+
+    fun sincronizarCheck() {
+        for (itemFiltrado in listaFiltered) {
+            val itemOriginal = lista.find { it.centro_custo.codigo == itemFiltrado.centro_custo.codigo }
+            if (itemOriginal != null) {
+                itemOriginal.check = itemFiltrado.check
+            }
+        }
+    }
+
+    fun EstaTudoMarcado():Boolean{
+        var retorno = false
+
+        val listaMarcada = lista.filter{ cc -> cc.check }
+
+        if (listaMarcada.size == lista.size) {
+            return true
+        }
+
+        return retorno
     }
 }

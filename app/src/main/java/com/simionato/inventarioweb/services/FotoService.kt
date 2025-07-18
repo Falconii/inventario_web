@@ -1,6 +1,7 @@
 package com.simionato.inventarioweb.services
 
 import com.google.gson.JsonObject
+import com.simionato.inventarioweb.models.CentroCustoModel
 import com.simionato.inventarioweb.models.FotoModel
 import com.simionato.inventarioweb.models.RetornoUpload
 import com.simionato.inventarioweb.parametros.ParametroFoto01
@@ -8,16 +9,36 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface FotoService {
     @POST("fotos")
     fun getFotos(
         @Body params: ParametroFoto01
     ): Call<List<FotoModel>>
+
+    @DELETE("foto/{id_empresa}/{id_local}/{id_inventario}/{id_imobilizado}/{id_pasta}/{id_file}/{file_name}")
+    fun deleteFotoDB(
+        @Path("id_empresa") id_empresa: Int,
+        @Path("id_local") id_local: Int,
+        @Path("id_inventario") id_inventario: Int,
+        @Path("id_imobilizado") id_imobilizado: Int,
+        @Path("id_pasta") id_pasta: String,
+        @Path("id_file") id_file: String,
+        @Path("file_name") file_name: String
+    ) : Call<JsonObject>
+
+
+    @POST("foto")
+    fun InsertFoto(
+        @Body params: FotoModel
+    ): Call<FotoModel>
 
     @POST("deleteuploadfotov5")
     fun DeleteFoto(
@@ -43,6 +64,7 @@ interface FotoService {
         @Part("data") data: RequestBody,
         @Part("destaque") destaque: RequestBody,
         @Part("obs") obs: RequestBody,
+        @Part("localizacao") localizacao: RequestBody,
         @Part file: MultipartBody.Part,
 
         ): Call<RetornoUpload>

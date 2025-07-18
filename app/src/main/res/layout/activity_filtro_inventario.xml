@@ -167,8 +167,8 @@
 
                 <TextView
                     android:id="@+id/editCCOriginal35"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="240dp"
+                    android:layout_height="60dp"
                     android:layout_marginEnd="3dp"
                     android:layout_weight="1"
                     android:gravity="center|left"
@@ -179,7 +179,9 @@
                     app:layout_constraintEnd_toStartOf="@+id/ib_Limpar_cc_orig35"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/LabelCCOriginal35" />
+                    app:layout_constraintTop_toBottomOf="@+id/LabelCCOriginal35"
+                    app:layout_constraintVertical_bias="0.0" />
+
 
                 <ImageButton
                     android:id="@+id/ib_Limpar_cc_orig35"

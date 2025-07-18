@@ -334,6 +334,8 @@ class EditFotoActivity : AppCompatActivity() {
 
             val obs = RequestBody.create(MultipartBody.FORM,binding.txtInputObs.text.toString())
 
+            val localizacao = RequestBody.create(MultipartBody.FORM,"N")
+
             binding.llProgress42.visibility = View.VISIBLE
 
             try {
@@ -351,6 +353,7 @@ class EditFotoActivity : AppCompatActivity() {
                     ,data
                     ,destaque
                     ,obs
+                    ,localizacao
                     ,body)
                     .enqueue(object : Callback<RetornoUpload> {
                         override fun onResponse(
@@ -454,6 +457,8 @@ class EditFotoActivity : AppCompatActivity() {
 
             val obs = RequestBody.create(MultipartBody.FORM,binding.txtInputObs.text.toString())
 
+            val localizacao = RequestBody.create(MultipartBody.FORM,"N")
+
             binding.llProgress42.visibility = View.VISIBLE
 
             try {
@@ -471,6 +476,7 @@ class EditFotoActivity : AppCompatActivity() {
                     ,data
                     ,destaque
                     ,obs
+                    ,localizacao
                     ,body)
                     .enqueue(object :Callback<RetornoUpload>{
                         override fun onResponse(

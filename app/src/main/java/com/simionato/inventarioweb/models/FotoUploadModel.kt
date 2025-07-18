@@ -18,6 +18,11 @@ data class FotoUploadModel(
     var data: String, // Pode ser LocalDate se estiver usando Java 8+
     var destaque: String, // CHAR(1), pode ser tratado como Boolean
     var obs: String,
+    var localizacao:String,
+    var descricao:String,
+    var razao:String,
+    var status_upload:String,
+    var data_upload:String,
     var userInsert: Int,
     var userUpdate: Int?
 ): Parcelable {
@@ -34,6 +39,11 @@ data class FotoUploadModel(
         0,
         "",
         "N",
+        "",
+        "N",
+        "",
+        "",
+        "0",
         "",
         0,
         0

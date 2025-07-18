@@ -1,39 +1,85 @@
 package com.simionato.inventarioweb.adapters
 
+import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.simionato.inventarioweb.R
+import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.models.FotoUploadModel
 
 class FotoUploadAdapter(
     private val lista : List<FotoUploadModel>,
-    private val clique: (foto:FotoUploadModel) -> Unit) :
+    private val clique: (foto:FotoUploadModel,idAcao:CadastrosAcoes) -> Unit) :
     RecyclerView.Adapter<FotoUploadAdapter.PesquisaViewHolder>(),Filterable {
 
     private var listaFiltered = lista
     inner class PesquisaViewHolder(val ItemView: View) : RecyclerView.ViewHolder(ItemView) {
 
         val  layout: View
+        val  foto_item_load_image: ImageView
+        val  btDestaque:ImageButton
+        val  btShow:ImageButton
+        val  btDelete:ImageButton
+        val  btUpdate:ImageButton
+        val  foto_item_load_txt_ativo : TextView
+        val  foto_item_load_txt_descricao : TextView
         val  foto_item_load_txt_obs: TextView
-        var  foto_item_load_txt_usuario:TextView
+        val  foto_item_load_txt_usuario:TextView
+        val foto_item_load_txt_situacao:TextView
 
         init {
             layout =  ItemView.findViewById(R.id.ll_load_foto)
+            btDestaque = ItemView.findViewById(R.id.foto_item_load_destaque)
+            btDelete     = ItemView.findViewById(R.id.foto_item_load_delete)
+            btUpdate     = ItemView.findViewById(R.id.foto_item_load_edicao)
+            btShow     = ItemView.findViewById(R.id.foto_item_load_consulta)
+            foto_item_load_txt_ativo = ItemView.findViewById(R.id.foto_item_load_txt_ativo)
+            foto_item_load_image = ItemView.findViewById(R.id.foto_item_load_image)
+            foto_item_load_txt_descricao = ItemView.findViewById(R.id.foto_item_load_txt_descricao)
             foto_item_load_txt_obs  = ItemView.findViewById(R.id.foto_item_load_txt_obs)
             foto_item_load_txt_usuario = ItemView.findViewById(R.id.foto_item_load_txt_usuario)
-
+            foto_item_load_txt_situacao = ItemView.findViewById(R.id.foto_item_load_txt_situacao)
         }
 
         fun bind(foto: FotoUploadModel){
-            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Obs: ",foto.obs,true))
-            foto_item_load_txt_usuario.setText(ParametroGlobal.prettyText.tituloDescricao("Usuário: ",foto.idUsuario.toString(),true))
 
+            val fotoUri = Uri.parse(foto.idFile)
+
+            Glide.with(layout.context)
+                .load(fotoUri)
+                .placeholder(R.drawable.placeholder_image)
+                .error(R.drawable.imagem_falha)
+                .into(foto_item_load_image)
+
+            foto_item_load_image.setImageURI(fotoUri)
+            btDestaque.visibility = if (foto.destaque == "S")  View.VISIBLE else View.GONE
+            foto_item_load_txt_ativo.setText(ParametroGlobal.prettyText.tituloDescricao("Código: ",foto.id.toString().padStart(6,'0'),false))
+            foto_item_load_txt_descricao.setText(ParametroGlobal.prettyText.tituloDescricao("Descrição: ",foto.descricao,true))
+            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Obs: ",foto.obs,true))
+            foto_item_load_txt_usuario.setText(ParametroGlobal.prettyText.tituloDescricao("Usuário: ",foto.razao.toString(),true))
+            foto_item_load_txt_situacao.setText(ParametroGlobal.prettyText.tituloDescricao("Situação: ","Foto Aguardando UPLOAD",true))
+
+            btShow.setOnClickListener {
+                clique(foto, CadastrosAcoes.Consulta)
+            }
+
+            btDelete.setOnClickListener {
+                clique(foto, CadastrosAcoes.Exclusao)
+            }
+
+            btUpdate.setOnClickListener {
+                clique(foto, CadastrosAcoes.Edicao)
+            }
         }
 
     }

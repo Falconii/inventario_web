@@ -3,6 +3,7 @@ package com.simionato.inventarioweb.adapters
   https://stackoverflow.com/questions/37462869/strange-issue-with-loading-image-from-imageview
  */
 
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ class FotoAdapter(
     var lista : List<FotoModel> = listOf()
     inner class FotoViewHolder(val ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val  layout: View
+        val  foto_item_txt_localizacao:TextView
         val  btDestaque:ImageButton
         val  btShow:ImageButton
         val  btDelete:ImageButton
@@ -34,6 +36,7 @@ class FotoAdapter(
         val  textUsuario: TextView
         init {
             layout =  ItemView.findViewById(R.id.foto_item_layout)
+            foto_item_txt_localizacao = ItemView.findViewById(R.id.foto_item_txt_localizacao)
             image =  ItemView.findViewById(R.id.foto_item_image)
             btDestaque = ItemView.findViewById(R.id.foto_item_destaque)
             btDelete     = ItemView.findViewById(R.id.foto_item_delete)
@@ -42,19 +45,28 @@ class FotoAdapter(
             textDescricao = ItemView.findViewById(R.id.foto_item_txt_descricao)
             textObservacao = ItemView.findViewById(R.id.foto_item_txt_obs)
             textUsuario  = ItemView.findViewById(R.id.foto_item_txt_usuario)
-
-            btUpdate.visibility = View.GONE;
+            btUpdate.visibility = View.GONE
         }
         fun bind(foto:FotoModel){
+            foto_item_txt_localizacao.visibility = if (foto.localizacao == "D") {View.VISIBLE} else {View.GONE}
             try {
-                val url = URL("https://drive.google.com/uc?export=view&id=${foto.id_file}")
-                val thumbnailUrl = URL("https://drive.google.com/thumbnail?id=${foto.id_file}&sz=w500")
 
+                if (foto.localizacao == "D"){
+                    val fotoUri = Uri.parse(foto.id_file)
+                    Glide.with(layout.context)
+                        .load(fotoUri)
+                        .placeholder(R.drawable.placeholder_image)
+                        .error(R.drawable.imagem_falha)
+                        .into(image)
+                } else {
+                    val url = URL("https://drive.google.com/uc?export=view&id=${foto.id_file}")
+                    val thumbnailUrl = URL("https://drive.google.com/thumbnail?id=${foto.id_file}&sz=w500")
+                    Glide.with(layout.context)
+                        .load(thumbnailUrl)
+                        .placeholder(R.drawable.placeholder_image)
+                        .into(image);
+                }
 
-                Glide.with(layout.context)
-                    .load(thumbnailUrl)
-                    .placeholder(R.drawable.no_foto)
-                    .into(image);
                 /*
                 Glide.with(layout.context)
                .load(url)

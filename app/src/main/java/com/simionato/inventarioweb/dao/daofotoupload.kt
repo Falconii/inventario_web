@@ -26,6 +26,11 @@ class daoFotoUpload(private val dbHelper: DatabaseHelper) {
             put(DatabaseHelper.COLUMN_DATA, photo.data)
             put(DatabaseHelper.COLUMN_DESTAQUE, photo.destaque)
             put(DatabaseHelper.COLUMN_OBS, photo.obs)
+            put(DatabaseHelper.COLUMN_LOCALIZACAO, photo.localizacao)
+            put(DatabaseHelper.COLUMN_DESCRICAO, photo.descricao)
+            put(DatabaseHelper.COLUMN_RAZAO, photo.razao)
+            put(DatabaseHelper.COLUMN_STATUS_UPLOAD, photo.status_upload)
+            put(DatabaseHelper.COLUMN_DATA_UPLOAD, photo.data_upload)
             put(DatabaseHelper.COLUMN_USER_INSERT, photo.userInsert)
             put(DatabaseHelper.COLUMN_USER_UPDATE, photo.userUpdate)
         }
@@ -50,6 +55,11 @@ class daoFotoUpload(private val dbHelper: DatabaseHelper) {
                 DatabaseHelper.COLUMN_DATA,
                 DatabaseHelper.COLUMN_DESTAQUE,
                 DatabaseHelper.COLUMN_OBS,
+                DatabaseHelper.COLUMN_LOCALIZACAO,
+                DatabaseHelper.COLUMN_DESCRICAO,
+                DatabaseHelper.COLUMN_RAZAO,
+                DatabaseHelper.COLUMN_STATUS_UPLOAD,
+                DatabaseHelper.COLUMN_DATA_UPLOAD,
                 DatabaseHelper.COLUMN_USER_INSERT,
                 DatabaseHelper.COLUMN_USER_UPDATE
             ),
@@ -73,6 +83,11 @@ class daoFotoUpload(private val dbHelper: DatabaseHelper) {
                     cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DATA)),
                     cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESTAQUE)),
                     cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_OBS)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LOCALIZACAO)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESCRICAO)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_RAZAO)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_STATUS_UPLOAD)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DATA_UPLOAD)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_INSERT)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_UPDATE))
                 )
@@ -96,6 +111,11 @@ class daoFotoUpload(private val dbHelper: DatabaseHelper) {
             put(DatabaseHelper.COLUMN_DATA, photo.data)
             put(DatabaseHelper.COLUMN_DESTAQUE, photo.destaque)
             put(DatabaseHelper.COLUMN_OBS, photo.obs)
+            put(DatabaseHelper.COLUMN_LOCALIZACAO, photo.localizacao)
+            put(DatabaseHelper.COLUMN_DESCRICAO, photo.descricao)
+            put(DatabaseHelper.COLUMN_RAZAO, photo.razao)
+            put(DatabaseHelper.COLUMN_STATUS_UPLOAD, photo.status_upload)
+            put(DatabaseHelper.COLUMN_DATA_UPLOAD, photo.data_upload)
             put(DatabaseHelper.COLUMN_USER_UPDATE, photo.userUpdate) // Atualizado por último
         }
 
@@ -117,29 +137,5 @@ class daoFotoUpload(private val dbHelper: DatabaseHelper) {
         return rowsDeleted > 0
     }
 
-    fun insertPhotoFromUri(context: Context, imageUri: Uri): Boolean {
-        val db = dbHelper.writableDatabase
 
-        val file = File(imageUri.path!!) // Obtém o caminho completo
-        val filePath = file.parent ?: "" // Caminho da pasta onde o arquivo está
-        val fileNameOriginal = file.name // Nome original do arquivo
-
-        val values = ContentValues().apply {
-            put(DatabaseHelper.COLUMN_ID_EMPRESA, 1) // Exemplo, ajuste conforme necessário
-            put(DatabaseHelper.COLUMN_ID_LOCAL, 2)
-            put(DatabaseHelper.COLUMN_ID_INVENTARIO, 3)
-            put(DatabaseHelper.COLUMN_ID_IMOBILIZADO, 4)
-            put(DatabaseHelper.COLUMN_ID_PASTA, filePath) // Path do arquivo
-            put(DatabaseHelper.COLUMN_ID_FILE, imageUri.toString()) // URI da imagem
-            put(DatabaseHelper.COLUMN_FILE_NAME, "compactado.jpg") // Pode ser gerado dinamicamente
-            put(DatabaseHelper.COLUMN_FILE_NAME_ORIGINAL, fileNameOriginal) // Nome original
-            put(DatabaseHelper.COLUMN_ID_USUARIO, 5) // Exemplo
-            put(DatabaseHelper.COLUMN_DATA, SimpleDateFormat("yyyy-MM-dd").format(Date()))
-            put(DatabaseHelper.COLUMN_DESTAQUE, "N")
-            put(DatabaseHelper.COLUMN_OBS, "Foto adicionada ao banco")
-            put(DatabaseHelper.COLUMN_USER_INSERT, 10) // Exemplo de usuário
-        }
-
-        return db.insert(DatabaseHelper.TABLE_PHOTOS, null, values) != -1L
-    }
 }

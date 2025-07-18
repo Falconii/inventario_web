@@ -184,7 +184,7 @@ class InventarioActivity : AppCompatActivity() {
             parametroService.getParametro(
                 empresa.id,
                 "inventariomobile",
-                "V1.00 21/08/2024",
+                ParametroGlobal.Dados.parametro_assinatura,
                 usuario.id
             )
                 .enqueue(object : Callback<ParametroModel> {
@@ -206,7 +206,7 @@ class InventarioActivity : AppCompatActivity() {
                                         parametro.parametro,
                                         ParametroImobilizadoInventario01::class.java
                                     )
-
+                                    Log.i("GetPar-Consulta","Achei ${parametro}")
                                     paramImoInventario = par
 
                                 } else {
@@ -222,6 +222,8 @@ class InventarioActivity : AppCompatActivity() {
                                 )
                                 if (response.code() == 409) {
                                     paramImoInventario = ParametroImobilizadoInventario01()
+
+                                    Log.i("GetPar-Consulta","Não Achei ")
                                 } else {
                                     showToast(message.getMessage().toString())
                                 }
@@ -536,10 +538,10 @@ class InventarioActivity : AppCompatActivity() {
     }
 
     private fun chamaUpload() {
-        //val intent = Intent(this, FotosUploadServicoActivity::class.java)
-        //getRetornoChamaUpload.launch(intent)
-        val intent = Intent(this, FotoTesteActivity::class.java)
-        getRetornoChamaTeste.launch(intent)
+        val intent = Intent(this, FotosUploadServicoActivity::class.java)
+        getRetornoChamaUpload.launch(intent)
+        //val intent = Intent(this, FotoTesteActivity::class.java)
+        //getRetornoChamaTeste.launch(intent)
     }
 
     private val getRetornoChamaUpload =

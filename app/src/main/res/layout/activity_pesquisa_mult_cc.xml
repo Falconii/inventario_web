@@ -34,8 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#D1C9C9"
-            android:orientation="vertical"
-
+            android:orientation="horizontal"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:paddingLeft="5dp"
@@ -46,25 +45,32 @@
             app:layout_constraintTop_toBottomOf="@+id/ToolBar200"
             app:layout_constraintVertical_bias="0.5">
 
-            <CheckBox
-                android:id="@+id/checkbox200"
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/swMarcarTudo200"
                 style="@style/CustomCheckboxStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Selecionar Todos"/>
+                android:text="Selecionar\nTodos"/>
+
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/swMarcados200"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/CustomCheckboxStyle"
+                android:layout_marginLeft="5dp"
+                android:text="Só Os \nMarcados" />
 
         </LinearLayout>
-        <SearchView
+
+        <androidx.appcompat.widget.SearchView
             android:id="@+id/svPesquisa200"
             android:layout_width="402dp"
             android:layout_height="56dp"
-            android:layout_marginBottom="8dp"
             android:iconifiedByDefault="false"
             android:queryHint="Descrição CC"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llCheckBox"
-            app:layout_constraintVertical_bias="0.5" />
+            app:layout_constraintTop_toBottomOf="@+id/llCheckBox" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvLista200"

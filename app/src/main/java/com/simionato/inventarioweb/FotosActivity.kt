@@ -38,6 +38,7 @@ import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.Inventario
 import com.simionato.inventarioweb.infra.DatabaseHelper
 import com.simionato.inventarioweb.infra.InfraHelper
+import com.simionato.inventarioweb.models.FotoModel
 import com.simionato.inventarioweb.models.FotoUploadModel
 import com.simionato.inventarioweb.models.RetornoUpload
 import com.simionato.inventarioweb.services.FotoService
@@ -246,7 +247,6 @@ class FotosActivity : AppCompatActivity() {
 
         binding.btGravarNuvem20.setOnClickListener {
             uploadFoto()
-            finish();
 
         }
         binding.btGravarLocal20.setOnClickListener {
@@ -344,7 +344,8 @@ class FotosActivity : AppCompatActivity() {
 
     private fun registroFotoUpload(){
         try {
-            var foto = FotoUploadModel();
+            //grava a foto na galeria
+
             val idUuid = UUID.randomUUID()
             val fileUuid = idUuid.toString()
             var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
@@ -359,10 +360,35 @@ class FotosActivity : AppCompatActivity() {
                 showToast("Falha Na Gravação Da Foto!")
             }
 
+            /*
             val file = File(newImageUri?.path!!) // Obtém o caminho completo
             val filePath = file.parent ?: "" // Caminho da pasta onde o arquivo está
             val fileNameOriginal = file.name // Nome original do arquivo
+            */
 
+            val filePath = "Pictures/Simionato"
+            val fileNameOriginal = fileName // já definido antes
+
+
+            //Prepara registro para api nuvem
+            var fotoNuvem = FotoModel()
+            fotoNuvem.id_empresa			= ParametroGlobal.Dados.empresa.id
+            fotoNuvem.id_local			= ParametroGlobal.Dados.local.id
+            fotoNuvem.id_inventario		= ParametroGlobal.Dados.Inventario.codigo
+            fotoNuvem.id_imobilizado		= ParametroGlobal.Dados.empresa.id
+            fotoNuvem.id_pasta			= filePath
+            fotoNuvem.id_file				= newImageUri.toString()
+            fotoNuvem.file_name			= fileNameOriginal
+            fotoNuvem.file_name_original	= fileNameOriginal
+            fotoNuvem.id_usuario		 	= ParametroGlobal.Dados.usuario.id
+            fotoNuvem.data			 	= getHoje()
+            fotoNuvem.destaque        	= if(binding.swDestaque20.isChecked) "S" else "N"
+            fotoNuvem.obs             	= binding.txtInputObs.text.toString()
+            fotoNuvem.localizacao       = "D"
+            fotoNuvem.user_insert      	= ParametroGlobal.Dados.usuario.id
+            fotoNuvem.user_update     	= 0
+
+            var foto = FotoUploadModel()
             foto.idEmpresa			= ParametroGlobal.Dados.empresa.id
             foto.idLocal			= ParametroGlobal.Dados.local.id
             foto.idInventario		= ParametroGlobal.Dados.Inventario.codigo
@@ -375,10 +401,87 @@ class FotosActivity : AppCompatActivity() {
             foto.data			 	= getHoje()
             foto.destaque        	= if(binding.swDestaque20.isChecked) "S" else "N"
             foto.obs             	= binding.txtInputObs.text.toString()
+            foto.localizacao        = "D"
+            foto.descricao          = descricao
+            foto.razao              =  ParametroGlobal.Dados.usuario.razao
             foto.userInsert      	= ParametroGlobal.Dados.usuario.id
             foto.userUpdate      	= 0
-            val dao = daoFotoUpload(DatabaseHelper(applicationContext));
-            dao.insertPhoto(foto)
+
+            try {
+
+                val dao = daoFotoUpload(DatabaseHelper(applicationContext));
+                dao.insertPhoto(foto)
+
+                val fotoService = InfraHelper.apiInventario.create( FotoService::class.java )
+
+                fotoService.InsertFoto(fotoNuvem)
+                    .enqueue(object :Callback<FotoModel>{
+                        override fun onResponse(
+                            call: Call<FotoModel>,
+                            response: Response<FotoModel>
+                        ) {
+                            binding.llProgress20.visibility = View.GONE
+
+                            if (response != null) {
+                                if (response.isSuccessful) {
+
+                                    var retorno = response.body()
+
+                                    if (retorno !== null) {
+
+                                        showToast("Foto Cadastrada Com Sucesso")
+
+                                        val returnIntent: Intent = Intent()
+
+                                        setResult(Activity.RESULT_OK,returnIntent)
+
+                                        finish()
+
+
+                                    } else {
+                                        showToast("Falha No Retorno Da Requisição!")
+
+                                        binding.btGravarNuvem20.setEnabled(true)
+                                        binding.btGravarLocal20.setEnabled(true)
+                                        binding.btCancelar20.setEnabled(true)
+                                    }
+
+                                }
+                                else {
+                                    binding.llProgress20.visibility = View.GONE
+                                    val gson = Gson()
+                                    val message = gson.fromJson(
+                                        response.errorBody()!!.charStream(),
+                                        HttpErrorMessage::class.java
+                                    )
+                                    showToast("${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+
+                                    binding.btGravarNuvem20.setEnabled(true)
+                                    binding.btGravarLocal20.setEnabled(true)
+                                    binding.btCancelar20.setEnabled(true)
+                                }
+                            }
+                            else {
+                                binding.llProgress20.visibility = View.GONE
+                                showToast("Não Foi Possivel Inserir A Foto Na Nuvem")
+                                binding.btGravarNuvem20.setEnabled(true)
+                                binding.btGravarLocal20.setEnabled(true)
+                                binding.btCancelar20.setEnabled(true)
+                            }
+                        }
+
+                        override fun onFailure(call: Call<FotoModel>, t: Throwable) {
+                            binding.llProgress20.visibility = View.GONE
+                            showToast("${t.message.toString()}", Toast.LENGTH_LONG)
+                        }
+                    })
+
+            } catch (e: Exception){
+                binding.llProgress20.visibility = View.GONE
+                showToast("${e.message.toString()}", Toast.LENGTH_LONG)
+            }
+
+
         }catch (error:Exception){
             showToast("Falha Ao Gravar Foto Localmente!")
         }
@@ -387,28 +490,6 @@ class FotosActivity : AppCompatActivity() {
     private fun uploadFoto_galeria(){
         try {
 
-            /*
-            val idUuid = UUID.randomUUID()
-            val fileUuid = idUuid.toString()
-            var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
-                    "${Inventario.id_filial.toString().padStart(6,'0')}_" +
-                    "${Inventario.codigo.toString().padStart(6,'0')}_" +
-                    "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
-
-            val filesDir = applicationContext.filesDir
-
-            val uriName = displayName(uri)
-
-            val file = File(filesDir, uriName)
-
-            val inputStream = contentResolver.openInputStream(uri)
-
-            val outPutStream = FileOutputStream(file)
-
-            inputStream!!.copyTo(outPutStream)
-
-            Log.i("zyzz","Nome do arquivo enviado! ${file.name}")
-            */
 
             val idUuid = UUID.randomUUID()
             val fileUuid = idUuid.toString()
@@ -445,6 +526,8 @@ class FotosActivity : AppCompatActivity() {
 
             val obs = RequestBody.create(MultipartBody.FORM,binding.txtInputObs.text.toString())
 
+            val localizacao = RequestBody.create(MultipartBody.FORM,"N")
+
             binding.llProgress20.visibility = View.VISIBLE
 
             try {
@@ -462,6 +545,7 @@ class FotosActivity : AppCompatActivity() {
                     ,data
                     ,destaque
                     ,obs
+                    ,localizacao
                     ,body)
                     .enqueue(object :Callback<RetornoUpload>{
                         override fun onResponse(
@@ -545,8 +629,10 @@ class FotosActivity : AppCompatActivity() {
                     "${Inventario.codigo.toString().padStart(6,'0')}_" +
                     "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
 
-            var file = saveCompressedImage(applicationContext,imageUri, fileName)
-                ?: return// saveLocal(fileName)
+            //var file = saveCompressedImage(applicationContext,imageUri, fileName)
+            //    ?:  saveLocal(fileName)
+
+            var file = saveLocal(fileName)
 
             val requestFile = RequestBody.create(MultipartBody.FORM, file)
 
@@ -574,6 +660,8 @@ class FotosActivity : AppCompatActivity() {
 
             val obs = RequestBody.create(MultipartBody.FORM,binding.txtInputObs.text.toString())
 
+            val localizacao = RequestBody.create(MultipartBody.FORM,"N")
+
             binding.llProgress20.visibility = View.VISIBLE
 
             try {
@@ -591,6 +679,7 @@ class FotosActivity : AppCompatActivity() {
                     data,
                     destaque,
                     obs,
+                    localizacao,
                     body
                 )
                     .enqueue(object : Callback<RetornoUpload> {
@@ -926,7 +1015,8 @@ class FotosActivity : AppCompatActivity() {
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/Simionato/${fileName}")
         val uriNova = FileProvider.getUriForFile(context, "com.simionato.inventarioweb.fileProvider", file)
 
-        return uriNova
+        //return uriNova
+        return imageUriSaved
     }
 
     fun saveCompressedImage(context: Context, imageUri: Uri, fileName: String): File? {

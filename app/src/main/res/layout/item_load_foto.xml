@@ -8,10 +8,10 @@
     android:background="@color/white">
     <ImageView
         android:id="@+id/foto_item_load_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -62,6 +62,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/foto_item_load_txt_ativo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Código:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/foto_item_load_image"
+        app:layout_constraintTop_toBottomOf="@+id/foto_item_load_consulta" />
+
+    <TextView
         android:id="@+id/foto_item_load_txt_descricao"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -70,20 +81,8 @@
         android:text="Descricao"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/foto_item_load_image"
-        app:layout_constraintTop_toBottomOf="@+id/foto_item_load_consulta" />
+        app:layout_constraintTop_toBottomOf="@+id/foto_item_load_txt_ativo" />
 
-    <TextView
-        android:id="@+id/foto_item_load_txt_obs"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="Observação"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/foto_item_load_image"
-        app:layout_constraintTop_toBottomOf="@+id/foto_item_load_txt_usuario" />
 
     <TextView
         android:id="@+id/foto_item_load_txt_usuario"
@@ -95,4 +94,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/foto_item_load_image"
         app:layout_constraintTop_toBottomOf="@+id/foto_item_load_txt_descricao" />
+
+    <TextView
+        android:id="@+id/foto_item_load_txt_obs"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Observação"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/foto_item_load_image"
+        app:layout_constraintTop_toBottomOf="@+id/foto_item_load_txt_usuario"
+        app:layout_constraintVertical_bias="0.09" />
+
+    <TextView
+        android:id="@+id/foto_item_load_txt_situacao"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Situação"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/foto_item_load_txt_obs" />
 </androidx.constraintlayout.widget.ConstraintLayout>

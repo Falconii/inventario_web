@@ -18,6 +18,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
 
+    <TextView
+        android:id="@+id/foto_item_txt_localizacao"
+        android:layout_width="0dp"
+        android:layout_height="35dp"
+        android:background="@drawable/background_gradient"
+        android:text="Foto No Dispositivo"
+        android:gravity="center"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/foto_item_txt_descricao"
+        app:layout_constraintEnd_toStartOf="@+id/foto_item_destaque"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/foto_item_txt_descricao"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageButton
         android:id="@+id/foto_item_destaque"
         android:layout_width="35dp"

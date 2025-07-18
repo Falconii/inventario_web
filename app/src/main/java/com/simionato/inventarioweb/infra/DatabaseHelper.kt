@@ -11,7 +11,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
     DATABASE_VERSION
 ) {
     companion object {
-        private const val DATABASE_VERSION = 3 // Atualizamos a versão do banco
+        private const val DATABASE_VERSION = 9// Atualizamos a versão do banco
         const val TABLE_PHOTOS = "photos"
         const val TABLE_LANCAMENTOS = "lancamentos"
 
@@ -29,6 +29,11 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
         const val COLUMN_DATA = "data"
         const val COLUMN_DESTAQUE = "destaque"
         const val COLUMN_OBS = "obs"
+        const val COLUMN_LOCALIZACAO = "localizacao"
+        const val COLUMN_DESCRICAO = "descricao"
+        const val COLUMN_RAZAO = "razao"
+        const val COLUMN_STATUS_UPLOAD = "status_upload"
+        const val COLUMN_DATA_UPLOAD = "data_upload"
         const val COLUMN_USER_INSERT = "user_insert"
         const val COLUMN_USER_UPDATE = "user_update"
 
@@ -38,7 +43,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
         const val COLUMN_ID_INVENTARIO_LANC = "id_inventario"
         const val COLUMN_ID_FOTO_LANC = "id_foto"
         const val COLUMN_ID_EXEC = "id_exec"
-        const val COLUMN_DESCRICAO = "descricao"
+        const val COLUMN_DESCRICAO_ATIVO = "descricao_ativo"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -54,9 +59,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
                 $COLUMN_FILE_NAME VARCHAR(255) NOT NULL,
                 $COLUMN_FILE_NAME_ORIGINAL VARCHAR(255) NOT NULL,
                 $COLUMN_ID_USUARIO INTEGER NOT NULL,
-                $COLUMN_DATA DATE NOT NULL,
+                $COLUMN_DATA DATE ,
                 $COLUMN_DESTAQUE CHAR(1) NOT NULL,
                 $COLUMN_OBS VARCHAR(255),
+                $COLUMN_LOCALIZACAO VAR(1) DEFAULT "D" NOT NULL,
+                $COLUMN_DESCRICAO VARCHAR(255),
+                $COLUMN_RAZAO     VARCHAR(255),
+                $COLUMN_STATUS_UPLOAD  CHAR(1),
+                $COLUMN_DATA_UPLOAD  DATA,
                 $COLUMN_USER_INSERT INTEGER NOT NULL,
                 $COLUMN_USER_UPDATE INTEGER
             )
@@ -69,7 +79,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
                 $COLUMN_ID_INVENTARIO_LANC INTEGER NOT NULL,
                 $COLUMN_ID_FOTO_LANC INTEGER NOT NULL,
                 $COLUMN_ID_EXEC INTEGER NOT NULL,
-                $COLUMN_DESCRICAO TEXT NOT NULL,
+                $COLUMN_DESCRICAO_ATIVO TEXT NOT NULL,
                 PRIMARY KEY ($COLUMN_ID_EMPRESA_LANC, $COLUMN_ID_LOCAL_LANC, $COLUMN_ID_INVENTARIO_LANC, $COLUMN_ID_FOTO_LANC)
             )
         """
@@ -79,7 +89,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        if (oldVersion < 3) {
+        if (oldVersion < 8) {
             db.execSQL("DROP TABLE IF EXISTS $TABLE_PHOTOS")
             db.execSQL("DROP TABLE IF EXISTS $TABLE_LANCAMENTOS")
             onCreate(db) // Recria as tabelas para aplicar as mudanças
