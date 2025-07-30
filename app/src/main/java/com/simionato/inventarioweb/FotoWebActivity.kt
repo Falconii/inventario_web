@@ -3,23 +3,23 @@ package com.simionato.inventarioweb
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.util.Base64
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.simionato.inventarioweb.databinding.ActivityFotoWebBinding
-import com.simionato.inventarioweb.databinding.ActivityInventarioBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
-import java.net.URL
 
 class FotoWebActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityFotoWebBinding.inflate(layoutInflater)
     }
+
 
     private val stringHtml = "<!DOCTYPE html> "+
                               "<html> " +
@@ -38,6 +38,7 @@ class FotoWebActivity : AppCompatActivity() {
         inicializarTooBar()
 
         var id_file =  intent.getStringExtra("id_file")
+        var localizacao = intent.getStringExtra("localizacao")
 
         if ( id_file == null || id_file.isEmpty()){
             showToast("Não Foi Informado O ID Da Foto!");
@@ -46,13 +47,39 @@ class FotoWebActivity : AppCompatActivity() {
             finish()
             return
         }
-        val url: String = "https://drive.google.com/uc?export=view&id=${id_file}"
-        //val url: String = "https://drive.google.com/thumbnail?id=${id_file}&sz=s1000"
+
+        if ( localizacao == null || localizacao.isEmpty()){
+            showToast("Não Foi Informada A Localização Da Foto!");
+            val returnIntent: Intent = Intent()
+            setResult(Activity.RESULT_CANCELED,returnIntent)
+            finish()
+            return
+        }
+
         binding.webView35.getSettings().setBuiltInZoomControls(true);
         binding.webView35.setInitialScale(-1);
         setWebViewClient(binding.webView35)
-        binding.webView35.loadUrl(url)
-        //binding.webView35.loadDataWithBaseURL(null,stringHtml,"text/html","utf-8",null)
+        if (localizacao == "D"){
+            val fotoUri = Uri.parse(id_file)
+            val inputStream = contentResolver.openInputStream(fotoUri)
+            val bytes = inputStream?.readBytes()
+            val base64 = Base64.encodeToString(bytes, Base64.DEFAULT)
+
+            val html = """
+                    <html>
+                    <body style="margin:0;padding:0;">
+                        <img src="data:image/jpeg;base64,$base64" style="width:100%;height:auto;" />
+                    </body>
+                    </html>
+                """
+            binding.webView35.settings.allowFileAccess = true
+            binding.webView35.settings.allowContentAccess = true
+            binding.webView35.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
+
+        } else {
+            val url: String = "https://drive.google.com/uc?export=view&id=${id_file}"
+            binding.webView35.loadUrl(url)
+        }
     }
 
     private fun inicializarTooBar(){

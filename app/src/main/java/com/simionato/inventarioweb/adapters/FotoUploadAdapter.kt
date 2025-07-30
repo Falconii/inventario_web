@@ -27,6 +27,7 @@ class FotoUploadAdapter(
 
         val  layout: View
         val  foto_item_load_image: ImageView
+        val btUpload:ImageButton
         val  btDestaque:ImageButton
         val  btShow:ImageButton
         val  btDelete:ImageButton
@@ -39,6 +40,7 @@ class FotoUploadAdapter(
 
         init {
             layout =  ItemView.findViewById(R.id.ll_load_foto)
+            btUpload   = ItemView.findViewById(R.id.foto_item_load_upload)
             btDestaque = ItemView.findViewById(R.id.foto_item_load_destaque)
             btDelete     = ItemView.findViewById(R.id.foto_item_load_delete)
             btUpdate     = ItemView.findViewById(R.id.foto_item_load_edicao)
@@ -63,12 +65,15 @@ class FotoUploadAdapter(
 
             foto_item_load_image.setImageURI(fotoUri)
             btDestaque.visibility = if (foto.destaque == "S")  View.VISIBLE else View.GONE
-            foto_item_load_txt_ativo.setText(ParametroGlobal.prettyText.tituloDescricao("Código: ",foto.id.toString().padStart(6,'0'),false))
+            foto_item_load_txt_ativo.setText(ParametroGlobal.prettyText.tituloDescricao("Código: ",foto.idImobilizado.toString().padStart(6,'0'),false))
             foto_item_load_txt_descricao.setText(ParametroGlobal.prettyText.tituloDescricao("Descrição: ",foto.descricao,true))
             foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Obs: ",foto.obs,true))
             foto_item_load_txt_usuario.setText(ParametroGlobal.prettyText.tituloDescricao("Usuário: ",foto.razao.toString(),true))
             foto_item_load_txt_situacao.setText(ParametroGlobal.prettyText.tituloDescricao("Situação: ","Foto Aguardando UPLOAD",true))
 
+            btUpload.setOnClickListener{
+                clique(foto,CadastrosAcoes.UpLoadFoto)
+            }
             btShow.setOnClickListener {
                 clique(foto, CadastrosAcoes.Consulta)
             }

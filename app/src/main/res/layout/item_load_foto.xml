@@ -18,6 +18,17 @@
         app:layout_constraintVertical_bias="0.5" />
 
     <ImageButton
+        android:id="@+id/foto_item_load_upload"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@color/white"
+        android:src="@drawable/celular_nuvem_icon"
+        android:layout_marginRight="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/foto_item_load_destaque"
+        app:layout_constraintHorizontal_bias="0.66"
+        app:layout_constraintTop_toTopOf="@+id/foto_item_load_destaque" />
+
+    <ImageButton
         android:id="@+id/foto_item_load_destaque"
         android:layout_width="35dp"
         android:layout_height="35dp"

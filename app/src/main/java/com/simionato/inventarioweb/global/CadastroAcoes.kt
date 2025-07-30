@@ -15,5 +15,6 @@ package com.simionato.inventarioweb.global
         Foto(20),
         ShowNfe(21),
         Lancamento(21),
+        UpLoadFoto(22),
         None(99)
     }

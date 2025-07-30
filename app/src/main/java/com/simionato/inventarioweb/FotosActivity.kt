@@ -251,8 +251,6 @@ class FotosActivity : AppCompatActivity() {
         }
         binding.btGravarLocal20.setOnClickListener {
             registroFotoUpload()
-            finish();
-
         }
         binding.btCancelar20.setOnClickListener {
             val returnIntent: Intent = Intent()
@@ -355,9 +353,10 @@ class FotosActivity : AppCompatActivity() {
             val newImageUri = saveCompressedImageToGallery(this, imageUri, fileName)
 
             if (newImageUri != null) {
-                showToast("Foto Gravada Com Sucesso!")
+                showToast("Foto Gravada Na Galeria Com Sucesso!")
             } else {
-                showToast("Falha Na Gravação Da Foto!")
+                showToast("Falha Na Gravação Da Foto Na Galeria!")
+                return
             }
 
             /*
@@ -373,12 +372,12 @@ class FotosActivity : AppCompatActivity() {
             //Prepara registro para api nuvem
             var fotoNuvem = FotoModel()
             fotoNuvem.id_empresa			= ParametroGlobal.Dados.empresa.id
-            fotoNuvem.id_local			= ParametroGlobal.Dados.local.id
-            fotoNuvem.id_inventario		= ParametroGlobal.Dados.Inventario.codigo
+            fotoNuvem.id_local			    = ParametroGlobal.Dados.local.id
+            fotoNuvem.id_inventario		    = ParametroGlobal.Dados.Inventario.codigo
             fotoNuvem.id_imobilizado		= ParametroGlobal.Dados.empresa.id
-            fotoNuvem.id_pasta			= filePath
+            fotoNuvem.id_pasta			    = filePath
             fotoNuvem.id_file				= newImageUri.toString()
-            fotoNuvem.file_name			= fileNameOriginal
+            fotoNuvem.file_name			    = fileNameOriginal
             fotoNuvem.file_name_original	= fileNameOriginal
             fotoNuvem.id_usuario		 	= ParametroGlobal.Dados.usuario.id
             fotoNuvem.data			 	= getHoje()
@@ -410,7 +409,10 @@ class FotosActivity : AppCompatActivity() {
             try {
 
                 val dao = daoFotoUpload(DatabaseHelper(applicationContext));
+
                 dao.insertPhoto(foto)
+
+                showToast("Foto Gravada No DB Com Sucesso!")
 
                 val fotoService = InfraHelper.apiInventario.create( FotoService::class.java )
 
@@ -429,9 +431,9 @@ class FotosActivity : AppCompatActivity() {
 
                                     if (retorno !== null) {
 
-                                        showToast("Foto Cadastrada Com Sucesso")
+                                        showToast("Foto Cadastrada Na Nuvem Com Sucesso")
 
-                                        val returnIntent: Intent = Intent()
+                                        val returnIntent = Intent()
 
                                         setResult(Activity.RESULT_OK,returnIntent)
 

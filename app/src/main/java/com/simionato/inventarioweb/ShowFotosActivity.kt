@@ -1,7 +1,9 @@
 package com.simionato.inventarioweb
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -17,11 +19,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.simionato.inventarioweb.adapters.FotoAdapter
+import com.simionato.inventarioweb.dao.daoFotoUpload
 import com.simionato.inventarioweb.databinding.ActivityShowFotosBinding
 import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.global.ParametroGlobal
+import com.simionato.inventarioweb.infra.DatabaseHelper
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.FotoModel
+import com.simionato.inventarioweb.models.FotoUploadModel
 import com.simionato.inventarioweb.models.ImobilizadoinventarioModel
 import com.simionato.inventarioweb.parametros.ParametroFoto01
 import com.simionato.inventarioweb.services.FotoService
@@ -217,6 +222,7 @@ class ShowFotosActivity : AppCompatActivity() {
 
     private fun deleteFoto(foto:FotoModel){
         try {
+
             val fotoService = InfraHelper.apiInventario.create( FotoService::class.java )
 
             fotoService.DeleteFoto(foto).enqueue( object  : Callback<JsonObject>{
@@ -295,6 +301,7 @@ class ShowFotosActivity : AppCompatActivity() {
     fun chamaFotoWeb(foto:FotoModel){
         val intent = Intent(this,FotoWebActivity::class.java)
         intent.putExtra("id_file",foto.id_file)
+        intent.putExtra("localizacao",foto.localizacao)
         startActivity(intent)
     }
 
@@ -303,7 +310,7 @@ class ShowFotosActivity : AppCompatActivity() {
 
         val intent = Intent(this,EditFotoActivity::class.java)
         intent.putExtra("foto",foto)
-        getRetornoFoto.launch(intent)
+        getRetornoFotoEdicao.launch(intent)
     }
 
     private val getRetornoFotoEdicao =
@@ -343,5 +350,21 @@ class ShowFotosActivity : AppCompatActivity() {
     }
     fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
         Toast.makeText(this, mensagem, duracao).show()
+    }
+
+    fun excluirImagemDaGaleria(context: Context, uri: Uri): Boolean {
+        return try {
+            val rowsDeleted = context.contentResolver.delete(uri, null, null)
+            if (rowsDeleted > 0) {
+                Log.d("Galeria", "Imagem excluída com sucesso.")
+                true
+            } else {
+                Log.e("Galeria", "Nenhum arquivo foi excluído.")
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("Galeria", "Erro ao excluir imagem: ${e.message}")
+            false
+        }
     }
 }

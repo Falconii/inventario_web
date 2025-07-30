@@ -25,7 +25,7 @@ class FotoAdapter(
     var lista : List<FotoModel> = listOf()
     inner class FotoViewHolder(val ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val  layout: View
-        val  foto_item_txt_localizacao:TextView
+        val  foto_item_localizacao:ImageButton
         val  btDestaque:ImageButton
         val  btShow:ImageButton
         val  btDelete:ImageButton
@@ -36,7 +36,7 @@ class FotoAdapter(
         val  textUsuario: TextView
         init {
             layout =  ItemView.findViewById(R.id.foto_item_layout)
-            foto_item_txt_localizacao = ItemView.findViewById(R.id.foto_item_txt_localizacao)
+            foto_item_localizacao = ItemView.findViewById(R.id.foto_item_localizacao)
             image =  ItemView.findViewById(R.id.foto_item_image)
             btDestaque = ItemView.findViewById(R.id.foto_item_destaque)
             btDelete     = ItemView.findViewById(R.id.foto_item_delete)
@@ -48,9 +48,9 @@ class FotoAdapter(
             btUpdate.visibility = View.GONE
         }
         fun bind(foto:FotoModel){
-            foto_item_txt_localizacao.visibility = if (foto.localizacao == "D") {View.VISIBLE} else {View.GONE}
+            foto_item_localizacao.visibility = if (foto.localizacao == "D") {View.VISIBLE} else {View.GONE}
+            btDelete.visibility =  if (foto.localizacao != "D") {View.VISIBLE} else {View.GONE}
             try {
-
                 if (foto.localizacao == "D"){
                     val fotoUri = Uri.parse(foto.id_file)
                     Glide.with(layout.context)
@@ -66,16 +66,6 @@ class FotoAdapter(
                         .placeholder(R.drawable.placeholder_image)
                         .into(image);
                 }
-
-                /*
-                Glide.with(layout.context)
-               .load(url)
-               .centerCrop()
-
-                    .placeholder(R.drawable.image_loading)
-                    .error(R.drawable.no_foto)
-               .into(image)
-               */
 
             } catch (e:Exception){
                 Log.i("zyzz","Erro-> ${e.message}")
