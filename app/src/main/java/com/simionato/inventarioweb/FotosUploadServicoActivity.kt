@@ -258,6 +258,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
 
     private fun upLoadFoto(foto:FotoUploadModel) {
         try {
+            binding.llProgress77.visibility = View.VISIBLE
 
             val fotoUri = Uri.parse(foto.idFile)
 
@@ -272,21 +273,20 @@ class FotosUploadServicoActivity : AppCompatActivity() {
             val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
             val id_empresa =
-                RequestBody.create(MultipartBody.FORM, ParametroGlobal.Dados.empresa.id.toString())
+                RequestBody.create(MultipartBody.FORM, foto.idEmpresa.toString())
 
             val id_local =
-                RequestBody.create(MultipartBody.FORM, ParametroGlobal.Dados.local.id.toString())
+                RequestBody.create(MultipartBody.FORM, foto.idLocal.toString())
 
-            val id_inventario = RequestBody.create(MultipartBody.FORM, Inventario.codigo.toString())
+            val id_inventario = RequestBody.create(MultipartBody.FORM, foto.idInventario.toString())
 
-            val id_imobilizado =
-                RequestBody.create(MultipartBody.FORM, foto.idImobilizado.toString())
+            val id_imobilizado = RequestBody.create(MultipartBody.FORM, foto.idImobilizado.toString())
 
-            val id_pasta = RequestBody.create(MultipartBody.FORM, "")
+            val id_pasta = RequestBody.create(MultipartBody.FORM, foto.idPasta)
 
-            val id_file = RequestBody.create(MultipartBody.FORM, "")
+            val id_file = RequestBody.create(MultipartBody.FORM,foto.idFile)
 
-            val old_name = RequestBody.create(MultipartBody.FORM, "")
+            val old_name = RequestBody.create(MultipartBody.FORM, foto.fileNameOriginal)
 
             val id_usuario =
                 RequestBody.create(MultipartBody.FORM, ParametroGlobal.Dados.usuario.id.toString())
@@ -304,7 +304,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
             try {
                 val fotoService = InfraHelper.apiInventario.create(FotoService::class.java)
 
-                fotoService.postUploadFoto(
+                fotoService.postUploadFotoV5_2(
                     id_empresa,
                     id_local,
                     id_inventario,
@@ -336,6 +336,8 @@ class FotosUploadServicoActivity : AppCompatActivity() {
                                         showToast("${mensagem.message}")
 
                                         daoFoto.deletePhoto(foto.id);
+
+                                        apagarFoto(applicationContext,fotoUri)
 
                                         getFotos()
 
@@ -391,6 +393,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
         cursor?.close()
         return filePath?.let { File(it) }
     }
+
     fun getHoje():String{
 
         try {
@@ -408,5 +411,18 @@ class FotosUploadServicoActivity : AppCompatActivity() {
             return ""
         }
 
+    }
+
+    fun apagarFoto(context: Context, fotoUri: Uri): Boolean {
+        return try {
+            val deletados = context.contentResolver.delete(fotoUri, null, null)
+            deletados > 0
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+            false
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 }

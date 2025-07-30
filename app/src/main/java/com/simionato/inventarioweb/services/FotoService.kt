@@ -68,4 +68,23 @@ interface FotoService {
         @Part file: MultipartBody.Part,
 
         ): Call<RetornoUpload>
+
+    @Multipart
+    @POST("uploadfotov5_2")
+    fun postUploadFotoV5_2(
+        @Part("id_empresa") id_empresa: RequestBody,
+        @Part("id_local") id_local: RequestBody,
+        @Part("id_inventario") id_inventario: RequestBody,
+        @Part("id_imobilizado") id_imobilizado: RequestBody,
+        @Part("id_pasta") id_pasta: RequestBody,
+        @Part("id_file") id_file: RequestBody,
+        @Part("old_name") old_name: RequestBody,
+        @Part("id_usuario") id_usuario: RequestBody,
+        @Part("data") data: RequestBody,
+        @Part("destaque") destaque: RequestBody,
+        @Part("obs") obs: RequestBody,
+        @Part("localizacao") localizacao: RequestBody,
+        @Part file: MultipartBody.Part,
+
+        ): Call<RetornoUpload>
 }

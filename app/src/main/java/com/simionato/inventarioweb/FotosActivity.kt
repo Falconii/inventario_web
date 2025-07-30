@@ -62,6 +62,9 @@ class FotosActivity : AppCompatActivity() {
         ActivityFotosBinding.inflate(layoutInflater)
     }
 
+    private val daoFoto by lazy {
+        daoFotoUpload(DatabaseHelper(applicationContext));
+    }
 
     private val isExternalStorageReadOnly: Boolean get() {
         val extStorageState = Environment.getExternalStorageState()
@@ -352,9 +355,7 @@ class FotosActivity : AppCompatActivity() {
                     "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
             val newImageUri = saveCompressedImageToGallery(this, imageUri, fileName)
 
-            if (newImageUri != null) {
-                showToast("Foto Gravada Na Galeria Com Sucesso!")
-            } else {
+            if (newImageUri == null) {
                 showToast("Falha Na Gravação Da Foto Na Galeria!")
                 return
             }
@@ -408,12 +409,6 @@ class FotosActivity : AppCompatActivity() {
 
             try {
 
-                val dao = daoFotoUpload(DatabaseHelper(applicationContext));
-
-                dao.insertPhoto(foto)
-
-                showToast("Foto Gravada No DB Com Sucesso!")
-
                 val fotoService = InfraHelper.apiInventario.create( FotoService::class.java )
 
                 fotoService.InsertFoto(fotoNuvem)
@@ -431,7 +426,8 @@ class FotosActivity : AppCompatActivity() {
 
                                     if (retorno !== null) {
 
-                                        showToast("Foto Cadastrada Na Nuvem Com Sucesso")
+
+                                        daoFoto.insertPhoto(foto)
 
                                         val returnIntent = Intent()
 
