@@ -17,6 +17,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.gson.Gson
@@ -62,7 +63,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ativarServicoUploadFotos()
+        //ativarServicoUploadFotos()
         setContentView(binding.root)
         inicializarTooBar()
         inflateTela()
@@ -336,21 +337,33 @@ class MainActivity : AppCompatActivity() {
 
     private fun ativarServicoUploadFotos(){
 
-        val uploadWorkRequest = PeriodicWorkRequestBuilder<UploadWorker>(2, TimeUnit.MINUTES)
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED) // Garante que só roda com internet
-                    .build()
+            // Executa imediatamente uma vez
+            val oneTimeRequest = OneTimeWorkRequestBuilder<UploadWorker>()
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                )
+                .build()
+
+            WorkManager.getInstance(applicationContext).enqueue(oneTimeRequest)
+
+            // Agendamento recorrente a cada 15 minutos
+            val periodicRequest = PeriodicWorkRequestBuilder<UploadWorker>(15, TimeUnit.MINUTES)
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                )
+                .build()
+
+            WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+                "photo_upload_work",
+                ExistingPeriodicWorkPolicy.KEEP, // ou REPLACE se quiser reconfigurar
+                periodicRequest
             )
-            .build()
 
-        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
-            "photo_upload_work",
-            ExistingPeriodicWorkPolicy.KEEP, // Mantém a tarefa recorrente
-            uploadWorkRequest
-        )
-
-        Log.i("SRV","Serviço ativado!");
+            Log.i("SRV", "Serviço imediato + recorrente ativado!")
     }
 }
 

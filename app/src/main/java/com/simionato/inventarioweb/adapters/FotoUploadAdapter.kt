@@ -1,7 +1,6 @@
 package com.simionato.inventarioweb.adapters
 
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,11 +62,10 @@ class FotoUploadAdapter(
                 .error(R.drawable.imagem_falha)
                 .into(foto_item_load_image)
 
-            foto_item_load_image.setImageURI(fotoUri)
             btDestaque.visibility = if (foto.destaque == "S")  View.VISIBLE else View.GONE
             foto_item_load_txt_ativo.setText(ParametroGlobal.prettyText.tituloDescricao("Código: ",foto.idImobilizado.toString().padStart(6,'0'),false))
             foto_item_load_txt_descricao.setText(ParametroGlobal.prettyText.tituloDescricao("Descrição: ",foto.descricao,true))
-            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Obs: ",foto.obs,true))
+            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Obs: ",foto.fileNameOriginal,true))
             foto_item_load_txt_usuario.setText(ParametroGlobal.prettyText.tituloDescricao("Usuário: ",foto.razao.toString(),true))
             foto_item_load_txt_situacao.setText(ParametroGlobal.prettyText.tituloDescricao("Situação: ","Foto Aguardando UPLOAD",true))
 

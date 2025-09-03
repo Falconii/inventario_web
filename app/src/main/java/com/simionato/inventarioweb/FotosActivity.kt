@@ -915,7 +915,6 @@ class FotosActivity : AppCompatActivity() {
 
         val resolver = context.contentResolver
         val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-
         val imageUriSaved = resolver.insert(imageCollection, contentValues) ?: return null
 
         resolver.openOutputStream(imageUriSaved).use { outputStream ->
@@ -925,50 +924,6 @@ class FotosActivity : AppCompatActivity() {
         }
 
         return imageUriSaved // Retorna a URI da imagem salva na galeria
-    }
-
-    fun saveCompressedImageToGalleryOld(context: Context, imageUri: Uri, fileName: String): Uri? {
-        val resolver = context.contentResolver
-
-        // Obtém o bitmap original
-        val inputStream = resolver.openInputStream(imageUri) ?: return null
-        val originalBitmap = BitmapFactory.decodeStream(inputStream)
-        inputStream.close()
-
-        // Verifica a orientação original da imagem
-        val exif = resolver.openInputStream(imageUri)?.use { ExifInterface(it) }
-        val rotationDegrees = when (exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
-            ExifInterface.ORIENTATION_ROTATE_90 -> 90
-            ExifInterface.ORIENTATION_ROTATE_180 -> 180
-            ExifInterface.ORIENTATION_ROTATE_270 -> 270
-            else -> 0
-        }
-
-        // Ajusta a rotação da imagem
-        val matrix = Matrix().apply { postRotate(rotationDegrees.toFloat()) }
-        val rotatedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
-
-        // Compacta a imagem para 40%
-        val outputStream = ByteArrayOutputStream()
-        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 40, outputStream)
-        val compressedBitmap = BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.size())
-
-        // Define os metadados para salvar na galeria
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Simionato")
-        }
-
-        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        val imageUriSaved = resolver.insert(imageCollection, contentValues) ?: return null
-
-        // Salva a imagem compactada na galeria
-        resolver.openOutputStream(imageUriSaved).use { output ->
-            compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 40, output!!)
-        }
-
-        return imageUriSaved // Retorna a URI da imagem compactada e corrigida na galeria
     }
 
     fun saveCompressedImageToGallery(context: Context, imageUri: Uri, fileName: String): Uri? {
@@ -991,9 +946,24 @@ class FotosActivity : AppCompatActivity() {
         val matrix = Matrix().apply { postRotate(rotationDegrees.toFloat()) }
         val rotatedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
 
-        // Compacta a imagem uma única vez
+        // Redimensiona a imagem para largura máxima de 1280px (mantendo proporção)
+        val maxWidth = 1280
+        val scaleFactor = if (rotatedBitmap.width > maxWidth) {
+            maxWidth.toFloat() / rotatedBitmap.width
+        } else {
+            1f // não redimensiona se já for menor
+        }
+
+        val resizedBitmap = Bitmap.createScaledBitmap(
+            rotatedBitmap,
+            (rotatedBitmap.width * scaleFactor).toInt(),
+            (rotatedBitmap.height * scaleFactor).toInt(),
+            true
+        )
+
+        // Compacta a imagem redimensionada
         val outputStream = ByteArrayOutputStream()
-        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 40, outputStream)
+        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 60, outputStream) // compressão moderada
 
         // Define os metadados para salvar na galeria
         val contentValues = ContentValues().apply {
@@ -1005,15 +975,11 @@ class FotosActivity : AppCompatActivity() {
         val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
         val imageUriSaved = resolver.insert(imageCollection, contentValues) ?: return null
 
-        // Salva a imagem já compactada na galeria
+        // Salva a imagem compactada na galeria
         resolver.openOutputStream(imageUriSaved).use { output ->
-            output?.write(outputStream.toByteArray()) // Agora salvamos diretamente os bytes compactados
+            output?.write(outputStream.toByteArray())
         }
 
-        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/Simionato/${fileName}")
-        val uriNova = FileProvider.getUriForFile(context, "com.simionato.inventarioweb.fileProvider", file)
-
-        //return uriNova
         return imageUriSaved
     }
 

@@ -12,36 +12,50 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.simionato.inventarioweb.adapters.FotoUploadAdapter
+import com.simionato.inventarioweb.agendamentos.UploadWorker
 import com.simionato.inventarioweb.dao.daoFotoUpload
 import com.simionato.inventarioweb.databinding.ActivityFotosUploadServicoBinding
 import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.Inventario
-import com.simionato.inventarioweb.infra.DatabaseHelper
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.FotoModel
 import com.simionato.inventarioweb.models.FotoUploadModel
 import com.simionato.inventarioweb.models.RetornoUpload
 import com.simionato.inventarioweb.services.FotoService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.io.FileOutputStream
 import java.util.Date
+import com.simionato.inventarioweb.global.ParametroGlobal.*
+import com.simionato.inventarioweb.infra.DatabaseHelper
 
 class FotosUploadServicoActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityFotosUploadServicoBinding.inflate(layoutInflater)
     }
+
     private val daoFoto by lazy {
         daoFotoUpload(DatabaseHelper(applicationContext));
     }
@@ -86,7 +100,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
     }
 
 
-    private fun inicializarTooBar() {
+    fun inicializarTooBar() {
         binding.ToolBar77.title = "Controle De Ativos"
         binding.ToolBar77.subtitle = ParametroGlobal.Dados.Inventario.descricao
         binding.ToolBar77.setTitleTextColor(
@@ -103,8 +117,18 @@ class FotosUploadServicoActivity : AppCompatActivity() {
                     return@setOnMenuItemClickListener true
                 }
 
-                R.id.menu_upload_srv_atualizar -> {
-                    finish()
+                R.id.menu_upload_srv_upload -> {
+
+                    // Executa imediatamente uma vez
+                    //val oneTimeRequest = OneTimeWorkRequestBuilder<UploadWorker>()
+                    //    .setConstraints(
+                    //        Constraints.Builder()
+                    //            .setRequiredNetworkType(NetworkType.CONNECTED)
+                    //            .build()
+                    //    )
+                    //    .build()
+
+                    //WorkManager.getInstance(applicationContext).enqueue(oneTimeRequest)
                     return@setOnMenuItemClickListener true
                 }
 
@@ -120,9 +144,10 @@ class FotosUploadServicoActivity : AppCompatActivity() {
 
         try {
             binding.llProgress77.visibility = View.VISIBLE
-            this.fotos = daoFoto.getPhotos()
+            this.fotos = daoFoto.getPhotosAll()
             binding.llProgress77.visibility = View.GONE
-            val adapter = FotoUploadAdapter(fotos, { foto, idAcao ->
+            val adapter = FotoUploadAdapter(fotos
+            ) { foto, idAcao ->
 
                 if (idAcao == CadastrosAcoes.Consulta) {
                     //chamaFotoWeb(foto)
@@ -134,10 +159,26 @@ class FotosUploadServicoActivity : AppCompatActivity() {
                     //chamaFotoEdicao(foto)
                 }
                 if (idAcao == CadastrosAcoes.UpLoadFoto) {
-                    upLoadFoto(foto)
+                lifecycleScope.launch {
+                    enviarFotoFlow(foto).collect { estado ->
+                        when (estado) {
+                            is EstadoUpload.Carregando -> {
+                                binding.llProgress77.visibility = View.VISIBLE
+                            }
+                            is EstadoUpload.Sucesso -> {
+                                binding.llProgress77.visibility = View.GONE
+                                showToast("Foto enviada com sucesso!", Toast.LENGTH_SHORT)
+                                getFotos()
+                            }
+                            is EstadoUpload.Falha -> {
+                                binding.llProgress77.visibility = View.GONE
+                                showToast(estado.mensagem, Toast.LENGTH_LONG)
+                            }
+                        }
+                    }
                 }
             }
-            )
+            }
             binding.rvLista77.adapter = adapter
             binding.rvLista77.layoutManager =
                 LinearLayoutManager(binding.rvLista77.context)
@@ -256,142 +297,23 @@ class FotosUploadServicoActivity : AppCompatActivity() {
 
     }
 
-    private fun upLoadFoto(foto:FotoUploadModel) {
-        try {
-            binding.llProgress77.visibility = View.VISIBLE
-
-            val fotoUri = Uri.parse(foto.idFile)
-
-            var file = this.getFileFromUri(applicationContext, fotoUri)
-
-            if (file == null) {
-                return
-            }
-
-            val requestFile = RequestBody.create(MultipartBody.FORM, file)
-
-            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
-
-            val id_empresa =
-                RequestBody.create(MultipartBody.FORM, foto.idEmpresa.toString())
-
-            val id_local =
-                RequestBody.create(MultipartBody.FORM, foto.idLocal.toString())
-
-            val id_inventario = RequestBody.create(MultipartBody.FORM, foto.idInventario.toString())
-
-            val id_imobilizado = RequestBody.create(MultipartBody.FORM, foto.idImobilizado.toString())
-
-            val id_pasta = RequestBody.create(MultipartBody.FORM, foto.idPasta)
-
-            val id_file = RequestBody.create(MultipartBody.FORM,foto.idFile)
-
-            val old_name = RequestBody.create(MultipartBody.FORM, foto.fileNameOriginal)
-
-            val id_usuario =
-                RequestBody.create(MultipartBody.FORM, ParametroGlobal.Dados.usuario.id.toString())
-
-            val data = RequestBody.create(MultipartBody.FORM, getHoje())
-
-            val destaque = RequestBody.create(MultipartBody.FORM, foto.destaque)
-
-            val obs = RequestBody.create(MultipartBody.FORM, foto.obs)
-
-            val localizacao = RequestBody.create(MultipartBody.FORM, "N")
-
-            binding.progressBar77.visibility = View.VISIBLE
-
-            try {
-                val fotoService = InfraHelper.apiInventario.create(FotoService::class.java)
-
-                fotoService.postUploadFotoV5_2(
-                    id_empresa,
-                    id_local,
-                    id_inventario,
-                    id_imobilizado,
-                    id_pasta,
-                    id_file,
-                    old_name,
-                    id_usuario,
-                    data,
-                    destaque,
-                    obs,
-                    localizacao,
-                    body
-                )
-                    .enqueue(object : Callback<RetornoUpload> {
-                        override fun onResponse(
-                            call: Call<RetornoUpload>,
-                            response: Response<RetornoUpload>
-                        ) {
-                            binding.llProgress77.visibility = View.GONE
-
-                            if (response != null) {
-                                if (response.isSuccessful) {
-
-                                    var mensagem = response.body()
-
-                                    if (mensagem !== null) {
-
-                                        showToast("${mensagem.message}")
-
-                                        daoFoto.deletePhoto(foto.id);
-
-                                        apagarFoto(applicationContext,fotoUri)
-
-                                        getFotos()
-
-                                        showToast("Foto Excluida Do Celular!")
-
-                                    } else {
-                                        showToast("Falha No Retorno Da Requisição!")
-
-                                    }
-
-                                } else {
-                                    binding.llProgress77.visibility = View.GONE
-                                    val gson = Gson()
-                                    val message = gson.fromJson(
-                                        response.errorBody()!!.charStream(),
-                                        HttpErrorMessage::class.java
-                                    )
-                                    showToast(
-                                        "${message.getMessage().toString()}",
-                                        Toast.LENGTH_SHORT
-                                    )
-
-                                }
-                            } else {
-                                binding.llProgress77.visibility = View.GONE
-                                showToast("Não Foi Possivel Inserir A Foto Na Nuvem")
-                            }
-                        }
-
-                        override fun onFailure(call: Call<RetornoUpload>, t: Throwable) {
-                            binding.llProgress77.visibility = View.GONE
-                            showToast("${t.message.toString()}", Toast.LENGTH_LONG)
-                        }
-                    })
-
-            } catch (e: Exception) {
-                binding.llProgress77.visibility = View.GONE
-                showToast("${e.message.toString()}", Toast.LENGTH_LONG)
-            }
-
-        } catch (error: Exception) {
-            Log.e("ww", "${error.message}")
-            showToast("Falha Ao Preparar A Foto Para Transmissão!")
-        }
-    }
-
     fun getFileFromUri(context: Context, uri: Uri): File? {
-        val filePathColumn = arrayOf(android.provider.MediaStore.Images.Media.DATA)
-        val cursor = context.contentResolver.query(uri, filePathColumn, null, null, null)
-        cursor?.moveToFirst()
-        val columnIndex = cursor?.getColumnIndex(filePathColumn[0])
-        val filePath = columnIndex?.let { cursor.getString(it) }
-        cursor?.close()
-        return filePath?.let { File(it) }
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val tempFile = File.createTempFile("upload_", ".jpg", context.cacheDir)
+            val outputStream = FileOutputStream(tempFile)
+
+            inputStream?.use { input ->
+                outputStream.use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            tempFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
     fun getHoje():String{
@@ -425,4 +347,71 @@ class FotosUploadServicoActivity : AppCompatActivity() {
             false
         }
     }
+
+    fun atualizarStatusErro(foto: FotoUploadModel) {
+        foto.status_upload = "2"
+        daoFoto.updatePhoto(foto)
+    }
+
+    fun logHttpError(response: Response<RetornoUpload>) {
+        try {
+            val gson = Gson()
+            val errorMsg = gson.fromJson(response.errorBody()?.charStream(), HttpErrorMessage::class.java)
+            Log.w("UploadWorker", "Erro HTTP: ${errorMsg}")
+        } catch (e: Exception) {
+            Log.e("UploadWorker", "Erro ao decodificar resposta HTTP.")
+        }
+    }
+
+    fun enviarFotoFlow(foto: FotoUploadModel): Flow<EstadoUpload> = flow {
+        emit(EstadoUpload.Carregando)
+
+        try {
+            val fotoUri = Uri.parse(foto.idFile)
+            val file = getFileFromUri(applicationContext, fotoUri) ?: throw Exception("Arquivo não encontrado.")
+
+            val filePart = MultipartBody.Part.createFormData(
+                "file", file.name,
+                RequestBody.create(MultipartBody.FORM, file)
+            )
+
+            val parts = mapOf(
+                "id_empresa"     to foto.idEmpresa.toString(),
+                "id_local"       to foto.idLocal.toString(),
+                "id_inventario"  to foto.idInventario.toString(),
+                "id_imobilizado" to foto.idImobilizado.toString(),
+                "id_pasta"       to foto.idPasta,
+                "id_file"        to foto.idFile,
+                "file_name"       to foto.fileNameOriginal,
+                "id_usuario"     to Dados.usuario.id.toString(),
+                "data"           to getHoje(),
+                "destaque"       to foto.destaque,
+                "obs"            to foto.obs,
+                "localizacao"    to "N"
+            ).mapValues { RequestBody.create(MultipartBody.FORM, it.value) }
+
+            val service = InfraHelper.apiInventario.create(FotoService::class.java)
+            val response = service.postUploadFotoV5_2(
+                parts["id_empresa"]!!, parts["id_local"]!!, parts["id_inventario"]!!,
+                parts["id_imobilizado"]!!, parts["id_pasta"]!!, parts["id_file"]!!,
+                parts["file_name"]!!, parts["id_usuario"]!!, parts["data"]!!,
+                parts["destaque"]!!, parts["obs"]!!, parts["localizacao"]!!, filePart
+            )
+
+            if (response.isSuccessful && response.body() != null) {
+                daoFoto.deletePhoto(foto.id)
+                apagarFoto(applicationContext, fotoUri)
+                emit(EstadoUpload.Sucesso)
+            } else {
+                logHttpError(response)
+                atualizarStatusErro(foto)
+                emit(EstadoUpload.Falha("Erro ao enviar foto: ${response.code()}"))
+            }
+
+        } catch (e: Exception) {
+            emit(EstadoUpload.Falha("Exceção: ${e.message}"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+
 }

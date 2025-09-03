@@ -2,11 +2,11 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_upload_srv_atualizar"
+        android:id="@+id/menu_upload_srv_upload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/filter_branco_noicon36"
-        android:title="Filtro"
+        android:title="UpLoad"
         app:showAsAction="never|ifRoom|withText" />
     <item
         android:id="@+id/menu_upload_srv_sair"

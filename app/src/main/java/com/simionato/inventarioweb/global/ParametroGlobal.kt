@@ -10,6 +10,7 @@ import com.simionato.inventarioweb.models.LocalModel
 import com.simionato.inventarioweb.models.UsuarioModel
 import com.simionato.inventarioweb.parametros.ParametroImobilizadoInventario01
 import java.text.Normalizer
+import java.util.Date
 import java.util.regex.Pattern
 
 class ParametroGlobal {
@@ -243,6 +244,33 @@ class ParametroGlobal {
                 return pattern.matcher(nfdNormalizedString).replaceAll("")
             }
         }
+    }
+
+    class Util{
+        companion object{
+            public fun getHoje():String{
+                try {
+
+                    val date = Date()
+
+                    val format = android.icu.text.SimpleDateFormat("dd/MM/yyyy")
+
+                    val data = format.format(date)
+
+                    return data
+
+                } catch (e:Exception)
+                {
+                    return ""
+                }
+            }
+        }
+    }
+
+    sealed class EstadoUpload {
+        object Carregando : EstadoUpload()
+        object Sucesso : EstadoUpload()
+        data class Falha(val mensagem: String) : EstadoUpload()
     }
 
 }

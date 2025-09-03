@@ -11,7 +11,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
     DATABASE_VERSION
 ) {
     companion object {
-        private const val DATABASE_VERSION = 9// Atualizamos a versão do banco
+        private const val DATABASE_VERSION = 11// Atualizamos a versão do banco
         const val TABLE_PHOTOS = "photos"
         const val TABLE_LANCAMENTOS = "lancamentos"
 
@@ -89,7 +89,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        if (oldVersion < 8) {
+        if (oldVersion < 11) {
             db.execSQL("DROP TABLE IF EXISTS $TABLE_PHOTOS")
             db.execSQL("DROP TABLE IF EXISTS $TABLE_LANCAMENTOS")
             onCreate(db) // Recria as tabelas para aplicar as mudanças

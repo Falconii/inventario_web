@@ -37,7 +37,7 @@ class daoFotoUpload(private val dbHelper: DatabaseHelper) {
         return db.insert(DatabaseHelper.TABLE_PHOTOS, null, values) != -1L
     }
 
-    fun getPhotos(): List<FotoUploadModel> {
+    fun getPhotosAll(): List<FotoUploadModel> {
         val db = dbHelper.readableDatabase
         val cursor = db.query(
             DatabaseHelper.TABLE_PHOTOS,
@@ -62,8 +62,7 @@ class daoFotoUpload(private val dbHelper: DatabaseHelper) {
                 DatabaseHelper.COLUMN_DATA_UPLOAD,
                 DatabaseHelper.COLUMN_USER_INSERT,
                 DatabaseHelper.COLUMN_USER_UPDATE
-            ),
-            null, null, null, null, null
+            ), null, null, null, null, null
         )
 
         val photos = mutableListOf<FotoUploadModel>()
@@ -96,6 +95,71 @@ class daoFotoUpload(private val dbHelper: DatabaseHelper) {
         cursor.close()
         return photos
     }
+
+    fun getPhotosUpLoad(): List<FotoUploadModel> {
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            DatabaseHelper.TABLE_PHOTOS,
+            arrayOf(
+                DatabaseHelper.COLUMN_ID,
+                DatabaseHelper.COLUMN_ID_EMPRESA,
+                DatabaseHelper.COLUMN_ID_LOCAL,
+                DatabaseHelper.COLUMN_ID_INVENTARIO,
+                DatabaseHelper.COLUMN_ID_IMOBILIZADO,
+                DatabaseHelper.COLUMN_ID_PASTA,
+                DatabaseHelper.COLUMN_ID_FILE,
+                DatabaseHelper.COLUMN_FILE_NAME,
+                DatabaseHelper.COLUMN_FILE_NAME_ORIGINAL,
+                DatabaseHelper.COLUMN_ID_USUARIO,
+                DatabaseHelper.COLUMN_DATA,
+                DatabaseHelper.COLUMN_DESTAQUE,
+                DatabaseHelper.COLUMN_OBS,
+                DatabaseHelper.COLUMN_LOCALIZACAO,
+                DatabaseHelper.COLUMN_DESCRICAO,
+                DatabaseHelper.COLUMN_RAZAO,
+                DatabaseHelper.COLUMN_STATUS_UPLOAD,
+                DatabaseHelper.COLUMN_DATA_UPLOAD,
+                DatabaseHelper.COLUMN_USER_INSERT,
+                DatabaseHelper.COLUMN_USER_UPDATE
+            ),
+            "${DatabaseHelper.COLUMN_STATUS_UPLOAD} = ? OR ${DatabaseHelper.COLUMN_STATUS_UPLOAD} = ?",
+            arrayOf("0", "2"),
+            null, null, null
+
+        )
+
+        val photos = mutableListOf<FotoUploadModel>()
+        while (cursor.moveToNext()) {
+            photos.add(
+                FotoUploadModel(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_EMPRESA)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_LOCAL)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_INVENTARIO)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_IMOBILIZADO)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_PASTA)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_FILE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_FILE_NAME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_FILE_NAME_ORIGINAL)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID_USUARIO)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DATA)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESTAQUE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_OBS)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LOCALIZACAO)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESCRICAO)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_RAZAO)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_STATUS_UPLOAD)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DATA_UPLOAD)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_INSERT)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_UPDATE))
+                )
+            )
+        }
+        cursor.close()
+        return photos
+    }
+
+
     fun updatePhoto(photo: FotoUploadModel): Boolean {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
@@ -126,6 +190,7 @@ class daoFotoUpload(private val dbHelper: DatabaseHelper) {
         )
         return rowsAffected > 0
     }
+
 
     fun deletePhoto(id: Int): Boolean {
         val db = dbHelper.writableDatabase

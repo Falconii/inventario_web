@@ -23,7 +23,6 @@ import com.simionato.inventarioweb.dao.daoFotoUpload
 import com.simionato.inventarioweb.databinding.ActivityShowFotosBinding
 import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.global.ParametroGlobal
-import com.simionato.inventarioweb.infra.DatabaseHelper
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.FotoModel
 import com.simionato.inventarioweb.models.FotoUploadModel
