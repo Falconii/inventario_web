@@ -38,7 +38,7 @@ class FotoRepository(
             "localizacao"    to "N"
         ).mapValues { RequestBody.create(MultipartBody.FORM, it.value) }
 
-        val response = service.postUploadFotoV5_2(
+        val response = service.uploadfotov5_2_disp(
             params["id_empresa"]!!, params["id_local"]!!, params["id_inventario"]!!,
             params["id_imobilizado"]!!, params["id_pasta"]!!, params["id_file"]!!,
             params["old_name"]!!, params["id_usuario"]!!, params["data"]!!,

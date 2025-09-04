@@ -71,8 +71,8 @@
             ): Call<RetornoUpload>
 
             @Multipart
-            @POST("uploadfotov5_2")
-            suspend fun postUploadFotoV5_2(
+            @POST("uploadfotov5_2_disp")
+            suspend fun uploadfotov5_2_disp(
                 @Part("id_empresa") idEmpresa: RequestBody,
                 @Part("id_local") idLocal: RequestBody,
                 @Part("id_inventario") idInventario: RequestBody,
@@ -87,4 +87,22 @@
                 @Part("localizacao") localizacao: RequestBody,
                 @Part file: MultipartBody.Part
             ): Response<RetornoUpload>
+
+        @Multipart
+        @POST("uploadfotov5_2_web")
+        suspend fun uploadfotov5_2_web(
+            @Part("id_empresa") idEmpresa: RequestBody,
+            @Part("id_local") idLocal: RequestBody,
+            @Part("id_inventario") idInventario: RequestBody,
+            @Part("id_imobilizado") idImobilizado: RequestBody,
+            @Part("id_pasta") idPasta: RequestBody,
+            @Part("id_file") idFile: RequestBody,
+            @Part("file_name") fileNameOriginal: RequestBody,
+            @Part("id_usuario") idUsuario: RequestBody,
+            @Part("data") data: RequestBody,
+            @Part("destaque") destaque: RequestBody,
+            @Part("obs") obs: RequestBody,
+            @Part("localizacao") localizacao: RequestBody,
+            @Part file: MultipartBody.Part
+        ): Response<RetornoUpload>
     }

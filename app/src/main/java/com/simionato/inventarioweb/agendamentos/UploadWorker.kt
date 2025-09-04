@@ -93,7 +93,7 @@ class UploadWorker(
 
         val service = InfraHelper.apiInventario.create(FotoService::class.java)
 
-        val response = service.postUploadFotoV5_2(
+        val response = service.uploadfotov5_2_disp(
             parts["id_empresa"]!!,
             parts["id_local"]!!,
             parts["id_inventario"]!!,

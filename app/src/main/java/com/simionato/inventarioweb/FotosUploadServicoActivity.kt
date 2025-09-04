@@ -49,6 +49,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.Date
 import com.simionato.inventarioweb.global.ParametroGlobal.*
+import com.simionato.inventarioweb.global.ParametroGlobal.Util.Companion.getHoje
+import com.simionato.inventarioweb.global.getFileFromUri
 import com.simionato.inventarioweb.infra.DatabaseHelper
 
 class FotosUploadServicoActivity : AppCompatActivity() {
@@ -255,9 +257,9 @@ class FotosUploadServicoActivity : AppCompatActivity() {
                                 HttpErrorMessage::class.java
                             )
                             if (response.code() == 409){
-                                showToast("Tabela De Fotos Vazia")
-                                //var fotos: List<FotoModel> = listOf()
-                                //montaLista(fotos)
+                                showToast("Não Encontrado Registro Temporário Da Foto. Foto Será Agada Do Celular!")
+                                daoFoto.deletePhoto(foto.id)
+                                getFotos()
                             } else {
                                 showToast("${message.getMessage().toString()}", Toast.LENGTH_SHORT)
                             }
@@ -296,7 +298,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
         }
 
     }
-
+    /*
     fun getFileFromUri(context: Context, uri: Uri): File? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri)
@@ -316,24 +318,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
         }
     }
 
-    fun getHoje():String{
-
-        try {
-
-            val date = Date()
-
-            val format = SimpleDateFormat("dd/MM/yyyy")
-
-            val data = format.format(date)
-
-            return data
-
-        } catch (e:Exception)
-        {
-            return ""
-        }
-
-    }
+*/
 
     fun apagarFoto(context: Context, fotoUri: Uri): Boolean {
         return try {
@@ -368,6 +353,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
 
         try {
             val fotoUri = Uri.parse(foto.idFile)
+
             val file = getFileFromUri(applicationContext, fotoUri) ?: throw Exception("Arquivo não encontrado.")
 
             val filePart = MultipartBody.Part.createFormData(
@@ -391,7 +377,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
             ).mapValues { RequestBody.create(MultipartBody.FORM, it.value) }
 
             val service = InfraHelper.apiInventario.create(FotoService::class.java)
-            val response = service.postUploadFotoV5_2(
+            val response = service.uploadfotov5_2_disp(
                 parts["id_empresa"]!!, parts["id_local"]!!, parts["id_inventario"]!!,
                 parts["id_imobilizado"]!!, parts["id_pasta"]!!, parts["id_file"]!!,
                 parts["file_name"]!!, parts["id_usuario"]!!, parts["data"]!!,

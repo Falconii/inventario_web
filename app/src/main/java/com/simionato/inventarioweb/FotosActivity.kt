@@ -31,11 +31,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.simionato.inventarioweb.dao.daoFotoUpload
 import com.simionato.inventarioweb.databinding.ActivityFotosBinding
 import com.simionato.inventarioweb.global.ParametroGlobal
+import com.simionato.inventarioweb.global.ParametroGlobal.Dados
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.Inventario
+import com.simionato.inventarioweb.global.ParametroGlobal.EstadoUpload
+import com.simionato.inventarioweb.global.getFileFromUri
+import com.simionato.inventarioweb.global.getHoje
+import com.simionato.inventarioweb.global.showToast
 import com.simionato.inventarioweb.infra.DatabaseHelper
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.FotoModel
@@ -43,11 +49,17 @@ import com.simionato.inventarioweb.models.FotoUploadModel
 import com.simionato.inventarioweb.models.RetornoUpload
 import com.simionato.inventarioweb.services.FotoService
 import com.simionato.inventarioweb.shared.HttpErrorMessage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -92,7 +104,7 @@ class FotosActivity : AppCompatActivity() {
                 Log.i("zyzz","Trocando a Imagem Da Tela...")
                 binding.imView20.setImageURI(imageUri)
             } catch (error:Exception){
-                showToast("Erro Ao Mostrar A Foto!: ${error.message}")
+                showToast(applicationContext,"Erro Ao Mostrar A Foto!: ${error.message}")
                 finish()
             }
             showFormulario(true)
@@ -150,7 +162,7 @@ class FotosActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         if (ParametroGlobal.Ambiente.itsOK()){
-            showToast("Ambiente Incorreto!!")
+            showToast(applicationContext,"Ambiente Incorreto!!")
             finish()
             return
         }
@@ -160,16 +172,16 @@ class FotosActivity : AppCompatActivity() {
                 id_imobilizado = bundle.getInt("id_imobilizado", 0)
                 descricao = bundle.getString("descricao")!!
             } else {
-                showToast("Parâmetro Foto Incorreto!!")
+                showToast(applicationContext,"Parâmetro Foto Incorreto!!")
                 finish()
             }
         }  catch (error:Exception){
-            showToast("Erro Nos Parametros: ${error.message}")
+            showToast(applicationContext,"Erro Nos Parametros: ${error.message}")
             finish()
         }
         setContentView(binding.root)
         if (id_imobilizado == 0){
-            showToast("Não Foi Informado O Código Do Imobilizado!");
+            showToast(applicationContext,"Não Foi Informado O Código Do Imobilizado!");
             val returnIntent: Intent = Intent()
             setResult(Activity.RESULT_CANCELED,returnIntent)
             finish()
@@ -189,7 +201,7 @@ class FotosActivity : AppCompatActivity() {
                 image
             )
         } catch (error:Exception){
-            showToast("Falha: createImageUri ${error.message} ")
+            showToast(applicationContext,"Falha: createImageUri ${error.message} ")
         }
         return null
     }
@@ -249,7 +261,7 @@ class FotosActivity : AppCompatActivity() {
         }
 
         binding.btGravarNuvem20.setOnClickListener {
-            uploadFoto()
+            uploadFotoNuvem()
 
         }
         binding.btGravarLocal20.setOnClickListener {
@@ -301,194 +313,52 @@ class FotosActivity : AppCompatActivity() {
             }
         }
     }
-    private fun uploadFoto(){
+    private fun uploadFotoNuvem(){
         binding.btGravarNuvem20.setEnabled(false)
         binding.btGravarLocal20.setEnabled(false)
         binding.btCancelar20.setEnabled(false)
         if (origem == "GALERIA"){
             if (!save_local){
-                uploadFoto_galeria()
+                uploadFoto_galeriaV2()
             } else {
-                showToast("Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
+                showToast(applicationContext,"Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
                 binding.btCancelar20.setEnabled(true)
             }
         } else {
             if (!save_local) {
-                uploadFoto_camera()
+                uploadFoto_camera_v2()
             } else {
-                showToast("Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
+                showToast(applicationContext,"Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
                 binding.btCancelar20.setEnabled(true)
             }
         }
     }
-
+/*
     private fun uploadFotoLocal(){
         binding.btGravarNuvem20.setEnabled(false)
         binding.btGravarLocal20.setEnabled(false)
         binding.btCancelar20.setEnabled(false)
         if (origem == "GALERIA"){
             if (!save_local){
-                uploadFoto_galeria()
+                uploadFoto_galeriaV2()
             } else {
-                showToast("Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
+                showToast(applicationContext,"Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
                 binding.btCancelar20.setEnabled(true)
             }
         } else {
             if (!save_local) {
                 //uploadFoto_camera()
             } else {
-                showToast("Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
+                showToast(applicationContext,"Aparentemente Esta Foto Já Foi Gravada!!! Verifique")
                 binding.btCancelar20.setEnabled(true)
             }
         }
     }
 
-    private fun registroFotoUpload(){
-        try {
-            //grava a foto na galeria
-
-            val idUuid = UUID.randomUUID()
-            val fileUuid = idUuid.toString()
-            var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
-                    "${Inventario.id_filial.toString().padStart(6,'0')}_" +
-                    "${Inventario.codigo.toString().padStart(6,'0')}_" +
-                    "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
-            val newImageUri = saveCompressedImageToGallery(this, imageUri, fileName)
-
-            if (newImageUri == null) {
-                showToast("Falha Na Gravação Da Foto Na Galeria!")
-                return
-            }
-
-            /*
-            val file = File(newImageUri?.path!!) // Obtém o caminho completo
-            val filePath = file.parent ?: "" // Caminho da pasta onde o arquivo está
-            val fileNameOriginal = file.name // Nome original do arquivo
-            */
-
-            val filePath = "Pictures/Simionato"
-            val fileNameOriginal = fileName // já definido antes
 
 
-            //Prepara registro para api nuvem
-            var fotoNuvem = FotoModel()
-            fotoNuvem.id_empresa			= ParametroGlobal.Dados.empresa.id
-            fotoNuvem.id_local			    = ParametroGlobal.Dados.local.id
-            fotoNuvem.id_inventario		    = ParametroGlobal.Dados.Inventario.codigo
-            fotoNuvem.id_imobilizado		= ParametroGlobal.Dados.empresa.id
-            fotoNuvem.id_pasta			    = filePath
-            fotoNuvem.id_file				= newImageUri.toString()
-            fotoNuvem.file_name			    = fileNameOriginal
-            fotoNuvem.file_name_original	= fileNameOriginal
-            fotoNuvem.id_usuario		 	= ParametroGlobal.Dados.usuario.id
-            fotoNuvem.data			 	= getHoje()
-            fotoNuvem.destaque        	= if(binding.swDestaque20.isChecked) "S" else "N"
-            fotoNuvem.obs             	= binding.txtInputObs.text.toString()
-            fotoNuvem.localizacao       = "D"
-            fotoNuvem.user_insert      	= ParametroGlobal.Dados.usuario.id
-            fotoNuvem.user_update     	= 0
-
-            var foto = FotoUploadModel()
-            foto.idEmpresa			= ParametroGlobal.Dados.empresa.id
-            foto.idLocal			= ParametroGlobal.Dados.local.id
-            foto.idInventario		= ParametroGlobal.Dados.Inventario.codigo
-            foto.idImobilizado		= ParametroGlobal.Dados.empresa.id
-            foto.idPasta			= filePath
-            foto.idFile				= newImageUri.toString()
-            foto.fileName			= fileNameOriginal
-            foto.fileNameOriginal	= fileNameOriginal
-            foto.idUsuario		 	= ParametroGlobal.Dados.usuario.id
-            foto.data			 	= getHoje()
-            foto.destaque        	= if(binding.swDestaque20.isChecked) "S" else "N"
-            foto.obs             	= binding.txtInputObs.text.toString()
-            foto.localizacao        = "D"
-            foto.descricao          = descricao
-            foto.razao              =  ParametroGlobal.Dados.usuario.razao
-            foto.userInsert      	= ParametroGlobal.Dados.usuario.id
-            foto.userUpdate      	= 0
-
-            try {
-
-                val fotoService = InfraHelper.apiInventario.create( FotoService::class.java )
-
-                fotoService.InsertFoto(fotoNuvem)
-                    .enqueue(object :Callback<FotoModel>{
-                        override fun onResponse(
-                            call: Call<FotoModel>,
-                            response: Response<FotoModel>
-                        ) {
-                            binding.llProgress20.visibility = View.GONE
-
-                            if (response != null) {
-                                if (response.isSuccessful) {
-
-                                    var retorno = response.body()
-
-                                    if (retorno !== null) {
-
-
-                                        daoFoto.insertPhoto(foto)
-
-                                        val returnIntent = Intent()
-
-                                        setResult(Activity.RESULT_OK,returnIntent)
-
-                                        finish()
-
-
-                                    } else {
-                                        showToast("Falha No Retorno Da Requisição!")
-
-                                        binding.btGravarNuvem20.setEnabled(true)
-                                        binding.btGravarLocal20.setEnabled(true)
-                                        binding.btCancelar20.setEnabled(true)
-                                    }
-
-                                }
-                                else {
-                                    binding.llProgress20.visibility = View.GONE
-                                    val gson = Gson()
-                                    val message = gson.fromJson(
-                                        response.errorBody()!!.charStream(),
-                                        HttpErrorMessage::class.java
-                                    )
-                                    showToast("${message.getMessage().toString()}",Toast.LENGTH_SHORT)
-
-                                    binding.btGravarNuvem20.setEnabled(true)
-                                    binding.btGravarLocal20.setEnabled(true)
-                                    binding.btCancelar20.setEnabled(true)
-                                }
-                            }
-                            else {
-                                binding.llProgress20.visibility = View.GONE
-                                showToast("Não Foi Possivel Inserir A Foto Na Nuvem")
-                                binding.btGravarNuvem20.setEnabled(true)
-                                binding.btGravarLocal20.setEnabled(true)
-                                binding.btCancelar20.setEnabled(true)
-                            }
-                        }
-
-                        override fun onFailure(call: Call<FotoModel>, t: Throwable) {
-                            binding.llProgress20.visibility = View.GONE
-                            showToast("${t.message.toString()}", Toast.LENGTH_LONG)
-                        }
-                    })
-
-            } catch (e: Exception){
-                binding.llProgress20.visibility = View.GONE
-                showToast("${e.message.toString()}", Toast.LENGTH_LONG)
-            }
-
-
-        }catch (error:Exception){
-            showToast("Falha Ao Gravar Foto Localmente!")
-        }
-
-    }
     private fun uploadFoto_galeria(){
         try {
-
-
             val idUuid = UUID.randomUUID()
             val fileUuid = idUuid.toString()
             var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
@@ -559,7 +429,7 @@ class FotosActivity : AppCompatActivity() {
 
                                     if (mensagem !== null) {
 
-                                        showToast("${mensagem.message}")
+                                        showToast(applicationContext,"${mensagem.message}")
 
                                         val returnIntent: Intent = Intent()
 
@@ -569,7 +439,7 @@ class FotosActivity : AppCompatActivity() {
 
 
                                     } else {
-                                        showToast("Falha No Retorno Da Requisição!")
+                                        showToast(applicationContext,"Falha No Retorno Da Requisição!")
 
                                         binding.btGravarNuvem20.setEnabled(true)
                                         binding.btGravarLocal20.setEnabled(true)
@@ -584,7 +454,7 @@ class FotosActivity : AppCompatActivity() {
                                         response.errorBody()!!.charStream(),
                                         HttpErrorMessage::class.java
                                     )
-                                    showToast("${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+                                    showToast(applicationContext,"${message.getMessage().toString()}",Toast.LENGTH_SHORT)
 
                                     binding.btGravarNuvem20.setEnabled(true)
                                     binding.btGravarLocal20.setEnabled(true)
@@ -593,7 +463,7 @@ class FotosActivity : AppCompatActivity() {
                             }
                             else {
                                 binding.llProgress20.visibility = View.GONE
-                                showToast("Não Foi Possivel Inserir A Foto Na Nuvem")
+                                showToast(applicationContext,"Não Foi Possivel Inserir A Foto Na Nuvem")
                                 binding.btGravarNuvem20.setEnabled(true)
                                 binding.btGravarLocal20.setEnabled(true)
                                 binding.btCancelar20.setEnabled(true)
@@ -602,23 +472,25 @@ class FotosActivity : AppCompatActivity() {
 
                         override fun onFailure(call: Call<RetornoUpload>, t: Throwable) {
                             binding.llProgress20.visibility = View.GONE
-                            showToast("${t.message.toString()}", Toast.LENGTH_LONG)
+                            showToast(applicationContext,"${t.message.toString()}", Toast.LENGTH_LONG)
                         }
                     })
 
             } catch (e: Exception){
                 binding.llProgress20.visibility = View.GONE
-                showToast("${e.message.toString()}", Toast.LENGTH_LONG)
+                showToast(applicationContext,"${e.message.toString()}", Toast.LENGTH_LONG)
             }
 
         } catch (error:Exception){
             Log.e("ww","${error.message}")
-            showToast("Falha Ao Preparar A Foto Para Transmissão!")
+            showToast(applicationContext,"Falha Ao Preparar A Foto Para Transmissão!")
         }
     }
 
-    private fun uploadFoto_camera(){
+*/
+    private fun uploadFoto_galeriaV2(){
         try {
+            //grava a foto na galeria\simionato
 
             val idUuid = UUID.randomUUID()
             val fileUuid = idUuid.toString()
@@ -626,173 +498,84 @@ class FotosActivity : AppCompatActivity() {
                     "${Inventario.id_filial.toString().padStart(6,'0')}_" +
                     "${Inventario.codigo.toString().padStart(6,'0')}_" +
                     "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
+            val newImageUri = saveCompressedImageToGallery(this,uri, fileName)
 
-            //var file = saveCompressedImage(applicationContext,imageUri, fileName)
-            //    ?:  saveLocal(fileName)
+            if (newImageUri == null) {
+                showToast(applicationContext,"Falha Na Gravação Da Foto Na Galeria Simionato!")
+                return
+            }
 
-            var file = saveLocal(fileName)
+            //val file = getFileFromUri(applicationContext, newImageUri) ?: throw Exception("Arquivo não encontrado.")
+            /*
+            val file = File(newImageUri?.path!!) // Obtém o caminho completo
+            val filePath = file.parent ?: "" // Caminho da pasta onde o arquivo está
+            val fileNameOriginal = file.name // Nome original do arquivo
+            */
 
-            val requestFile = RequestBody.create(MultipartBody.FORM, file)
+            val filePath = "Pictures/Simionato"
+            val fileNameOriginal = fileName // já definido antes
 
-            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
-            val id_empresa = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.empresa.id.toString())
+            //Prepara registro para api nuvem
+            var fotoNuvem = FotoModel()
+            fotoNuvem.id_empresa			= ParametroGlobal.Dados.empresa.id
+            fotoNuvem.id_local			    = ParametroGlobal.Dados.local.id
+            fotoNuvem.id_inventario		    = ParametroGlobal.Dados.Inventario.codigo
+            fotoNuvem.id_imobilizado		= id_imobilizado
+            fotoNuvem.id_pasta			    = filePath
+            fotoNuvem.id_file				= newImageUri.toString()
+            fotoNuvem.file_name			    = fileNameOriginal
+            fotoNuvem.file_name_original	= fileNameOriginal
+            fotoNuvem.id_usuario		 	= ParametroGlobal.Dados.usuario.id
+            fotoNuvem.data			 	    = getHoje()
+            fotoNuvem.destaque           	= if(binding.swDestaque20.isChecked) "S" else "N"
+            fotoNuvem.obs             	    = binding.txtInputObs.text.toString()
+            fotoNuvem.localizacao           = "N"
+            fotoNuvem.user_insert      	    = ParametroGlobal.Dados.usuario.id
+            fotoNuvem.user_update     	    = 0
 
-            val id_local = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.local.id.toString())
-
-            val id_inventario = RequestBody.create(MultipartBody.FORM, Inventario.codigo.toString())
-
-            val id_imobilizado = RequestBody.create(MultipartBody.FORM,id_imobilizado.toString())
-
-            val id_pasta = RequestBody.create(MultipartBody.FORM,"")
-
-            val id_file = RequestBody.create(MultipartBody.FORM,"")
-
-            val old_name = RequestBody.create(MultipartBody.FORM,"")
-
-            val id_usuario = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.usuario.id.toString())
-
-            val data = RequestBody.create(MultipartBody.FORM,getHoje())
-
-            val destaque = RequestBody.create(MultipartBody.FORM,if(binding.swDestaque20.isChecked) "S" else "N")
-
-            val obs = RequestBody.create(MultipartBody.FORM,binding.txtInputObs.text.toString())
-
-            val localizacao = RequestBody.create(MultipartBody.FORM,"N")
-
-            binding.llProgress20.visibility = View.VISIBLE
-
-            try {
-                val fotoService = InfraHelper.apiInventario.create(FotoService::class.java)
-
-                fotoService.postUploadFoto(
-                    id_empresa,
-                    id_local,
-                    id_inventario,
-                    id_imobilizado,
-                    id_pasta,
-                    id_file,
-                    old_name,
-                    id_usuario,
-                    data,
-                    destaque,
-                    obs,
-                    localizacao,
-                    body
-                )
-                    .enqueue(object : Callback<RetornoUpload> {
-                        override fun onResponse(
-                            call: Call<RetornoUpload>,
-                            response: Response<RetornoUpload>
-                        ) {
+            lifecycleScope.launch {
+                enviarFotoFlow(fotoNuvem,newImageUri).collect { estado ->
+                    when (estado) {
+                        is EstadoUpload.Carregando -> {
+                            binding.llProgress20.visibility = View.VISIBLE
+                        }
+                        is EstadoUpload.Sucesso -> {
                             binding.llProgress20.visibility = View.GONE
 
-                            if (response != null) {
+                            showToast(applicationContext,"Foto enviada com sucesso!", Toast.LENGTH_SHORT)
 
-                                if (response.isSuccessful) {
+                            val returnIntent: Intent = Intent()
 
-                                    var mensagem = response.body()
+                            setResult(Activity.RESULT_OK, returnIntent)
 
-                                    if (mensagem !== null) {
-
-                                        try {
-                                            file.delete()
-                                        } catch (e: Exception) {
-                                            showToast(
-                                                "Falha Na Exclusão Da Foto!",
-                                                Toast.LENGTH_LONG
-                                            )
-                                        }
-                                        showToast("${mensagem.message}")
-
-                                        val returnIntent: Intent = Intent()
-
-                                        setResult(Activity.RESULT_OK, returnIntent)
-
-                                        finish()
-
-                                    } else {
-                                        showToast("Falha No Retorno Da Requisição!")
-                                        binding.btGravarNuvem20.setEnabled(true)
-                                        binding.btGravarLocal20.setEnabled(true)
-                                        binding.btCancelar20.setEnabled(true)
-                                    }
-
-                                } else {
-                                    binding.llProgress20.visibility = View.GONE
-                                    val gson = Gson()
-                                    val message = gson.fromJson(
-                                        response.errorBody()!!.charStream(),
-                                        HttpErrorMessage::class.java
-                                    )
-                                    showToast(
-                                        "${message.getMessage().toString()}",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                    binding.btGravarNuvem20.setEnabled(true)
-                                    binding.btGravarLocal20.setEnabled(true)
-                                    binding.btCancelar20.setEnabled(true)
-                                }
-                            } else {
-                                binding.llProgress20.visibility = View.GONE
-                                showToast("Não Foi Possivel Inserir A Foto Na Nuvem")
-                                binding.btGravarNuvem20.setEnabled(false)
-                                binding.btGravarLocal20.setEnabled(false)
-                                binding.btCancelar20.setEnabled(true)
-                            }
+                            finish()
                         }
-
-                        override fun onFailure(call: Call<RetornoUpload>, t: Throwable) {
+                        is EstadoUpload.Falha -> {
                             binding.llProgress20.visibility = View.GONE
-                            if (t.message.toString() == "timeout") {
-                                showToast(
-                                    "Excedeu O Tempo De Espera!\nCancele E Atualize A Tela Anterior",
-                                    Toast.LENGTH_LONG
-                                )
-                            } else {
-                                showToast("${t.message.toString()}", Toast.LENGTH_LONG)
-                            }
-                            binding.btGravarNuvem20.setEnabled(true)
-                            binding.btGravarLocal20.setEnabled(true)
-                            binding.btCancelar20.setEnabled(true)
+                            showToast(applicationContext,estado.mensagem, Toast.LENGTH_LONG)
                         }
-                    })
-
-            } catch (e: Exception){
-                binding.llProgress20.visibility = View.GONE
-                showToast("${e.message.toString()}", Toast.LENGTH_LONG)
+                    }
+                }
             }
 
 
-        } catch (error:Exception){
-            showToast("Falha Ao Preparar A Foto Para Transmissão!")
+
+        } catch (e: Exception){
+            binding.llProgress20.visibility = View.GONE
+            showToast(applicationContext,"${e.message.toString()}", Toast.LENGTH_LONG)
         }
+
+        return
     }
+
+
+
     private fun showFormulario(value:Boolean){
         binding.llAjuda20.visibility = if (!value) View.VISIBLE else View.GONE
         binding.llCadastro20.visibility = if (value) View.VISIBLE else View.GONE
     }
-    fun showToast(mensagem:String,duracao:Int = Toast.LENGTH_SHORT){
-        Toast.makeText(this, mensagem, duracao).show()
-    }
-    fun getHoje():String{
 
-        try {
-
-            val date = Date()
-
-            val format = SimpleDateFormat("dd/MM/yyyy")
-
-            val data = format.format(date)
-
-            return data
-
-        } catch (e:Exception)
-        {
-            return ""
-        }
-
-    }
     private fun displayName(uri: Uri): String? {
         val mCursor = applicationContext.contentResolver.query(uri, null, null, null, null)
         val indexedname = mCursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
@@ -833,7 +616,7 @@ class FotosActivity : AppCompatActivity() {
             }
 
         } catch (e: IOException) {
-            showToast("Falha Na Correção Da Orientação Da Foto!!");
+            showToast(applicationContext,"Falha Na Correção Da Orientação Da Foto!!");
         }
 
         save_local = true;
@@ -880,7 +663,7 @@ class FotosActivity : AppCompatActivity() {
             }
 
         } catch (e: IOException) {
-            showToast("Falha Na Correção Da Orientação Da Foto!!");
+            showToast(applicationContext,"Falha Na Correção Da Orientação Da Foto!!");
         }
 
         save_local = true;
@@ -888,6 +671,7 @@ class FotosActivity : AppCompatActivity() {
         return fotoExternalFile
 
     }
+
     private fun storageItsOk():Boolean{
         if (!isExternalStorageAvailable || isExternalStorageReadOnly) {
             return false
@@ -896,39 +680,10 @@ class FotosActivity : AppCompatActivity() {
         return true;
     }
 
-    fun getFileFromUri(context: Context, uri: Uri): File? {
-        val filePathColumn = arrayOf(android.provider.MediaStore.Images.Media.DATA)
-        val cursor = context.contentResolver.query(uri, filePathColumn, null, null, null)
-        cursor?.moveToFirst()
-        val columnIndex = cursor?.getColumnIndex(filePathColumn[0])
-        val filePath = columnIndex?.let { cursor.getString(it) }
-        cursor?.close()
-        return filePath?.let { File(it) }
-    }
-
-    fun saveImageToGallery(context: Context, imageUri: Uri, fileName: String): Uri? {
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg") // Ajuste conforme necessário
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Simionato") // Pasta dentro da galeria
-        }
-
-        val resolver = context.contentResolver
-        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        val imageUriSaved = resolver.insert(imageCollection, contentValues) ?: return null
-
-        resolver.openOutputStream(imageUriSaved).use { outputStream ->
-            resolver.openInputStream(imageUri)?.use { inputStream ->
-                inputStream.copyTo(outputStream!!)
-            }
-        }
-
-        return imageUriSaved // Retorna a URI da imagem salva na galeria
-    }
-
     fun saveCompressedImageToGallery(context: Context, imageUri: Uri, fileName: String): Uri? {
         val resolver = context.contentResolver
 
+        /* refatorado
         // Obtém o bitmap original
         val inputStream = resolver.openInputStream(imageUri) ?: return null
         val originalBitmap = BitmapFactory.decodeStream(inputStream)
@@ -936,7 +691,17 @@ class FotosActivity : AppCompatActivity() {
 
         // Verifica e corrige a orientação da imagem
         val exif = resolver.openInputStream(imageUri)?.use { ExifInterface(it) }
-        val rotationDegrees = when (exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+
+         */
+
+        val inputStream = resolver.openInputStream(imageUri) ?: return null
+        val byteArray = inputStream.readBytes()
+        inputStream.close()
+
+        val originalBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+        val exif = ExifInterface(ByteArrayInputStream(byteArray))
+
+        val rotationDegrees = when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
             ExifInterface.ORIENTATION_ROTATE_90 -> 90
             ExifInterface.ORIENTATION_ROTATE_180 -> 180
             ExifInterface.ORIENTATION_ROTATE_270 -> 270
@@ -1029,6 +794,458 @@ class FotosActivity : AppCompatActivity() {
         save_local = true;
 
         return file
+    }
+
+    /* oficial até 04/09/2025 */
+    private fun uploadFoto_camera(){
+        try {
+
+            val idUuid = UUID.randomUUID()
+            val fileUuid = idUuid.toString()
+            var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
+                    "${Inventario.id_filial.toString().padStart(6,'0')}_" +
+                    "${Inventario.codigo.toString().padStart(6,'0')}_" +
+                    "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
+
+            //var file = saveCompressedImage(applicationContext,imageUri, fileName)
+            //    ?:  saveLocal(fileName)
+
+            var file = saveLocal(fileName)
+
+            val requestFile = RequestBody.create(MultipartBody.FORM, file)
+
+            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+
+            val id_empresa = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.empresa.id.toString())
+
+            val id_local = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.local.id.toString())
+
+            val id_inventario = RequestBody.create(MultipartBody.FORM, Inventario.codigo.toString())
+
+            val id_imobilizado = RequestBody.create(MultipartBody.FORM,id_imobilizado.toString())
+
+            val id_pasta = RequestBody.create(MultipartBody.FORM,"")
+
+            val id_file = RequestBody.create(MultipartBody.FORM,"")
+
+            val old_name = RequestBody.create(MultipartBody.FORM,"")
+
+            val id_usuario = RequestBody.create(MultipartBody.FORM,ParametroGlobal.Dados.usuario.id.toString())
+
+            val data = RequestBody.create(MultipartBody.FORM,getHoje())
+
+            val destaque = RequestBody.create(MultipartBody.FORM,if(binding.swDestaque20.isChecked) "S" else "N")
+
+            val obs = RequestBody.create(MultipartBody.FORM,binding.txtInputObs.text.toString())
+
+            val localizacao = RequestBody.create(MultipartBody.FORM,"N")
+
+            binding.llProgress20.visibility = View.VISIBLE
+
+            try {
+                val fotoService = InfraHelper.apiInventario.create(FotoService::class.java)
+
+                fotoService.postUploadFoto(
+                    id_empresa,
+                    id_local,
+                    id_inventario,
+                    id_imobilizado,
+                    id_pasta,
+                    id_file,
+                    old_name,
+                    id_usuario,
+                    data,
+                    destaque,
+                    obs,
+                    localizacao,
+                    body
+                )
+                    .enqueue(object : Callback<RetornoUpload> {
+                        override fun onResponse(
+                            call: Call<RetornoUpload>,
+                            response: Response<RetornoUpload>
+                        ) {
+                            binding.llProgress20.visibility = View.GONE
+
+                            if (response != null) {
+
+                                if (response.isSuccessful) {
+
+                                    var mensagem = response.body()
+
+                                    if (mensagem !== null) {
+
+                                        try {
+                                            file.delete()
+                                        } catch (e: Exception) {
+                                            showToast(applicationContext,
+                                                "Falha Na Exclusão Da Foto!",
+                                                Toast.LENGTH_LONG
+                                            )
+                                        }
+                                        showToast(applicationContext,"${mensagem.message}")
+
+                                        val returnIntent: Intent = Intent()
+
+                                        setResult(Activity.RESULT_OK, returnIntent)
+
+                                        finish()
+
+                                    } else {
+                                        showToast(applicationContext,"Falha No Retorno Da Requisição!")
+                                        binding.btGravarNuvem20.setEnabled(true)
+                                        binding.btGravarLocal20.setEnabled(true)
+                                        binding.btCancelar20.setEnabled(true)
+                                    }
+
+                                } else {
+                                    binding.llProgress20.visibility = View.GONE
+                                    val gson = Gson()
+                                    val message = gson.fromJson(
+                                        response.errorBody()!!.charStream(),
+                                        HttpErrorMessage::class.java
+                                    )
+                                    showToast(applicationContext,
+                                        "${message.getMessage().toString()}",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    binding.btGravarNuvem20.setEnabled(true)
+                                    binding.btGravarLocal20.setEnabled(true)
+                                    binding.btCancelar20.setEnabled(true)
+                                }
+                            } else {
+                                binding.llProgress20.visibility = View.GONE
+                                showToast(applicationContext,"Não Foi Possivel Inserir A Foto Na Nuvem")
+                                binding.btGravarNuvem20.setEnabled(false)
+                                binding.btGravarLocal20.setEnabled(false)
+                                binding.btCancelar20.setEnabled(true)
+                            }
+                        }
+
+                        override fun onFailure(call: Call<RetornoUpload>, t: Throwable) {
+                            binding.llProgress20.visibility = View.GONE
+                            if (t.message.toString() == "timeout") {
+                                showToast(applicationContext,
+                                    "Excedeu O Tempo De Espera!\nCancele E Atualize A Tela Anterior",
+                                    Toast.LENGTH_LONG
+                                )
+                            } else {
+                                showToast(applicationContext,"${t.message.toString()}", Toast.LENGTH_LONG)
+                            }
+                            binding.btGravarNuvem20.setEnabled(true)
+                            binding.btGravarLocal20.setEnabled(true)
+                            binding.btCancelar20.setEnabled(true)
+                        }
+                    })
+
+            } catch (e: Exception){
+                binding.llProgress20.visibility = View.GONE
+                showToast(applicationContext,"${e.message.toString()}", Toast.LENGTH_LONG)
+            }
+
+
+        } catch (error:Exception){
+            showToast(applicationContext,"Falha Ao Preparar A Foto Para Transmissão!")
+        }
+    }
+
+    private fun uploadFoto_camera_v2(){
+        try {
+            //grava a foto na galeria\simionato
+
+            val idUuid = UUID.randomUUID()
+            val fileUuid = idUuid.toString()
+            var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
+                    "${Inventario.id_filial.toString().padStart(6,'0')}_" +
+                    "${Inventario.codigo.toString().padStart(6,'0')}_" +
+                    "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
+            val newImageUri = saveCompressedImageToGallery(this, imageUri, fileName)
+
+            if (newImageUri == null) {
+                showToast(applicationContext,"Falha Na Gravação Da Foto Na Galeria Simionato!")
+                return
+            }
+
+            //val file = getFileFromUri(applicationContext, newImageUri) ?: throw Exception("Arquivo não encontrado.")
+            /*
+            val file = File(newImageUri?.path!!) // Obtém o caminho completo
+            val filePath = file.parent ?: "" // Caminho da pasta onde o arquivo está
+            val fileNameOriginal = file.name // Nome original do arquivo
+            */
+
+            val filePath = "Pictures/Simionato"
+            val fileNameOriginal = fileName // já definido antes
+
+
+            //Prepara registro para api nuvem
+            var fotoNuvem = FotoModel()
+            fotoNuvem.id_empresa			= ParametroGlobal.Dados.empresa.id
+            fotoNuvem.id_local			    = ParametroGlobal.Dados.local.id
+            fotoNuvem.id_inventario		    = ParametroGlobal.Dados.Inventario.codigo
+            fotoNuvem.id_imobilizado		= id_imobilizado
+            fotoNuvem.id_pasta			    = filePath
+            fotoNuvem.id_file				= newImageUri.toString()
+            fotoNuvem.file_name			    = fileNameOriginal
+            fotoNuvem.file_name_original	= fileNameOriginal
+            fotoNuvem.id_usuario		 	= ParametroGlobal.Dados.usuario.id
+            fotoNuvem.data			 	    = getHoje()
+            fotoNuvem.destaque           	= if(binding.swDestaque20.isChecked) "S" else "N"
+            fotoNuvem.obs             	    = binding.txtInputObs.text.toString()
+            fotoNuvem.localizacao           = "N"
+            fotoNuvem.user_insert      	    = ParametroGlobal.Dados.usuario.id
+            fotoNuvem.user_update     	    = 0
+
+            lifecycleScope.launch {
+                enviarFotoFlow(fotoNuvem,newImageUri).collect { estado ->
+                    when (estado) {
+                        is EstadoUpload.Carregando -> {
+                            binding.llProgress20.visibility = View.VISIBLE
+                        }
+                        is EstadoUpload.Sucesso -> {
+                            binding.llProgress20.visibility = View.GONE
+
+                            showToast(applicationContext,"Foto enviada com sucesso!", Toast.LENGTH_SHORT)
+
+                            val returnIntent: Intent = Intent()
+
+                            setResult(Activity.RESULT_OK, returnIntent)
+
+                            finish()
+                        }
+                        is EstadoUpload.Falha -> {
+                            binding.llProgress20.visibility = View.GONE
+                            showToast(applicationContext,estado.mensagem, Toast.LENGTH_LONG)
+                        }
+                    }
+                }
+            }
+
+
+
+        } catch (e: Exception){
+                binding.llProgress20.visibility = View.GONE
+                showToast(applicationContext,"${e.message.toString()}", Toast.LENGTH_LONG)
+        }
+
+        return
+    }
+
+
+    private fun registroFotoUpload(){
+        try {
+            //grava a foto na galeria/simionato
+
+            var uriFile = if(origem == "GALERIA") {uri} else {imageUri}
+
+            val idUuid = UUID.randomUUID()
+            val fileUuid = idUuid.toString()
+            var fileName: String = "${Inventario.id_empresa.toString().padStart(2,'0')}_" +
+                    "${Inventario.id_filial.toString().padStart(6,'0')}_" +
+                    "${Inventario.codigo.toString().padStart(6,'0')}_" +
+                    "${id_imobilizado.toString().padStart(6,'0')}_${fileUuid}.jpg"
+
+
+            val newImageUri = saveCompressedImageToGallery(this, uriFile, fileName)
+
+            if (newImageUri == null) {
+                showToast(applicationContext,"Falha Na Gravação Da Foto Na Galeria!")
+                return
+            }
+
+            /*
+            val file = File(newImageUri?.path!!) // Obtém o caminho completo
+            val filePath = file.parent ?: "" // Caminho da pasta onde o arquivo está
+            val fileNameOriginal = file.name // Nome original do arquivo
+            */
+
+            val filePath = "Pictures/Simionato"
+            val fileNameOriginal = fileName // já definido antes
+
+
+            //Prepara registro para api nuvem
+            var fotoNuvem = FotoModel()
+            fotoNuvem.id_empresa			= ParametroGlobal.Dados.empresa.id
+            fotoNuvem.id_local			    = ParametroGlobal.Dados.local.id
+            fotoNuvem.id_inventario		    = ParametroGlobal.Dados.Inventario.codigo
+            fotoNuvem.id_imobilizado		= ParametroGlobal.Dados.empresa.id
+            fotoNuvem.id_pasta			    = filePath
+            fotoNuvem.id_file				= newImageUri.toString()
+            fotoNuvem.file_name			    = fileNameOriginal
+            fotoNuvem.file_name_original	= fileNameOriginal
+            fotoNuvem.id_usuario		 	= ParametroGlobal.Dados.usuario.id
+            fotoNuvem.data			 	    = getHoje()
+            fotoNuvem.destaque           	= if(binding.swDestaque20.isChecked) "S" else "N"
+            fotoNuvem.obs             	= binding.txtInputObs.text.toString()
+            fotoNuvem.localizacao       = "D"
+            fotoNuvem.user_insert      	= ParametroGlobal.Dados.usuario.id
+            fotoNuvem.user_update     	= 0
+
+            var foto = FotoUploadModel()
+            foto.idEmpresa			= ParametroGlobal.Dados.empresa.id
+            foto.idLocal			= ParametroGlobal.Dados.local.id
+            foto.idInventario		= ParametroGlobal.Dados.Inventario.codigo
+            foto.idImobilizado		= ParametroGlobal.Dados.empresa.id
+            foto.idPasta			= filePath
+            foto.idFile				= newImageUri.toString()
+            foto.fileName			= fileNameOriginal
+            foto.fileNameOriginal	= fileNameOriginal
+            foto.idUsuario		 	= ParametroGlobal.Dados.usuario.id
+            foto.data			 	= getHoje()
+            foto.destaque        	= if(binding.swDestaque20.isChecked) "S" else "N"
+            foto.obs             	= binding.txtInputObs.text.toString()
+            foto.localizacao        = "D"
+            foto.descricao          = descricao
+            foto.razao              =  ParametroGlobal.Dados.usuario.razao
+            foto.userInsert      	= ParametroGlobal.Dados.usuario.id
+            foto.userUpdate      	= 0
+
+            try {
+
+                val fotoService = InfraHelper.apiInventario.create( FotoService::class.java )
+
+                fotoService.InsertFoto(fotoNuvem)
+                    .enqueue(object :Callback<FotoModel>{
+                        override fun onResponse(
+                            call: Call<FotoModel>,
+                            response: Response<FotoModel>
+                        ) {
+                            binding.llProgress20.visibility = View.GONE
+
+                            if (response != null) {
+                                if (response.isSuccessful) {
+
+                                    var retorno = response.body()
+
+                                    if (retorno !== null) {
+
+
+                                        daoFoto.insertPhoto(foto)
+
+                                        val returnIntent = Intent()
+
+                                        setResult(Activity.RESULT_OK,returnIntent)
+
+                                        finish()
+
+
+                                    } else {
+                                        showToast(applicationContext,"Falha No Retorno Da Requisição!")
+
+                                        binding.btGravarNuvem20.setEnabled(true)
+                                        binding.btGravarLocal20.setEnabled(true)
+                                        binding.btCancelar20.setEnabled(true)
+                                    }
+
+                                }
+                                else {
+                                    binding.llProgress20.visibility = View.GONE
+                                    val gson = Gson()
+                                    val message = gson.fromJson(
+                                        response.errorBody()!!.charStream(),
+                                        HttpErrorMessage::class.java
+                                    )
+                                    showToast(applicationContext,"${message.getMessage().toString()}",Toast.LENGTH_SHORT)
+
+                                    binding.btGravarNuvem20.setEnabled(true)
+                                    binding.btGravarLocal20.setEnabled(true)
+                                    binding.btCancelar20.setEnabled(true)
+                                }
+                            }
+                            else {
+                                binding.llProgress20.visibility = View.GONE
+                                showToast(applicationContext,"Não Foi Possivel Inserir A Foto Na Nuvem")
+                                binding.btGravarNuvem20.setEnabled(true)
+                                binding.btGravarLocal20.setEnabled(true)
+                                binding.btCancelar20.setEnabled(true)
+                            }
+                        }
+
+                        override fun onFailure(call: Call<FotoModel>, t: Throwable) {
+                            binding.llProgress20.visibility = View.GONE
+                            showToast(applicationContext,"${t.message.toString()}", Toast.LENGTH_LONG)
+                        }
+                    })
+
+            } catch (e: Exception){
+                binding.llProgress20.visibility = View.GONE
+                showToast(applicationContext,"${e.message.toString()}", Toast.LENGTH_LONG)
+            }
+
+
+        }catch (error:Exception){
+            showToast(applicationContext,"Falha Ao Gravar Foto Localmente!")
+        }
+
+    }
+
+
+private fun enviarFotoFlow(foto: FotoModel,newUri : Uri): Flow<EstadoUpload> = flow {
+    emit(EstadoUpload.Carregando)
+
+    try {
+
+        val file = getFileFromUri(applicationContext, newUri) ?: throw Exception("Arquivo não encontrado.")
+
+
+        val filePart = MultipartBody.Part.createFormData(
+            "file", file.name,
+            RequestBody.create(MultipartBody.FORM, file)
+        )
+
+        val parts = mapOf(
+            "id_empresa"     to foto.id_empresa.toString(),
+            "id_local"       to foto.id_local.toString(),
+            "id_inventario"  to foto.id_inventario.toString(),
+            "id_imobilizado" to foto.id_imobilizado.toString(),
+            "id_pasta"       to foto.id_pasta,
+            "id_file"        to foto.id_file,
+            "file_name"       to foto.file_name_original,
+            "id_usuario"     to Dados.usuario.id.toString(),
+            "data"           to getHoje(),
+            "destaque"       to foto.destaque,
+            "obs"            to foto.obs,
+            "localizacao"    to "N"
+        ).mapValues { RequestBody.create(MultipartBody.FORM, it.value) }
+
+        val service = InfraHelper.apiInventario.create(FotoService::class.java)
+        val response = service.uploadfotov5_2_web(
+            parts["id_empresa"]!!, parts["id_local"]!!, parts["id_inventario"]!!,
+            parts["id_imobilizado"]!!, parts["id_pasta"]!!, parts["id_file"]!!,
+            parts["file_name"]!!, parts["id_usuario"]!!, parts["data"]!!,
+            parts["destaque"]!!, parts["obs"]!!, parts["localizacao"]!!, filePart
+        )
+
+        if (response.isSuccessful && response.body() != null) {
+            try {
+                try {
+                    file.delete()
+                } catch (e: Exception) {
+                    throw Exception("Foto Enviada Com Sucesso. Mas Continua Na Galeria. Sem Problemas!")
+                }
+                emit(EstadoUpload.Sucesso)
+            } catch (e: Exception) {
+                emit(EstadoUpload.Falha("Erro ao apagar a foto na galeria: ${response.code()}"))
+            }
+        } else {
+            logHttpError(response)
+            emit(EstadoUpload.Falha("Erro ao enviar foto: ${response.code()}"))
+        }
+
+    } catch (e: Exception) {
+        emit(EstadoUpload.Falha("Exceção: ${e.message}"))
+    }
+}.flowOn(Dispatchers.IO)
+
+   public fun logHttpError(response: Response<RetornoUpload>): HttpErrorMessage? {
+        try {
+            val gson = Gson()
+            val errorMsg = gson.fromJson(response.errorBody()?.charStream(), HttpErrorMessage::class.java)
+            return errorMsg
+        } catch (e: Exception) {
+            val gson = Gson()
+            val errorMsg = gson.fromJson(response.errorBody()?.charStream(), HttpErrorMessage::class.java)
+            return errorMsg
+        }
     }
 
 
