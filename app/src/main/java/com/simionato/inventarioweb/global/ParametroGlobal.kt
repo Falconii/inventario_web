@@ -271,6 +271,7 @@ class ParametroGlobal {
         object Carregando : EstadoUpload()
         object Sucesso : EstadoUpload()
         data class Falha(val mensagem: String) : EstadoUpload()
+        data class SucessoParcial(val mensagem:String):EstadoUpload()
     }
 
 }

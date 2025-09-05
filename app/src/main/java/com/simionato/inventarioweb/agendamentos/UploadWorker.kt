@@ -5,9 +5,15 @@ import android.net.Uri
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.google.gson.Gson
 import com.simionato.inventarioweb.dao.daoFotoUpload
 import com.simionato.inventarioweb.global.ParametroGlobal
+import com.simionato.inventarioweb.global.UploadStatusHelper
+import com.simionato.inventarioweb.global.apagarFotoGaleria
+import com.simionato.inventarioweb.global.getCurrentDateTime
+import com.simionato.inventarioweb.global.getFileFromUri
+import com.simionato.inventarioweb.global.getHoje
 import com.simionato.inventarioweb.infra.DatabaseHelper
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.FotoUploadModel
@@ -41,29 +47,55 @@ class UploadWorker(
                 "⏱️ Fotos pendentes: ${pendingPhotos.size} às ${getCurrentDateTime()}"
             )
 
-            if (pendingPhotos.isEmpty()) return Result.success()
+            if (pendingPhotos.isEmpty()) {
+                UploadStatusHelper.mostrarNotificacao(
+                    applicationContext,
+                    "Upload finalizado",
+                    "Nenhuma foto pendente para envio."
+                )
+                return Result.success()
+            }
+
+            var houveErro = false
+
+            var index = 1
 
             for (foto in pendingPhotos) {
                 try {
+                    setProgress(workDataOf("progresso_upload" to "Enviando Foto ${index}/${pendingPhotos.size-1}"))
                     enviarFotoSuspend(foto)
                 } catch (e: Exception) {
-                    Log.e("UploadWorker", "⚠️ Erro ao enviar foto ${foto.idFile}: ${e.message}")
+                    houveErro = true
                     atualizarStatusErro(foto)
                 }
+
+            }
+
+            if (houveErro) {
+                UploadStatusHelper.mostrarNotificacao(
+                    applicationContext,
+                    "Erro no upload",
+                    "Algumas fotos não foram enviadas."
+                )
+            } else {
+                UploadStatusHelper.mostrarNotificacao(
+                    applicationContext,
+                    "Upload concluído",
+                    "Todas as fotos foram enviadas com sucesso."
+                )
             }
 
             Result.success()
 
+
         } catch (e: Exception) {
-            Log.e("UploadWorker", "💥 Erro geral no Worker: ${e.message}")
+            UploadStatusHelper.mostrarNotificacao(
+                applicationContext,
+                "Falha crítica",
+                "Ocorreu um erro inesperado no envio."
+            )
             Result.failure()
         }
-    }
-
-    fun getCurrentDateTime(): String {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-        val currentTime = Calendar.getInstance().time
-        return dateFormat.format(currentTime)
     }
 
     private suspend fun enviarFotoSuspend(foto: FotoUploadModel) {
@@ -111,51 +143,10 @@ class UploadWorker(
 
         if (response.isSuccessful && response.body() != null) {
             daoFoto.deletePhoto(foto.id)
-            apagarFoto(applicationContext, fotoUri)
+            apagarFotoGaleria(applicationContext, fotoUri)
         } else {
             logHttpError(response)
             atualizarStatusErro(foto)
-        }
-    }
-
-    fun getFileFromUri(context: Context, uri: Uri): File? {
-        val filePathColumn = arrayOf(android.provider.MediaStore.Images.Media.DATA)
-        val cursor = context.contentResolver.query(uri, filePathColumn, null, null, null)
-        cursor?.moveToFirst()
-        val columnIndex = cursor?.getColumnIndex(filePathColumn[0])
-        val filePath = columnIndex?.let { cursor.getString(it) }
-        cursor?.close()
-        return filePath?.let { File(it) }
-    }
-
-    fun getHoje(): String {
-
-        try {
-
-            val date = Date()
-
-            val format = android.icu.text.SimpleDateFormat("dd/MM/yyyy")
-
-            val data = format.format(date)
-
-            return data
-
-        } catch (e: Exception) {
-            return ""
-        }
-
-    }
-
-    fun apagarFoto(context: Context, fotoUri: Uri): Boolean {
-        return try {
-            val deletados = context.contentResolver.delete(fotoUri, null, null)
-            deletados > 0
-        } catch (e: SecurityException) {
-            e.printStackTrace()
-            false
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
         }
     }
 

@@ -21,6 +21,10 @@ class FotoViewModel(
                 is EstadoUpload.Sucesso -> {
                     // Atualiza UI, dispara toast, etc.
                 }
+                is EstadoUpload.SucessoParcial -> {
+                    Log.e("Upload", resultado.mensagem)
+                    // Exibe mensagem de erro, mostra dialog, etc.
+                }
                 is EstadoUpload.Falha -> {
                     Log.e("Upload", resultado.mensagem)
                     // Exibe mensagem de erro, mostra dialog, etc.

@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white">
+
     <ImageView
         android:id="@+id/foto_item_load_image"
         android:layout_width="130dp"
@@ -21,12 +22,12 @@
         android:id="@+id/foto_item_load_upload"
         android:layout_width="35dp"
         android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:background="@color/white"
-        android:src="@drawable/celular_nuvem_icon"
-        android:layout_marginRight="16dp"
+        android:src="@drawable/icons8_upload_to_cloud_24"
         app:layout_constraintEnd_toStartOf="@+id/foto_item_load_destaque"
-        app:layout_constraintHorizontal_bias="0.66"
-        app:layout_constraintTop_toTopOf="@+id/foto_item_load_destaque" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageButton
         android:id="@+id/foto_item_load_destaque"

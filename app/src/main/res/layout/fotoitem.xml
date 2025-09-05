@@ -23,7 +23,7 @@
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:background="@color/white"
-        android:src="@drawable/celular_nuvem_icon"
+        android:src="@drawable/icons8_gallery_24"
         app:layout_constraintBottom_toTopOf="@+id/foto_item_txt_descricao"
         app:layout_constraintEnd_toStartOf="@+id/foto_item_destaque"
         app:layout_constraintHorizontal_bias="0.66"
