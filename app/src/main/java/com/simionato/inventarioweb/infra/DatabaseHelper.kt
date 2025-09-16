@@ -3,19 +3,63 @@ package com.simionato.inventarioweb.infra
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.net.Uri
+import android.util.Log
+import androidx.documentfile.provider.DocumentFile
+import com.simionato.inventarioweb.global.SafManager
+import java.io.File
+import java.io.FileOutputStream
 
-class DatabaseHelper(context: Context) : SQLiteOpenHelper(
-    context,
-    "${context.filesDir}/simionato.db",
-    null,
-    DATABASE_VERSION
-) {
+class DatabaseHelper private constructor(context: Context, dbFile: File) :
+    SQLiteOpenHelper(context, dbFile.absolutePath, null, DATABASE_VERSION) {
+
     companion object {
-        private const val DATABASE_VERSION = 11// Atualizamos a versão do banco
+        private const val DATABASE_VERSION = 11
+        private const val DATABASE_NAME = "simionato.db"
+
+        @Volatile
+        private var instance: DatabaseHelper? = null
+
+        fun getInstance(context: Context): DatabaseHelper? {
+            if (instance == null) {
+                synchronized(this) {
+                    val dbFile = getDatabaseFileFromSaf(context)
+                    if (dbFile != null) {
+                        instance = DatabaseHelper(context, dbFile)
+                    } else {
+                        Log.e("DatabaseHelper", "Não foi possível localizar a pasta simionato via SAF.")
+                    }
+                }
+            }
+            return instance
+        }
+
+        private fun getDatabaseFileFromSaf(context: Context): File? {
+            val simionatoFolder = SafManager.getPastaSimionato(context) ?: return null
+            val dbDocument = simionatoFolder.findFile(DATABASE_NAME)
+                ?: simionatoFolder.createFile("application/octet-stream", DATABASE_NAME)
+
+            val uri = dbDocument?.uri ?: return null
+
+            // Copiar o conteúdo para um arquivo temporário local
+            val tempFile = File(context.cacheDir, DATABASE_NAME)
+            try {
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    FileOutputStream(tempFile).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("DatabaseHelper", "Erro ao copiar banco do SAF: ${e.message}")
+                return null
+            }
+
+            return tempFile
+        }
+
+        // Constantes de tabelas e colunas
         const val TABLE_PHOTOS = "photos"
         const val TABLE_LANCAMENTOS = "lancamentos"
-
-        // Colunas da tabela "photos"
         const val COLUMN_ID = "id"
         const val COLUMN_ID_EMPRESA = "id_empresa"
         const val COLUMN_ID_LOCAL = "id_local"
@@ -36,62 +80,42 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
         const val COLUMN_DATA_UPLOAD = "data_upload"
         const val COLUMN_USER_INSERT = "user_insert"
         const val COLUMN_USER_UPDATE = "user_update"
-
-        // Colunas da tabela "lançamentos"
-        const val COLUMN_ID_EMPRESA_LANC = "id_empresa"
-        const val COLUMN_ID_LOCAL_LANC = "id_local"
-        const val COLUMN_ID_INVENTARIO_LANC = "id_inventario"
-        const val COLUMN_ID_FOTO_LANC = "id_foto"
-        const val COLUMN_ID_EXEC = "id_exec"
-        const val COLUMN_DESCRICAO_ATIVO = "descricao_ativo"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
+        // Criação das tabelas
         val createPhotosTable = """
-            CREATE TABLE $TABLE_PHOTOS (
+            CREATE TABLE IF NOT EXISTS $TABLE_PHOTOS (
                 $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                $COLUMN_ID_EMPRESA INTEGER NOT NULL,
-                $COLUMN_ID_LOCAL INTEGER NOT NULL,
-                $COLUMN_ID_INVENTARIO INTEGER NOT NULL,
-                $COLUMN_ID_IMOBILIZADO INTEGER NOT NULL,
-                $COLUMN_ID_PASTA VARCHAR(255) NOT NULL,
-                $COLUMN_ID_FILE VARCHAR(255) NOT NULL,
-                $COLUMN_FILE_NAME VARCHAR(255) NOT NULL,
-                $COLUMN_FILE_NAME_ORIGINAL VARCHAR(255) NOT NULL,
-                $COLUMN_ID_USUARIO INTEGER NOT NULL,
-                $COLUMN_DATA DATE ,
-                $COLUMN_DESTAQUE CHAR(1) NOT NULL,
-                $COLUMN_OBS VARCHAR(255),
-                $COLUMN_LOCALIZACAO VAR(1) DEFAULT "D" NOT NULL,
-                $COLUMN_DESCRICAO VARCHAR(255),
-                $COLUMN_RAZAO     VARCHAR(255),
-                $COLUMN_STATUS_UPLOAD  CHAR(1),
-                $COLUMN_DATA_UPLOAD  DATA,
-                $COLUMN_USER_INSERT INTEGER NOT NULL,
-                $COLUMN_USER_UPDATE INTEGER
+                $COLUMN_ID_EMPRESA TEXT,
+                $COLUMN_ID_LOCAL TEXT,
+                $COLUMN_ID_INVENTARIO TEXT,
+                $COLUMN_ID_IMOBILIZADO TEXT,
+                $COLUMN_ID_PASTA TEXT,
+                $COLUMN_ID_FILE TEXT,
+                $COLUMN_FILE_NAME TEXT,
+                $COLUMN_FILE_NAME_ORIGINAL TEXT,
+                $COLUMN_ID_USUARIO TEXT,
+                $COLUMN_DATA TEXT,
+                $COLUMN_DESTAQUE INTEGER,
+                $COLUMN_OBS TEXT,
+                $COLUMN_LOCALIZACAO TEXT,
+                $COLUMN_DESCRICAO TEXT,
+                $COLUMN_RAZAO TEXT,
+                $COLUMN_STATUS_UPLOAD INTEGER,
+                $COLUMN_DATA_UPLOAD TEXT,
+                $COLUMN_USER_INSERT TEXT,
+                $COLUMN_USER_UPDATE TEXT
             )
-        """
-
-        val createLancamentosTable = """
-            CREATE TABLE $TABLE_LANCAMENTOS (
-                $COLUMN_ID_EMPRESA_LANC INTEGER NOT NULL,
-                $COLUMN_ID_LOCAL_LANC INTEGER NOT NULL,
-                $COLUMN_ID_INVENTARIO_LANC INTEGER NOT NULL,
-                $COLUMN_ID_FOTO_LANC INTEGER NOT NULL,
-                $COLUMN_ID_EXEC INTEGER NOT NULL,
-                $COLUMN_DESCRICAO_ATIVO TEXT NOT NULL,
-                PRIMARY KEY ($COLUMN_ID_EMPRESA_LANC, $COLUMN_ID_LOCAL_LANC, $COLUMN_ID_INVENTARIO_LANC, $COLUMN_ID_FOTO_LANC)
-            )
-        """
+        """.trimIndent()
 
         db.execSQL(createPhotosTable)
-        db.execSQL(createLancamentosTable)
+
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion < 11) {
             db.execSQL("DROP TABLE IF EXISTS $TABLE_PHOTOS")
-            db.execSQL("DROP TABLE IF EXISTS $TABLE_LANCAMENTOS")
             onCreate(db) // Recria as tabelas para aplicar as mudanças
         }
     }

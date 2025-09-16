@@ -43,17 +43,13 @@ class ShowFotosActivity : AppCompatActivity() {
     private val adapter = FotoAdapter(){foto,idAcao ->
 
         if (idAcao == CadastrosAcoes.Consulta) {
-            chamaFotoWeb(foto)
+            chamaFotosAtivos(foto)
+        }
+        if (idAcao == CadastrosAcoes.ConsultaByGlide){
+            chamaFotosAtivos(foto)
         }
         if (idAcao == CadastrosAcoes.Exclusao) {
             showDialogDelete(foto)
-            /*
-            if (foto.id_pasta == "1eQuwNcfTmpYUWUIvlGBouodico8WrjoD") {
-                showDialogDelete(foto)
-            } else {
-                showToast("Não Posso Apagar ESta Foto!")
-            }
-             */
         }
         if (idAcao == CadastrosAcoes.Edicao) {
             chamaFotoEdicao(foto)
@@ -304,6 +300,12 @@ class ShowFotosActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun chamaFotosAtivos(foto:FotoModel){
+        val intent = Intent(this,FotosAtivosActivity::class.java)
+        intent.putExtra("imobilizado",foto.id_imobilizado)
+        startActivity(intent)
+    }
+
 
     private fun chamaFotoEdicao(foto:FotoModel){
 
@@ -351,19 +353,4 @@ class ShowFotosActivity : AppCompatActivity() {
         Toast.makeText(this, mensagem, duracao).show()
     }
 
-    fun excluirImagemDaGaleria(context: Context, uri: Uri): Boolean {
-        return try {
-            val rowsDeleted = context.contentResolver.delete(uri, null, null)
-            if (rowsDeleted > 0) {
-                Log.d("Galeria", "Imagem excluída com sucesso.")
-                true
-            } else {
-                Log.e("Galeria", "Nenhum arquivo foi excluído.")
-                false
-            }
-        } catch (e: Exception) {
-            Log.e("Galeria", "Erro ao excluir imagem: ${e.message}")
-            false
-        }
-    }
 }

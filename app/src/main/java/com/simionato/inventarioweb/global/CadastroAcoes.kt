@@ -12,6 +12,7 @@ package com.simionato.inventarioweb.global
         Sub_Conta(8),
         Visualizar_Estrtura(9),
         EdicaoMultipla(10),
+        ConsultaByGlide(idAcao = 11),
         Foto(20),
         ShowNfe(21),
         Lancamento(21),

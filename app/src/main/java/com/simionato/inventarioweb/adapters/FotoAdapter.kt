@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.ortiz.touchview.TouchImageView
 import com.simionato.inventarioweb.R
 import com.simionato.inventarioweb.global.CadastrosAcoes
 import com.simionato.inventarioweb.models.FotoModel
@@ -30,7 +31,7 @@ class FotoAdapter(
         val  btShow:ImageButton
         val  btDelete:ImageButton
         val  btUpdate:ImageButton
-        val  image:ImageView
+        val  image: TouchImageView
         val  textDescricao : TextView
         val  textObservacao : TextView
         val  textUsuario: TextView
@@ -77,7 +78,7 @@ class FotoAdapter(
             btDestaque.visibility = if (foto.destaque == "S")  View.VISIBLE else View.GONE
 
             image.setOnClickListener{
-                clique(foto,CadastrosAcoes.Consulta)
+                clique(foto,CadastrosAcoes.ConsultaByGlide)
             }
 
             btShow.setOnClickListener {

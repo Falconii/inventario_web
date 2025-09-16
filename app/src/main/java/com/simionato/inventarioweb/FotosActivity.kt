@@ -63,9 +63,7 @@ class FotosActivity : AppCompatActivity() {
         ActivityFotosBinding.inflate(layoutInflater)
     }
 
-    private val daoFoto by lazy {
-        daoFotoUpload(DatabaseHelper(applicationContext));
-    }
+    private lateinit var daoFoto: daoFotoUpload
 
     private val isExternalStorageReadOnly: Boolean get() {
         val extStorageState = Environment.getExternalStorageState()
@@ -144,7 +142,7 @@ class FotosActivity : AppCompatActivity() {
 
     private var origem:String = ""
 
-    private var save_local:Boolean = false;
+    private var save_local:Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -178,6 +176,12 @@ class FotosActivity : AppCompatActivity() {
         }
 
         binding.llProgress20.visibility = View.GONE
+        val dbHelper = DatabaseHelper.getInstance(this)
+        if (dbHelper == null) {
+            showToast(applicationContext, "Banco de dados não disponível");
+            return
+        }
+        daoFoto = daoFotoUpload(dbHelper)
         showFormulario(false)
         iniciar()
     }
@@ -219,7 +223,7 @@ class FotosActivity : AppCompatActivity() {
             }
             .setPositiveButton("Sim"){_,_ ->
                 val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                    android.net.Uri.fromParts("package",packageName, null)
+                    Uri.fromParts("package",packageName, null)
                 )
                 intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
@@ -571,7 +575,7 @@ class FotosActivity : AppCompatActivity() {
             fotoNuvem.id_empresa			= ParametroGlobal.Dados.empresa.id
             fotoNuvem.id_local			    = ParametroGlobal.Dados.local.id
             fotoNuvem.id_inventario		    = ParametroGlobal.Dados.Inventario.codigo
-            fotoNuvem.id_imobilizado		= ParametroGlobal.Dados.empresa.id
+            fotoNuvem.id_imobilizado		= this.id_imobilizado
             fotoNuvem.id_pasta			    = filePath
             fotoNuvem.id_file				= newImageUri.toString()
             fotoNuvem.file_name			    = fileNameOriginal
@@ -588,7 +592,7 @@ class FotosActivity : AppCompatActivity() {
             foto.idEmpresa			= ParametroGlobal.Dados.empresa.id
             foto.idLocal			= ParametroGlobal.Dados.local.id
             foto.idInventario		= ParametroGlobal.Dados.Inventario.codigo
-            foto.idImobilizado		= ParametroGlobal.Dados.empresa.id
+            foto.idImobilizado		= this.id_imobilizado
             foto.idPasta			= filePath
             foto.idFile				= newImageUri.toString()
             foto.fileName			= fileNameOriginal
@@ -623,7 +627,7 @@ class FotosActivity : AppCompatActivity() {
                                     if (retorno !== null) {
 
 
-                                        daoFoto.insertPhoto(foto)
+                                        daoFoto.insertFoto(foto)
 
                                         val returnIntent = Intent()
 

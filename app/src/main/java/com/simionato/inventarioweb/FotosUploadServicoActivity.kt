@@ -1,11 +1,16 @@
 package com.simionato.inventarioweb
-
+import android.Manifest
+import android.os.Build
+import androidx.core.app.ActivityCompat
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -56,20 +61,32 @@ import com.simionato.inventarioweb.global.apagarFotoGaleria
 import com.simionato.inventarioweb.global.getFileFromUri
 import com.simionato.inventarioweb.global.showToast
 import com.simionato.inventarioweb.infra.DatabaseHelper
+import java.util.UUID
+import android.provider.Settings
+import androidx.activity.result.contract.ActivityResultContracts
+import com.simionato.inventarioweb.databinding.ActivityFotosBinding
+import com.simionato.inventarioweb.global.SafManager
+
 
 class FotosUploadServicoActivity : AppCompatActivity() {
+
     private val binding by lazy {
         ActivityFotosUploadServicoBinding.inflate(layoutInflater)
     }
 
+
     private val daoFoto by lazy {
-        daoFotoUpload(DatabaseHelper(applicationContext));
+        daoFotoUpload(dbHelper)
     }
 
     private var fotos: List<FotoUploadModel> = listOf();
 
-
     private lateinit var  dialogDelete: AlertDialog
+
+    private val safLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            SafManager.tratarResultado(this, result.resultCode, result.data)
+        }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,36 +96,37 @@ class FotosUploadServicoActivity : AppCompatActivity() {
             finish()
             return
         }
-        try {
-            val bundle = intent.extras
-            if (bundle != null) {
-                //id_imobilizado = bundle.getInt("id_imobilizado", 0)
-                //descricao = bundle.getString("descricao")!!
-            } else {
-                //showToast("Parâmetro Foto Incorreto!!")
-                //finish()
-            }
-        } catch (error: Exception) {
-            showToast(applicationContext,"Erro Nos Parametros: ${error.message}")
-            finish()
-        }
         setContentView(binding.root)
 
-        //binding.llProgress20.visibility = View.GONE
+        if (!SafManager.hasPermissao(this)) {
+            SafManager.solicitarAcesso(safLauncher)
+        } else {
+            val pasta = SafManager.getPastaSimionato(this)
+
+            val dbHelper = DatabaseHelper.getInstance(this)
+            if (dbHelper == null) {
+                Toast.makeText(this, "Banco de dados não disponível", Toast.LENGTH_LONG).show()
+                return
+            }
+
+            // Instancia o DAO
+
+
+
+        }
 
         iniciar()
     }
 
     fun iniciar() {
 
+
+        getFotos()
+
+
         val id = UploadStatusHelper.recuperarIdWorker(this)
         if (id != null) {
-            WorkManager.getInstance(this)
-                .getWorkInfoByIdLiveData(id)
-                .observe(this) { workInfo ->
-                    var mensagem  = UploadStatusHelper.interpretarStatus(workInfo)
-                    showToast(applicationContext,mensagem)
-                }
+            workerStarter(id)
         }
 
         val nome = UploadStatusHelper.recuperarUltimaFoto(this)
@@ -117,7 +135,6 @@ class FotosUploadServicoActivity : AppCompatActivity() {
         }
         binding.llProgress77.visibility = View.GONE
         inicializarTooBar()
-        getFotos()
     }
 
 
@@ -140,7 +157,11 @@ class FotosUploadServicoActivity : AppCompatActivity() {
 
                 R.id.menu_upload_srv_upload -> {
 
-                    workerStarter()
+                    if (this.fotos.size == 0){
+                       showToast(applicationContext,"Nehuma Foto Para Enviar!")
+                    } else {
+                        workerStarter(null)
+                    }
 
                     return@setOnMenuItemClickListener true
                 }
@@ -157,20 +178,26 @@ class FotosUploadServicoActivity : AppCompatActivity() {
         try {
             binding.llProgress77.visibility = View.VISIBLE
             this.fotos = daoFoto.getPhotosAll()
+            ativarAdapter()
             binding.llProgress77.visibility = View.GONE
-            val adapter = FotoUploadAdapter(fotos
-            ) { foto, idAcao ->
+        } catch (e: Exception) {
+            binding.llProgress77.visibility = View.GONE
+            showToast(applicationContext,"${e.message.toString()}", Toast.LENGTH_LONG)
+        }
+    }
 
-                if (idAcao == CadastrosAcoes.Consulta) {
-                    //chamaFotoWeb(foto)
-                }
-                if (idAcao == CadastrosAcoes.Exclusao) {
-                    showDialogDelete(foto)
-                }
-                if (idAcao == CadastrosAcoes.Edicao) {
-                    //chamaFotoEdicao(foto)
-                }
-                if (idAcao == CadastrosAcoes.UpLoadFoto) {
+    fun ativarAdapter(){
+
+        val adapter = FotoUploadAdapter(this.fotos
+        ) { foto, idAcao ->
+
+            if (idAcao == CadastrosAcoes.Consulta) {
+                chamaFotosLocaisAtivos(foto)
+            }
+            if (idAcao == CadastrosAcoes.Exclusao) {
+                showDialogDelete(foto)
+            }
+            if (idAcao == CadastrosAcoes.UpLoadFoto) {
                 lifecycleScope.launch {
                     enviarFotoFlow(foto).collect { estado ->
                         when (estado) {
@@ -195,23 +222,18 @@ class FotosUploadServicoActivity : AppCompatActivity() {
                     }
                 }
             }
-            }
-            binding.rvLista77.adapter = adapter
-            binding.rvLista77.layoutManager =
-                LinearLayoutManager(binding.rvLista77.context)
-            binding.rvLista77.addItemDecoration(
-                DividerItemDecoration(
-                    binding.rvLista77.context,
-                    RecyclerView.VERTICAL
-                )
-            )
-
-        } catch (e: Exception) {
-            binding.llProgress77.visibility = View.GONE
-            showToast(applicationContext,"${e.message.toString()}", Toast.LENGTH_LONG)
         }
-    }
+        binding.rvLista77.adapter = adapter
+        binding.rvLista77.layoutManager =
+            LinearLayoutManager(binding.rvLista77.context)
+        binding.rvLista77.addItemDecoration(
+            DividerItemDecoration(
+                binding.rvLista77.context,
+                RecyclerView.VERTICAL
+            )
+        )
 
+    }
 
 
     private fun showDialogDelete(foto: FotoUploadModel){
@@ -251,7 +273,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
 
                             if (retorno !== null) {
 
-                                daoFoto.deletePhoto(foto.id);
+                                daoFoto.deleteFoto(foto.id);
 
                                 getFotos()
 
@@ -271,7 +293,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
                             )
                             if (response.code() == 409){
                                 showToast(applicationContext,"Não Encontrado Registro Temporário Da Foto. Foto Será Agada Do Celular!")
-                                daoFoto.deletePhoto(foto.id)
+                                daoFoto.deleteFoto(foto.id)
                                 getFotos()
                             } else {
                                 showToast(applicationContext,"${message.getMessage().toString()}", Toast.LENGTH_SHORT)
@@ -302,7 +324,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
     private fun deleteFotoLocal(foto:FotoUploadModel){
         try {
             binding.llProgress77.visibility = View.VISIBLE
-            daoFoto.deletePhoto(foto.id);
+            daoFoto.deleteFoto(foto.id);
             getFotos()
             binding.llProgress77.visibility = View.GONE
         }catch (e: Exception){
@@ -315,7 +337,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
 
     fun atualizarStatusErro(foto: FotoUploadModel) {
         foto.status_upload = "2"
-        daoFoto.updatePhoto(foto)
+        daoFoto.updateFoto(foto)
     }
 
     fun logHttpError(response: Response<RetornoUpload>) {
@@ -367,7 +389,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
             if (response.isSuccessful && response.body() != null) {
                 var mensagem_error = "";
                 try{
-                    daoFoto.deletePhoto(foto.id)
+                    daoFoto.deleteFoto(foto.id)
                 } catch (e:Exception){
                     mensagem_error = "Foto Enviada Com Sucesso. Mas Continua No Banco. Isso Não Atrapalha Operacionalmente\n"
                 }
@@ -392,8 +414,9 @@ class FotosUploadServicoActivity : AppCompatActivity() {
         }
     }.flowOn(Dispatchers.IO)
 
-    fun workerStarter()
-        {
+    fun workerStarter(id: UUID?) {
+        if (id == null) {
+            // 🔹 Cria e enfileira um novo Worker
             val oneTimeRequest = OneTimeWorkRequestBuilder<UploadWorker>()
                 .setConstraints(
                     Constraints.Builder()
@@ -402,57 +425,77 @@ class FotosUploadServicoActivity : AppCompatActivity() {
                 )
                 .addTag("uploadFotos")
                 .build()
-            // Enfileira o Worker
+
             WorkManager.getInstance(applicationContext).enqueue(oneTimeRequest)
 
             UploadStatusHelper.salvarIdWorker(applicationContext, oneTimeRequest.id)
 
-            // Observa o status do Worker
-            WorkManager.getInstance(applicationContext)
-                .getWorkInfoByIdLiveData(oneTimeRequest.id)
-                .observe(this) { workInfo ->
-                    val nomeFoto = workInfo!!.progress.getString("nomeFotoAtual")
-                    if (!nomeFoto.isNullOrEmpty()) {
-                        binding.textViewProgress77.setText("Enviando: $nomeFoto")
-                    }
-
-                    if (workInfo != null) {
-                        when (workInfo.state) {
-                            WorkInfo.State.ENQUEUED -> {
-                                binding.rvLista77.visibility = View.VISIBLE
-                                binding.llProgress77.visibility = View.VISIBLE
-                                Log.d("Activity", "📦 Upload agendado")
-                            }
-
-                            WorkInfo.State.RUNNING -> {
-                                binding.rvLista77.visibility = View.VISIBLE
-                                binding.llProgress77.visibility = View.VISIBLE
-                            }
-
-                            WorkInfo.State.SUCCEEDED -> {
-                                binding.rvLista77.visibility = View.GONE
-                                binding.llProgress77.visibility = View.GONE
-                                Toast.makeText(this, "Upload finalizado!", Toast.LENGTH_SHORT)
-                                    .show()
-                                getFotos()
-                            }
-
-                            WorkInfo.State.FAILED -> {
-                                binding.rvLista77.visibility = View.GONE
-                                binding.llProgress77.visibility = View.GONE
-                                Toast.makeText(this, "Erro ao enviar fotos", Toast.LENGTH_LONG)
-                                    .show()
-                            }
-
-                            WorkInfo.State.CANCELLED -> {
-                                binding.rvLista77.visibility = View.GONE
-                                binding.llProgress77.visibility = View.GONE
-                                showToast(applicationContext, "⚠️ Upload cancelado")
-                            }
-
-                            else -> {}
-                        }
-                    }
-                }
+            observarWorker(oneTimeRequest.id)
+        } else {
+            observarWorker(id)
         }
+    }
+
+    private fun observarWorker(id: UUID) {
+        WorkManager.getInstance(applicationContext)
+            .getWorkInfoByIdLiveData(id)
+            .observe(this) { workInfo ->
+                val progress = workInfo?.progress?.getString("progresso_upload")
+                if (!progress.isNullOrEmpty()) {
+                    binding.textViewProgress77.text = "Enviando: $progress"
+                }
+
+                //val mensagem = UploadStatusHelper.interpretarStatus(workInfo)
+                //showToast(applicationContext, mensagem)
+
+                when (workInfo?.state) {
+                    WorkInfo.State.ENQUEUED,
+                    WorkInfo.State.RUNNING -> {
+                        binding.rvLista77.visibility = View.GONE
+                        binding.llProgress77.visibility = View.VISIBLE
+                    }
+
+                    WorkInfo.State.SUCCEEDED -> {
+                        binding.rvLista77.visibility = View.VISIBLE
+                        binding.llProgress77.visibility = View.GONE
+                        Toast.makeText(this, "Upload finalizado!", Toast.LENGTH_SHORT).show()
+                        UploadStatusHelper.limparDadosUpload(applicationContext)
+                        getFotos()
+                    }
+
+                    WorkInfo.State.FAILED -> {
+                        binding.rvLista77.visibility = View.VISIBLE
+                        binding.llProgress77.visibility = View.GONE
+                        UploadStatusHelper.limparDadosUpload(applicationContext)
+                        Toast.makeText(this, "Erro ao enviar fotos", Toast.LENGTH_LONG).show()
+                    }
+
+                    WorkInfo.State.CANCELLED -> {
+                        binding.rvLista77.visibility = View.GONE
+                        binding.llProgress77.visibility = View.GONE
+                        UploadStatusHelper.limparDadosUpload(applicationContext)
+                        showToast(applicationContext, "⚠️ Upload cancelado")
+                    }
+
+                    else -> {}
+                }
+            }
+    }
+
+    fun chamaFotosLocaisAtivos(foto:FotoUploadModel){
+        val intent = Intent(this,FotosLocaisActivity::class.java)
+        intent.putExtra("imobilizado",foto.idImobilizado)
+        startActivity(intent)
+    }
+
+
+
+    private fun criarPastaSimionato() {
+        val pasta = File(Environment.getExternalStorageDirectory(), "simionato")
+        if (!pasta.exists()) {
+            pasta.mkdirs()
+        }
+    }
+
+
 }

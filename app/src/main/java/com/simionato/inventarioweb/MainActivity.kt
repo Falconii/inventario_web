@@ -1,5 +1,4 @@
 package com.simionato.inventarioweb
-
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -53,6 +52,15 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
+import android.Manifest
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.Settings
+import androidx.core.app.ActivityCompat
+import com.simionato.inventarioweb.infra.DatabaseHelper
+import java.io.File
+
 //val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "INVENTARIO_PREFERS")
 //private val id_empresa_key = intPreferencesKey("id_empresa")
 //private val id_usuario_key = intPreferencesKey("id_usuario")
@@ -63,7 +71,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //ativarServicoUploadFotos()
         setContentView(binding.root)
         inicializarTooBar()
         inflateTela()
@@ -171,6 +178,7 @@ class MainActivity : AppCompatActivity() {
                 Inventario = InventarioModel()
                 inflateTela()
             }
+
         }
 
     private fun chamaParametro(){
@@ -365,6 +373,8 @@ class MainActivity : AppCompatActivity() {
 
             Log.i("SRV", "Serviço imediato + recorrente ativado!")
     }
+
+
 }
 
 

@@ -1,6 +1,8 @@
 package com.simionato.inventarioweb.global
 
 import android.Manifest
+import android.os.Environment
+import android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
 import android.text.Html
 import android.text.Spanned
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.Inventario
@@ -9,9 +11,11 @@ import com.simionato.inventarioweb.models.InventarioModel
 import com.simionato.inventarioweb.models.LocalModel
 import com.simionato.inventarioweb.models.UsuarioModel
 import com.simionato.inventarioweb.parametros.ParametroImobilizadoInventario01
+import java.io.File
 import java.text.Normalizer
 import java.util.Date
 import java.util.regex.Pattern
+import android.os.Build
 
 class ParametroGlobal {
     class Dados {
@@ -125,6 +129,7 @@ class ParametroGlobal {
         companion object{
             val PERMISSAO_GALERIA  = Manifest.permission.READ_MEDIA_IMAGES
             val PERMISSAO_CAMERA   = Manifest.permission.CAMERA
+            var PERMISSAO_FOLDER   = ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
         }
     }
 
@@ -160,6 +165,14 @@ class ParametroGlobal {
         companion object {
             public fun getVersao(value:String):String{
                 return "Versão 28 10 A"
+            }
+        }
+    }
+
+    class CaminhoBanco{
+        companion object {
+            public fun getCaminhoDB():String{
+                return File(Environment.getExternalStorageDirectory(), "simionato/simionato.db").absolutePath
             }
         }
     }
@@ -274,4 +287,30 @@ class ParametroGlobal {
         data class SucessoParcial(val mensagem:String):EstadoUpload()
     }
 
+    enum class CodigoErro(val codigo: Int, val descricao: String) {
+        REG_TEMP(1001, "Não Existe Registro Temporário De Foto Do Dispositivo"),
+        ERRO_DESCONHECIDO(9999, "Erro desconhecido")
+    }
+
+    class UpLoadExcessao(
+        val codigoErro: CodigoErro
+    ) : Exception(codigoErro.descricao) {
+
+        override fun toString(): String {
+            return "Erro ${codigoErro.codigo}: ${codigoErro.descricao}"
+        }
+    }
+
+    class PermissaoFolderSimionato() {
+        companion object {
+            fun hasManageAllFilesPermission(): Boolean {
+                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    Environment.isExternalStorageManager()
+                } else {
+                    // Em versões anteriores, essa permissão não existe
+                    true
+                }
+            }
+        }
+    }
 }

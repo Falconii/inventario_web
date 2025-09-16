@@ -46,11 +46,11 @@ class FotoRepository(
         )
 
         return if (response.isSuccessful && response.body() != null) {
-            dao.deletePhoto(foto.id)
+            dao.deleteFoto(foto.id)
             EstadoUpload.Sucesso
         } else {
             foto.status_upload = "2"
-            dao.updatePhoto(foto)
+            dao.updateFoto(foto)
             EstadoUpload.Falha("Erro no upload: ${response.code()}")
 
         }

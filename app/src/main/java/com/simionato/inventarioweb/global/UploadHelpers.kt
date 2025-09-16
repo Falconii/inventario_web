@@ -68,4 +68,11 @@ object UploadStatusHelper {
             else -> "ℹ️ Status desconhecido"
         }
     }
+
+    fun limparDadosUpload(context: Context) {
+        prefs(context).edit()
+            .remove(KEY_LAST_WORK_ID)
+            .remove(KEY_LAST_PHOTO)
+            .apply()
+    }
 }

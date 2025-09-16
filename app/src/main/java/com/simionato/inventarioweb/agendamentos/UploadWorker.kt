@@ -3,6 +3,7 @@ package com.simionato.inventarioweb.agendamentos
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -14,6 +15,7 @@ import com.simionato.inventarioweb.global.apagarFotoGaleria
 import com.simionato.inventarioweb.global.getCurrentDateTime
 import com.simionato.inventarioweb.global.getFileFromUri
 import com.simionato.inventarioweb.global.getHoje
+import com.simionato.inventarioweb.global.showToast
 import com.simionato.inventarioweb.infra.DatabaseHelper
 import com.simionato.inventarioweb.infra.InfraHelper
 import com.simionato.inventarioweb.models.FotoUploadModel
@@ -35,24 +37,27 @@ class UploadWorker(
 
 ) : CoroutineWorker(context, workerParams) {
 
-    private val daoFoto by lazy {
-        daoFotoUpload(DatabaseHelper(applicationContext));
-    }
+
+    private lateinit var daoFoto: daoFotoUpload
 
     override suspend fun doWork(): Result {
+        val dbHelper = DatabaseHelper.getInstance(applicationContext)
+        if (dbHelper == null) {
+            showToast(applicationContext,"Banco de dados não disponível")
+            return Result.failure()
+        }
+
+        // Instancia o DAO
+        daoFoto = daoFotoUpload(dbHelper)
         return try {
-            val pendingPhotos = daoFoto.getPhotosUpLoad()
+            val pendingPhotos = daoFoto.getFotosUpLoad()
             Log.i(
                 "UploadWorker",
                 "⏱️ Fotos pendentes: ${pendingPhotos.size} às ${getCurrentDateTime()}"
             )
 
             if (pendingPhotos.isEmpty()) {
-                UploadStatusHelper.mostrarNotificacao(
-                    applicationContext,
-                    "Upload finalizado",
-                    "Nenhuma foto pendente para envio."
-                )
+                UploadStatusHelper.limparDadosUpload(applicationContext)
                 return Result.success()
             }
 
@@ -62,13 +67,15 @@ class UploadWorker(
 
             for (foto in pendingPhotos) {
                 try {
-                    setProgress(workDataOf("progresso_upload" to "Enviando Foto ${index}/${pendingPhotos.size-1}"))
+                    setProgress(workDataOf("progresso_upload" to "Enviando Foto ${index}/${pendingPhotos.size}"))
                     enviarFotoSuspend(foto)
-                } catch (e: Exception) {
-                    houveErro = true
-                    atualizarStatusErro(foto)
+                    index++
+                } catch (e: ParametroGlobal.UpLoadExcessao) {
+                    if (e.codigoErro != ParametroGlobal.CodigoErro.REG_TEMP){
+                        houveErro = true
+                        atualizarStatusErro(foto)
+                    }
                 }
-
             }
 
             if (houveErro) {
@@ -77,6 +84,7 @@ class UploadWorker(
                     "Erro no upload",
                     "Algumas fotos não foram enviadas."
                 )
+                UploadStatusHelper.limparDadosUpload(applicationContext)
             } else {
                 UploadStatusHelper.mostrarNotificacao(
                     applicationContext,
@@ -84,16 +92,17 @@ class UploadWorker(
                     "Todas as fotos foram enviadas com sucesso."
                 )
             }
-
+            UploadStatusHelper.limparDadosUpload(applicationContext)
+            setProgress(workDataOf("progresso_upload" to "Enviando Foto ${pendingPhotos.size-1}/${pendingPhotos.size-1}"))
             Result.success()
-
-
         } catch (e: Exception) {
             UploadStatusHelper.mostrarNotificacao(
                 applicationContext,
                 "Falha crítica",
                 "Ocorreu um erro inesperado no envio."
             )
+            setProgress(workDataOf("progresso_upload" to "Problemas Com As Fotos"))
+            UploadStatusHelper.limparDadosUpload(applicationContext)
             Result.failure()
         }
     }
@@ -142,28 +151,40 @@ class UploadWorker(
         )
 
         if (response.isSuccessful && response.body() != null) {
-            daoFoto.deletePhoto(foto.id)
+            daoFoto.deleteFoto(foto.id)
             apagarFotoGaleria(applicationContext, fotoUri)
         } else {
-            logHttpError(response)
-            atualizarStatusErro(foto)
+            var erro = logHttpError(response)
+            if (erro.isNotEmpty()){
+                if ("Não Existe Registro Temporário De Foto Do Dispositivo" in erro) {
+                    daoFoto.deleteFoto(foto.id)
+                    apagarFotoGaleria(applicationContext, fotoUri)
+                    throw ParametroGlobal.UpLoadExcessao(ParametroGlobal.CodigoErro.REG_TEMP)
+                }
+                else {
+                    throw ParametroGlobal.UpLoadExcessao(ParametroGlobal.CodigoErro.ERRO_DESCONHECIDO)
+                }
+
+            }
         }
     }
 
     private fun atualizarStatusErro(foto: FotoUploadModel) {
         foto.status_upload = "2"
-        daoFoto.updatePhoto(foto)
+        daoFoto.updateFoto(foto)
     }
 
-    private fun logHttpError(response: Response<RetornoUpload>) {
+    private fun logHttpError(response: Response<RetornoUpload>): String {
+        var retorno = ""
         try {
             val gson = Gson()
             val errorMsg =
                 gson.fromJson(response.errorBody()?.charStream(), HttpErrorMessage::class.java)
-            Log.w("UploadWorker", "Erro HTTP: ${errorMsg}")
+            retorno = errorMsg.getMessage().toString()
         } catch (e: Exception) {
-            Log.e("UploadWorker", "Erro ao decodificar resposta HTTP.")
+            retorno =  e.message.toString()
         }
+        return retorno
     }
 
 
