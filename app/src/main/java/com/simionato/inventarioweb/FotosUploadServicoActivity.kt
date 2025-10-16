@@ -64,7 +64,6 @@ import com.simionato.inventarioweb.infra.DatabaseHelper
 import java.util.UUID
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
-import com.simionato.inventarioweb.databinding.ActivityFotosBinding
 import com.simionato.inventarioweb.global.SafManager
 
 
@@ -74,10 +73,7 @@ class FotosUploadServicoActivity : AppCompatActivity() {
         ActivityFotosUploadServicoBinding.inflate(layoutInflater)
     }
 
-
-    private val daoFoto by lazy {
-        daoFotoUpload(dbHelper)
-    }
+    private lateinit var daoFoto: daoFotoUpload
 
     private var fotos: List<FotoUploadModel> = listOf();
 
@@ -86,6 +82,15 @@ class FotosUploadServicoActivity : AppCompatActivity() {
     private val safLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             SafManager.tratarResultado(this, result.resultCode, result.data)
+
+            // Após tratar o SAF, inicializa o banco
+            val dbHelper = DatabaseHelper.getInstance(this)
+            if (dbHelper == null) {
+                Toast.makeText(this, "Banco de dados não disponível", Toast.LENGTH_LONG).show()
+                return@registerForActivityResult
+            }
+            daoFoto = daoFotoUpload(dbHelper)
+            iniciar()
         }
 
 
@@ -101,25 +106,22 @@ class FotosUploadServicoActivity : AppCompatActivity() {
         if (!SafManager.hasPermissao(this)) {
             SafManager.solicitarAcesso(safLauncher)
         } else {
-            val pasta = SafManager.getPastaSimionato(this)
 
+            // Após tratar o SAF, inicializa o banco
             val dbHelper = DatabaseHelper.getInstance(this)
             if (dbHelper == null) {
                 Toast.makeText(this, "Banco de dados não disponível", Toast.LENGTH_LONG).show()
+                finish()
                 return
             }
 
-            // Instancia o DAO
-
-
-
+            daoFoto = daoFotoUpload(dbHelper)
+            iniciar()
         }
 
-        iniciar()
     }
 
     fun iniciar() {
-
 
         getFotos()
 

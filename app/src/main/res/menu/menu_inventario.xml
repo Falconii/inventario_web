@@ -16,6 +16,6 @@
         app:showAsAction="always|withText" />
     <item
         android:id="@+id/menu_inventario_upload"
-        android:title="EnviarFotos"
+        android:title="Enviar Fotos"
         app:showAsAction="never" />
 </menu>

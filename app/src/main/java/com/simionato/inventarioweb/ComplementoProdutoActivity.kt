@@ -152,6 +152,9 @@ class ComplementoProdutoActivity : AppCompatActivity() {
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
+            val returnIntent: Intent = Intent()
+            setResult(Activity.RESULT_OK,returnIntent)
+            finish()
         }
 
     fun showToast(mensagem: String, duracao: Int = Toast.LENGTH_SHORT) {

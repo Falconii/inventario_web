@@ -2,14 +2,17 @@ package com.simionato.inventarioweb
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.InputFilter
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
@@ -39,6 +42,8 @@ class ProdutoActivity : AppCompatActivity() {
     var imobilizado: ImobilizadoModel = ImobilizadoModel()
 
     var idAcao: CadastrosAcoes = CadastrosAcoes.None
+
+    private lateinit var  dialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,8 +103,6 @@ class ProdutoActivity : AppCompatActivity() {
 
         inicializarTooBar()
 
-
-
         binding.imSearch03.setOnClickListener {
 
             val inputMethodManager =
@@ -122,12 +125,6 @@ class ProdutoActivity : AppCompatActivity() {
 
         binding.editDescricao03.filters += InputFilter.AllCaps()
 
-        binding.ibapelido03.visibility = View.GONE
-
-        binding.ibapelido03.setOnClickListener {
-            chamaPesquisaApelido()
-        }
-
         binding.ibLimparGrupo03.setOnClickListener {
             imobilizado.cod_grupo = 0
             imobilizado.grupo_descricao = ""
@@ -141,14 +138,15 @@ class ProdutoActivity : AppCompatActivity() {
         }
 
         binding.editGrupo03.setOnClickListener {
-            chamaPesquisaGrupo()
+            if (idAcao != CadastrosAcoes.Consulta) chamaPesquisaGrupo()
         }
 
         binding.editcc03.setOnClickListener {
-            chamaPesquisaCc()
+            if (idAcao != CadastrosAcoes.Consulta) chamaPesquisaCc()
         }
 
         binding.rgCondicao03  .setOnCheckedChangeListener{ _, _ ->
+
             if (binding.rbBom03.isChecked) {
                 imobilizado.condicao = 1
             }
@@ -162,7 +160,26 @@ class ProdutoActivity : AppCompatActivity() {
                 imobilizado.condicao = 9
             }
         }
-        binding.btExcluir03.setOnClickListener { }
+        binding.btAlterar03.setOnClickListener {
+            if (idAcao == CadastrosAcoes.Edicao) {
+                imobilizado.descricao = binding.editDescricao03.text.toString();
+                imobilizado.apelido = binding.editApelido03.text.toString();
+                if (imobilizado.descricao.trim() == "") {
+                    showToast("Descrição Obrigatória!")
+                    return@setOnClickListener
+                }
+                if (imobilizado.cod_cc.trim() == "") {
+                    showToast("Centro De Custo Obrigatório!")
+                    return@setOnClickListener
+                }
+                if (imobilizado.cod_grupo == 0) {
+                    showToast("Grupo Obrigatório!")
+                    return@setOnClickListener
+                }
+                updateImobilizado()
+                return@setOnClickListener
+            }
+        }
 
         binding.btCancelar03.setOnClickListener {
             binding.editCodigo03.setText("")
@@ -188,7 +205,8 @@ class ProdutoActivity : AppCompatActivity() {
                 }
                 saveImobilizado()
                 return@setOnClickListener
-            } else {
+            }
+            if (idAcao == CadastrosAcoes.Consulta) {
                 imobilizado = ImobilizadoModel()
                 idAcao = CadastrosAcoes.None
                 binding.editCodigo03.setText("")
@@ -369,16 +387,23 @@ class ProdutoActivity : AppCompatActivity() {
                                 imobilizado = (imo ?: ImobilizadoModel()) as ImobilizadoModel
 
                                 if (imobilizado.codigo !== 0) {
-                                    showToast(
-                                        "Ativo Já Cadastrado!",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                    idAcao = CadastrosAcoes.Consulta
+
+                                    if (imobilizado.origem == "P"){
+                                        showToast(
+                                            "Ativo Já Cadastrado!",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                        idAcao = CadastrosAcoes.Consulta
+                                        loadFormulario()
+                                        formulario(true)
+                                    } else {
+                                        showDialogEdicao();
+                                    }
                                 } else {
                                     idAcao = CadastrosAcoes.Inclusao
+                                    loadFormulario()
+                                    formulario(true)
                                 }
-                                loadFormulario()
-                                formulario(true)
                             } else {
                                 binding.llProgress03.visibility = View.GONE
                                 val gson = Gson()
@@ -483,6 +508,58 @@ class ProdutoActivity : AppCompatActivity() {
 
     }
 
+    private fun updateImobilizado() {
+
+        try {
+
+            val imobilizadoService =
+                InfraHelper.apiInventario.create(ImobilizadoService::class.java)
+            imobilizadoService.putInventario(imobilizado
+            ).enqueue(object : Callback<ImobilizadoModel> {
+                override fun onResponse(
+                    call: Call<ImobilizadoModel>,
+                    response: Response<ImobilizadoModel>
+                ) {
+                    binding.llProgress03.visibility = View.GONE
+                    if (response != null) {
+                        if (response.isSuccessful) {
+                            var imo = response.body()
+                            if (imo != null) {
+                                showToast("Imobilizado Atualizado!")
+                            } else {
+                                showToast("Falha Na Atualização Do Imobilizado")
+                            }
+                            binding.editCodigo03.setText("")
+                            formulario(false)
+                        } else {
+                            binding.llProgress03.visibility = View.GONE
+                            val gson = Gson()
+                            val message = gson.fromJson(
+                                response.errorBody()!!.charStream(),
+                                HttpErrorMessage::class.java
+                            )
+                            showToast("${message.getMessage().toString()}", Toast.LENGTH_SHORT)
+                        }
+                    } else {
+                        binding.llProgress03.visibility = View.GONE
+                        showToast("Sem retorno Da Requisição!")
+                    }
+                }
+
+                override fun onFailure(call: Call<ImobilizadoModel>, t: Throwable) {
+                    binding.llProgress03.visibility = View.GONE
+                    showToast(t.message.toString())
+                }
+
+            })
+
+        } catch (e: Exception) {
+            binding.llProgress03.visibility = View.GONE
+            showToast("${e.message.toString()}", Toast.LENGTH_LONG)
+        }
+
+    }
+
     fun showToast(mensagem: String, duracao: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(this, mensagem, duracao).show()
     }
@@ -508,20 +585,34 @@ class ProdutoActivity : AppCompatActivity() {
     }
     private fun formulario(show: Boolean) {
         if (show) {
-            if (idAcao == CadastrosAcoes.Consulta) {
-                binding.textViewTitulo03.setText("Produto Localizado.\nSOMENTE CONSULTA")
-            } else {
-                binding.textViewTitulo03.setText("Produto Novo")
-            }
+            if (idAcao == CadastrosAcoes.Consulta) binding.textViewTitulo03.setText("Produto Localizado.\nSOMENTE CONSULTA")
+            if (idAcao == CadastrosAcoes.Inclusao) binding.textViewTitulo03.setText("Produto Novo")
+            if (idAcao == CadastrosAcoes.Edicao) binding.textViewTitulo03.setText("Produto Já Cadastrado. Alteração")
         }
         if (idAcao == CadastrosAcoes.Consulta) {
             binding.editDescricao03.setFocusable(false)
             binding.ibLimparCc03.visibility = View.GONE
             binding.ibLimparGrupo03.visibility = View.GONE
-        } else {
+            binding.editApelido03.setFocusable(false)
+            for (i in 0 until binding.rgCondicao03.childCount) {
+                val child = binding.rgCondicao03.getChildAt(i)
+                if (child is RadioButton) {
+                    child.isEnabled = false
+                }
+            }
+        }
+        if (idAcao == CadastrosAcoes.Inclusao || idAcao == CadastrosAcoes.Edicao) {
             binding.editDescricao03.setFocusableInTouchMode(true)
             binding.ibLimparCc03.visibility = View.VISIBLE
             binding.ibLimparGrupo03.visibility = View.VISIBLE
+            binding.editApelido03.setFocusable(true)
+
+            for (i in 0 until binding.rgCondicao03.childCount) {
+                val child = binding.rgCondicao03.getChildAt(i)
+                if (child is RadioButton) {
+                    child.isEnabled = true
+                }
+            }
         }
         binding.llLinhaCodigoAtual03.visibility = if (!show) {
             View.GONE
@@ -555,20 +646,26 @@ class ProdutoActivity : AppCompatActivity() {
         }
         if (show) {
             if (idAcao == CadastrosAcoes.Inclusao) {
-                binding.btExcluir03.visibility = View.GONE
+                binding.btAlterar03.visibility = View.GONE
                 binding.btCancelar03.visibility = View.VISIBLE
                 binding.btGravar03.visibility = View.VISIBLE
                 binding.btGravar03.text = "Gravar"
-            } else {
-                binding.btExcluir03.visibility = View.GONE
+            }
+            if (idAcao == CadastrosAcoes.Edicao){
+                binding.btAlterar03.visibility = View.VISIBLE
+                binding.btCancelar03.visibility = View.VISIBLE
+                binding.btGravar03.visibility = View.GONE
+            }
+            if (idAcao == CadastrosAcoes.Consulta) {
+                binding.btAlterar03.visibility = View.GONE
                 binding.btCancelar03.visibility = View.GONE
                 binding.btGravar03.visibility = View.VISIBLE
                 binding.btGravar03.text = "Pesquisar Outro Produto"
             }
         } else {
-            binding.btExcluir03.visibility = View.GONE
+            binding.btAlterar03.visibility  = View.GONE
             binding.btCancelar03.visibility = View.GONE
-            binding.btGravar03.visibility = View.GONE
+            binding.btGravar03.visibility   = View.GONE
         }
 
         pesquisa(!show)
@@ -604,6 +701,26 @@ class ProdutoActivity : AppCompatActivity() {
             editApelido03.setText(imobilizado.apelido)
         }
 
+    }
+    private fun showDialogEdicao(){
+        val builder = AlertDialog.Builder(this)
+            .setTitle("Atenção")
+            .setMessage("Produto Já Cadastrado. Deseja Alterar ?")
+            .setNegativeButton("Não"){_,_  ->
+                idAcao = CadastrosAcoes.Consulta
+                loadFormulario()
+                formulario(true)
+                dialog.dismiss()
+            }
+            .setPositiveButton("Sim"){_,_ ->
+                idAcao = CadastrosAcoes.Edicao
+                loadFormulario()
+                formulario(true)
+                dialog.dismiss()
+            }
+        dialog = builder.create()
+
+        dialog.show()
     }
 
 }

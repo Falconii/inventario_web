@@ -58,7 +58,7 @@ data class ParametroImobilizadoInventario01(
     0,
     50,
     "N",
-    "Imobilizado",
+    "",
     false,
         0,
         0,

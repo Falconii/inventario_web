@@ -3,9 +3,7 @@ package com.simionato.inventarioweb.infra
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.net.Uri
 import android.util.Log
-import androidx.documentfile.provider.DocumentFile
 import com.simionato.inventarioweb.global.SafManager
 import java.io.File
 import java.io.FileOutputStream
@@ -14,7 +12,7 @@ class DatabaseHelper private constructor(context: Context, dbFile: File) :
     SQLiteOpenHelper(context, dbFile.absolutePath, null, DATABASE_VERSION) {
 
     companion object {
-        private const val DATABASE_VERSION = 11
+        private const val DATABASE_VERSION = 12
         private const val DATABASE_NAME = "simionato.db"
 
         @Volatile
@@ -41,25 +39,26 @@ class DatabaseHelper private constructor(context: Context, dbFile: File) :
 
             val uri = dbDocument?.uri ?: return null
 
-            // Copiar o conteúdo para um arquivo temporário local
-            val tempFile = File(context.cacheDir, DATABASE_NAME)
-            try {
-                context.contentResolver.openInputStream(uri)?.use { input ->
-                    FileOutputStream(tempFile).use { output ->
-                        input.copyTo(output)
+            // Copiar o conteúdo para um arquivo persistente local
+            val localFile = File(context.filesDir, DATABASE_NAME)
+
+            if (!localFile.exists()) {
+                try {
+                    context.contentResolver.openInputStream(uri)?.use { input ->
+                        FileOutputStream(localFile).use { output ->
+                            input.copyTo(output)
+                        }
                     }
+                } catch (e: Exception) {
+                    Log.e("DatabaseHelper", "Erro ao copiar banco do SAF: ${e.message}")
+                    return null
                 }
-            } catch (e: Exception) {
-                Log.e("DatabaseHelper", "Erro ao copiar banco do SAF: ${e.message}")
-                return null
             }
 
-            return tempFile
+            return localFile
         }
-
         // Constantes de tabelas e colunas
         const val TABLE_PHOTOS = "photos"
-        const val TABLE_LANCAMENTOS = "lancamentos"
         const val COLUMN_ID = "id"
         const val COLUMN_ID_EMPRESA = "id_empresa"
         const val COLUMN_ID_LOCAL = "id_local"
@@ -83,7 +82,6 @@ class DatabaseHelper private constructor(context: Context, dbFile: File) :
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        // Criação das tabelas
         val createPhotosTable = """
             CREATE TABLE IF NOT EXISTS $TABLE_PHOTOS (
                 $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -110,13 +108,12 @@ class DatabaseHelper private constructor(context: Context, dbFile: File) :
         """.trimIndent()
 
         db.execSQL(createPhotosTable)
-
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        if (oldVersion < 11) {
-            db.execSQL("DROP TABLE IF EXISTS $TABLE_PHOTOS")
-            onCreate(db) // Recria as tabelas para aplicar as mudanças
+        if (oldVersion < 12) {
+            // Exemplo de migração segura
+            db.execSQL("ALTER TABLE $TABLE_PHOTOS ADD COLUMN nova_coluna TEXT")
         }
     }
 }

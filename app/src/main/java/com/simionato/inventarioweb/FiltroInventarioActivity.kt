@@ -204,6 +204,11 @@ class FiltroInventarioActivity : AppCompatActivity() {
             paramImoInventario.id_imobilizado = 0
             paramImoInventario.new_codigo = 0
             paramImoInventario.descricao = ""
+            if (paramImoInventario._searchIndex == 0) paramImoInventario.orderby="001"
+            if (paramImoInventario._searchIndex == 1) paramImoInventario.orderby="002"
+            if (paramImoInventario._searchIndex == 2) paramImoInventario.orderby="006"
+            if (paramImoInventario._searchIndex == 3) paramImoInventario.orderby="007"
+            if (paramImoInventario._searchIndex == 4) paramImoInventario.orderby="009"
             var parametro = ParametroModel(
                 usuario.id_empresa,
                 "inventariomobile",

@@ -1,29 +1,28 @@
 package com.simionato.inventarioweb.global
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.provider.DocumentsContract
-import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.documentfile.provider.DocumentFile
 import com.simionato.inventarioweb.infra.DatabaseHelper
 
-object SafManager  {
-
+object SafManager {
 
     private const val PREFS_NAME = "saf_prefs"
     private const val KEY_URI = "simionato_uri"
 
     fun solicitarAcesso(activityLauncher: ActivityResultLauncher<Intent>) {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                    Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
-                    Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
+            addFlags(
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+            )
         }
         activityLauncher.launch(intent)
     }
@@ -40,13 +39,17 @@ object SafManager  {
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
             salvarUri(context, uri)
+
             val dbHelper = DatabaseHelper.getInstance(context)
             if (dbHelper == null) {
                 showToast(context, "Banco de dados não disponível")
                 return
+            } else {
+                Log.i("SafManager", "Banco de dados carregado com sucesso.")
             }
         } else {
             Log.w("SafManager", "Pasta selecionada não é 'simionato': $docId")
+            showToast(context, "Selecione a pasta correta: 'simionato'")
         }
     }
 
@@ -73,4 +76,7 @@ object SafManager  {
         prefs.edit().putString(KEY_URI, uri.toString()).apply()
     }
 
+    private fun showToast(context: Context, message: String) {
+        android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_LONG).show()
+    }
 }

@@ -65,7 +65,7 @@ class FotoUploadAdapter(
             btDestaque.visibility = if (foto.destaque == "S")  View.VISIBLE else View.GONE
             foto_item_load_txt_ativo.setText(ParametroGlobal.prettyText.tituloDescricao("Código: ",foto.idImobilizado.toString().padStart(6,'0'),false))
             foto_item_load_txt_descricao.setText(ParametroGlobal.prettyText.tituloDescricao("Descrição: ",foto.descricao,true))
-            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Obs: ",foto.fileNameOriginal,true))
+            foto_item_load_txt_obs.setText(ParametroGlobal.prettyText.tituloDescricao("Obs: ",foto.obs,true))
             foto_item_load_txt_usuario.setText(ParametroGlobal.prettyText.tituloDescricao("Usuário: ",foto.razao.toString(),true))
             foto_item_load_txt_situacao.setText(ParametroGlobal.prettyText.tituloDescricao("Situação: ","Foto Aguardando UPLOAD",true))
 

@@ -31,6 +31,7 @@ import com.simionato.inventarioweb.global.ParametroGlobal
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados
 import com.simionato.inventarioweb.global.ParametroGlobal.Dados.Companion.Inventario
 import com.simionato.inventarioweb.global.ParametroGlobal.EstadoUpload
+import com.simionato.inventarioweb.global.SafManager
 import com.simionato.inventarioweb.global.apagarFotoGaleria
 import com.simionato.inventarioweb.global.getFileFromUri
 import com.simionato.inventarioweb.global.getHoje
@@ -132,6 +133,24 @@ class FotosActivity : AppCompatActivity() {
         }
     }
 
+
+    private val safLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            SafManager.tratarResultado(this, result.resultCode, result.data)
+
+            // Após tratar o SAF, inicializa o banco
+            val dbHelper = DatabaseHelper.getInstance(this)
+            if (dbHelper == null) {
+                Toast.makeText(this, "Banco de dados não disponível", Toast.LENGTH_LONG).show()
+                finish()
+                return@registerForActivityResult
+            }
+
+            daoFoto = daoFotoUpload(dbHelper)
+            this.showFormulario(false)
+            iniciar()
+        }
+
     private lateinit var  dialog: AlertDialog
 
     private lateinit var uri:Uri
@@ -145,8 +164,11 @@ class FotosActivity : AppCompatActivity() {
     private var save_local:Boolean = false
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding.llProgress20.visibility = View.GONE
+        setContentView(binding.root)
 
         if (ParametroGlobal.Ambiente.itsOK()){
             showToast(applicationContext,"Ambiente Incorreto!!")
@@ -166,7 +188,6 @@ class FotosActivity : AppCompatActivity() {
             showToast(applicationContext,"Erro Nos Parametros: ${error.message}")
             finish()
         }
-        setContentView(binding.root)
         if (id_imobilizado == 0){
             showToast(applicationContext,"Não Foi Informado O Código Do Imobilizado!");
             val returnIntent: Intent = Intent()
@@ -174,16 +195,31 @@ class FotosActivity : AppCompatActivity() {
             finish()
             return
         }
-
-        binding.llProgress20.visibility = View.GONE
-        val dbHelper = DatabaseHelper.getInstance(this)
-        if (dbHelper == null) {
-            showToast(applicationContext, "Banco de dados não disponível");
-            return
+        requestCamara = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+            if (it){
+                resultFoto.launch(imageUri)
+            } else {
+                Toast.makeText(this,"Permissão Negada",Toast.LENGTH_SHORT).show()
+            }
         }
-        daoFoto = daoFotoUpload(dbHelper)
-        showFormulario(false)
-        iniciar()
+        if (!SafManager.hasPermissao(this)) {
+            SafManager.solicitarAcesso(safLauncher)
+        } else {
+
+            val dbHelper = DatabaseHelper.getInstance(this)
+            if (dbHelper == null) {
+                Toast.makeText(this, "Banco de dados não disponível", Toast.LENGTH_LONG).show()
+                finish()
+                return
+            }
+
+            // Instancia o DAO
+            daoFoto = daoFotoUpload(dbHelper)
+
+            this.showFormulario(false)
+            iniciar()
+        }
+
     }
 
     private fun createImageUri() : Uri? {
@@ -235,13 +271,7 @@ class FotosActivity : AppCompatActivity() {
     }
 
     private fun iniciar(){
-        requestCamara = registerForActivityResult(ActivityResultContracts.RequestPermission()){
-            if (it){
-                resultFoto.launch(imageUri)
-            } else {
-                Toast.makeText(this,"Permissão Negada",Toast.LENGTH_SHORT).show()
-            }
-        }
+
         inicializarTooBar()
         imageUri = createImageUri()!!
         binding.txtViewSituacao20.setText(ParametroGlobal.prettyText.ambiente_produto(id_imobilizado,descricao))

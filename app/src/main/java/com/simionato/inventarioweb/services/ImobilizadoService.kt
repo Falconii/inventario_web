@@ -3,9 +3,11 @@ package com.simionato.inventarioweb.services
 import com.simionato.inventarioweb.models.ImobilizadoModel
 import com.simionato.inventarioweb.parametros.ParametroImobilizado01
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -21,6 +23,11 @@ interface ImobilizadoService {
     fun postInventario(
         @Body params: ParametroImobilizado01
     ): Call<List<ImobilizadoModel>>
+
+    @PUT("imobilizado")
+    fun putInventario(
+        @Body params: ImobilizadoModel
+    ): Call<ImobilizadoModel>
 
     @POST("imobilizado_inv")
     fun postImobilizadoInventario(
