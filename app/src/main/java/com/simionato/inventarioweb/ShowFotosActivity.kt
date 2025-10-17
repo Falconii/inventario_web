@@ -353,4 +353,5 @@ class ShowFotosActivity : AppCompatActivity() {
         Toast.makeText(this, mensagem, duracao).show()
     }
 
+    // teste do git
 }
