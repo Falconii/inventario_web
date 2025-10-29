@@ -570,6 +570,9 @@ class FotosActivity : AppCompatActivity() {
     }
 
     private fun uploadFoto_db(){
+        binding.btGravarNuvem20.setEnabled(false)
+        binding.btGravarLocal20.setEnabled(false)
+        binding.btCancelar20.setEnabled(false)
         try {
             //grava a foto na galeria/simionato
 
